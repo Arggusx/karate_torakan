@@ -15,6 +15,7 @@ import type {
   KataResumo,
   Mestre,
   NivelKata,
+  OrigemDosKatas,
   PerfilUsuario,
   Pilar,
   Professor,
@@ -192,6 +193,11 @@ export function getEtiquetaDojo(): EtiquetaDojo[] {
   return dados.etiquetaDojo;
 }
 
+/** O quadro "origem dos katas básicos": de qual kata cada outro foi extraído. */
+export function getOrigemDosKatas(): OrigemDosKatas {
+  return dados.origemDosKatas;
+}
+
 export function getDicionario(): DicionarioItem[] {
   return dados.dicionario;
 }
@@ -286,6 +292,46 @@ export function listarDestaques(kata: KataCompleto): string[] {
     .split(/,|\s+e\s+/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+/**
+ * Casa o nome de uma técnica escrito num kata com a ficha do catálogo.
+ *
+ * Os katas escrevem "Gedan Barai" e o catálogo "Gedan-Barai"; os movimentos
+ * ainda qualificam com lado e altura ("Hidari chudan gyaku-zuki"). A busca
+ * ignora hífen, acento e caixa, e depois tenta achar a técnica dentro do
+ * nome — que é onde ela costuma estar quando vem qualificada.
+ */
+const CHAVE_TECNICA = new Map<string, Tecnica>();
+for (const tecnica of dados.tecnicas) {
+  CHAVE_TECNICA.set(normalizar(tecnica.nome).replace(/\s+/g, ""), tecnica);
+}
+
+/** Grafias alternativas usadas nos katas, apontando para a ficha real. */
+const APELIDOS: Record<string, string> = dados.apelidosTecnicas ?? {};
+
+export function acharTecnica(nome: string): Tecnica | undefined {
+  const limpo = normalizar(nome).replace(/\s+/g, "");
+
+  const apelido = APELIDOS[limpo];
+  if (apelido) {
+    const porApelido = CHAVE_TECNICA.get(normalizar(apelido).replace(/\s+/g, ""));
+    if (porApelido) return porApelido;
+  }
+
+  const direta = CHAVE_TECNICA.get(limpo);
+  if (direta) return direta;
+
+  // "hidarichudangyakuzuki" contém "gyakuzuki". Prefere o nome mais longo,
+  // para "gedanbarai" não perder para um eventual "barai".
+  let melhor: Tecnica | undefined;
+  for (const [chave, tecnica] of CHAVE_TECNICA) {
+    if (chave.length < 5 || !limpo.includes(chave)) continue;
+    if (!melhor || chave.length > normalizar(melhor.nome).replace(/\s+/g, "").length) {
+      melhor = tecnica;
+    }
+  }
+  return melhor;
 }
 
 

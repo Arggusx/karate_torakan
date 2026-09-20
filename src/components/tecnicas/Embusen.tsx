@@ -49,8 +49,11 @@ export function Embusen({
   }, [tocando, passos.length]);
 
   // Caixa do desenho a partir dos próprios pontos, com folga para o marcador.
-  const xs = passos.map((p) => p.x);
-  const ys = passos.map((p) => p.y);
+  // Os `via` entram na caixa: se um deles sair da área dos passos, a linha
+  // ficaria cortada na borda do desenho.
+  const pontos = passos.flatMap((p) => [...(p.via ?? []), { x: p.x, y: p.y }]);
+  const xs = pontos.map((p) => p.x);
+  const ys = pontos.map((p) => p.y);
   const folga = 1;
   const minX = Math.min(0, ...xs) - folga;
   const maxX = Math.max(0, ...xs) + folga;
@@ -61,13 +64,46 @@ export function Embusen({
   const px = (x: number) => x - minX;
   const py = (y: number) => maxY - y;
 
-  const linha = [{ x: 0, y: 0 }, ...passos]
+  /*
+    A linha percorre os passos na ordem, abrindo os `via` de cada um antes de
+    chegar nele. Sem isso o traçado cortaria em diagonal onde o deslocamento
+    na verdade dobra uma esquina.
+  */
+  const linha = [
+    { x: 0, y: 0 },
+    ...passos.flatMap((p) => [...(p.via ?? []), { x: p.x, y: p.y }]),
+  ]
     .map((p) => `${px(p.x).toFixed(2)},${py(p.y).toFixed(2)}`)
     .join(" ");
 
   const passo = passos[atual];
   const movimento = movimentos[passo.numero - 1] ?? "";
   const base = passo.base ?? baseDoMovimento(movimento);
+
+  /*
+    Nem todo movimento desloca o praticante: vários são executados parado, na
+    mesma base. Sem sinalizar isso o diagrama parece travado — o número sobe e
+    o marcador não sai do lugar. Aqui a interface conta quantos movimentos
+    seguidos caem neste ponto e em qual deles estamos.
+  */
+  let inicioDoPonto = atual;
+  let fimDoPonto = atual;
+  while (
+    inicioDoPonto > 0 &&
+    passos[inicioDoPonto - 1].x === passo.x &&
+    passos[inicioDoPonto - 1].y === passo.y
+  ) {
+    inicioDoPonto--;
+  }
+  while (
+    fimDoPonto < passos.length - 1 &&
+    passos[fimDoPonto + 1].x === passo.x &&
+    passos[fimDoPonto + 1].y === passo.y
+  ) {
+    fimDoPonto++;
+  }
+  const movimentosNoPonto = fimDoPonto - inicioDoPonto + 1;
+  const ordemNoPonto = atual - inicioDoPonto + 1;
 
   return (
     <div className="card overflow-hidden">
@@ -182,6 +218,25 @@ export function Embusen({
               className="text-accent"
               fill="currentColor"
             />
+
+            {/*
+              Anel de contagem: fecha conforme os movimentos parados vão sendo
+              executados. É o que dá movimento ao diagrama quando o marcador
+              não anda.
+            */}
+            {movimentosNoPonto > 1 ? (
+              <circle
+                r="0.42"
+                fill="none"
+                strokeWidth="0.1"
+                strokeLinecap="round"
+                pathLength={1}
+                strokeDasharray={`${ordemNoPonto / movimentosNoPonto} 1`}
+                transform="rotate(-90)"
+                className="text-gold"
+                stroke="currentColor"
+              />
+            ) : null}
           </g>
         </svg>
 
@@ -199,6 +254,25 @@ export function Embusen({
               </span>
             ) : null}
           </div>
+
+          {/* Movimentos executados sem sair do lugar. */}
+          {movimentosNoPonto > 1 ? (
+            <p className="mt-1.5 flex items-center gap-1.5 text-2xs text-gold">
+              <span className="inline-flex gap-0.5" aria-hidden>
+                {Array.from({ length: movimentosNoPonto }, (_, i) => (
+                  <span
+                    key={i}
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      i < ordemNoPonto ? "bg-gold" : "bg-gold/25",
+                    )}
+                  />
+                ))}
+              </span>
+              {ordemNoPonto}º de {movimentosNoPonto} movimentos nesta posição —
+              sem deslocamento
+            </p>
+          ) : null}
 
           {base ? (
             <p className="mt-1 text-xs font-medium text-gold">{base}</p>
@@ -230,7 +304,12 @@ export function Embusen({
             {movimento}
           </p>
 
-          <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
+          {/*
+            Sem `mt-auto`: antes os controles eram empurrados para o fim da
+            coluna e abriam um vazio no meio. Agora eles vêm logo depois do
+            texto e o espaço que sobra embaixo é o do diagrama de referência.
+          */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button
               size="sm"
               onClick={() => {
@@ -285,6 +364,34 @@ export function Embusen({
                 )}
               />
             ))}
+          </div>
+
+          {/*
+            Espaço do diagrama de referência — o embusen desenhado à mão, que
+            entra depois. Enquanto não há imagem, o lugar fica marcado em vez
+            de virar vazio: quem olha entende que falta algo ali, e não que a
+            coluna acabou.
+          */}
+          <div className="mt-4 flex-1">
+            {tracado.imagemReferencia ? (
+              <figure className="relative h-full min-h-[160px] w-full overflow-hidden rounded-md border border-line bg-canvas">
+                <Image
+                  src={tracado.imagemReferencia}
+                  alt={`Diagrama de referência do embusen, forma de ${tracado.forma}`}
+                  fill
+                  sizes="(min-width: 640px) 360px, 100vw"
+                  className="object-contain p-2"
+                />
+              </figure>
+            ) : (
+              <div className="flex h-full min-h-[160px] w-full items-center justify-center rounded-md border border-dashed border-line bg-canvas px-4 text-center">
+                <p className="text-2xs leading-relaxed text-subtle">
+                  Diagrama de referência
+                  <br />
+                  <span className="text-subtle/70">em preparo</span>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

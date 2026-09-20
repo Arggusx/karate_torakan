@@ -1,11 +1,13 @@
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import type { Metadata } from "next";
+import { OrigemDosKatas } from "@/components/fundamentos/OrigemDosKatas";
 import { SectionHeading } from "@/components/ui/Card";
 import {
   getDojoKun,
   getEtiquetaDojo,
   getGraduacoes,
   getNijuKun,
+  getOrigemDosKatas,
   getPrincipiosTecnicos,
 } from "@/services/dataService";
 
@@ -21,6 +23,7 @@ export default function FundamentosPage() {
   const nijuKun = getNijuKun();
   const principios = getPrincipiosTecnicos();
   const etiqueta = getEtiquetaDojo();
+  const origemDosKatas = getOrigemDosKatas();
 
   return (
     <>
@@ -228,6 +231,17 @@ export default function FundamentosPage() {
         </div>
         </div>
       </section>
+
+      {/* Seção 3 — Origem dos katas. Sem faixa, alternando com a seção
+          anterior, que é destacada. */}
+      <div className="section space-y-4 py-12">
+        <SectionHeading
+          eyebrow="Seção III"
+          titulo="De onde vem cada kata"
+          descricao="O Shotokan não tem 26 formas independentes. Quase tudo desce de um kata só, destrinchado por Itosu para virar material de ensino — e é por isso que o programa tem a ordem que tem."
+        />
+        <OrigemDosKatas dados={origemDosKatas} />
+      </div>
     </>
   );
 }
