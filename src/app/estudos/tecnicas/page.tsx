@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { KataTable } from "@/components/tecnicas/KataTable";
+import { DeslocamentosEmPreparo } from "@/components/tecnicas/DeslocamentosEmPreparo";
 import { KihonGrid } from "@/components/tecnicas/KihonGrid";
 import { SkeletonCard, SkeletonTable } from "@/components/ui/Skeleton";
 import { HeroPagina } from "@/components/layout/HeroPagina";
@@ -13,11 +14,14 @@ import {
 } from "@/services/dataService";
 import type { KataCompleto, Tecnica } from "@/types";
 
-type Visao = "kihon" | "katas";
+type Visao = "kihon" | "katas" | "deslocamentos";
 
 const VISOES = [
   { value: "kihon" as const, label: "Kihon" },
   { value: "katas" as const, label: "Katas" },
+  // Ashi-sabaki: suri-ashi, yori-ashi, tsugi-ashi. O espaço já fica marcado
+  // para o aluno saber que a família existe, antes mesmo do conteúdo entrar.
+  { value: "deslocamentos" as const, label: "Deslocamentos" },
 ];
 
 const CATEGORIAS_KIHON = [
@@ -57,6 +61,37 @@ export default function TecnicasPage() {
       ativo = false;
     };
   }, []);
+
+  /*
+    A lista de técnicas é montada no cliente, então quando o navegador
+    processa o `#Gedan-Barai` do link vindo da página do kata o elemento ainda
+    não existe e a rolagem não acontece. Aqui a âncora é resolvida de novo,
+    depois que os dados chegaram.
+  */
+  useEffect(() => {
+    if (carregando) return;
+    const alvo = decodeURIComponent(window.location.hash.slice(1));
+    if (!alvo) return;
+
+    const elemento = document.getElementById(alvo);
+    if (!elemento) return;
+
+    /*
+      O App Router restaura a rolagem para o topo depois que o efeito roda, o
+      que cancelava o scroll daqui. Esperar um quadro devolve a ordem certa.
+    */
+    const rolar = window.setTimeout(() => {
+      elemento.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Pisca a borda para o olho achar o card na grade.
+      elemento.classList.add("ring-2", "ring-accent");
+      window.setTimeout(
+        () => elemento.classList.remove("ring-2", "ring-accent"),
+        2000,
+      );
+    }, 150);
+
+    return () => window.clearTimeout(rolar);
+  }, [carregando]);
 
   const tecnicasFiltradas = useMemo(
     () =>
@@ -99,7 +134,7 @@ export default function TecnicasPage() {
           onChange={setVisao}
           destaque
         />
-        {visao === "kihon" ? (
+        {visao === "deslocamentos" ? null : visao === "kihon" ? (
           <FilterChips
             options={CATEGORIAS_KIHON}
             value={filtroKihon}
@@ -114,7 +149,9 @@ export default function TecnicasPage() {
         )}
       </div>
 
-      {carregando ? (
+      {visao === "deslocamentos" ? (
+        <DeslocamentosEmPreparo />
+      ) : carregando ? (
         visao === "kihon" ? (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 9 }).map((_, index) => (

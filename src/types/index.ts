@@ -67,7 +67,60 @@ export interface KataDetalhado {
   embusenOficialImg: string;
   embusenCompletoImg: string;
   bunkai: string[];
+  /** A sequência em frase corrida — usada pelo diagrama do embusen. */
   movimentos: string[];
+  /** A mesma sequência em colunas — usada pela tabela da página do kata. */
+  movimentosDetalhados: MovimentoKata[];
+  /**
+   * Divergência entre fontes sobre a contagem de movimentos ou o ponto de
+   * kiai, quando existe. Guardar em vez de escolher em silêncio importa: quem
+   * usa o site para preparar exame precisa saber onde as escolas discordam.
+   */
+  observacaoContagem?: string;
+
+  // --- Campos vindos do cartaz da ISO (International Shotokan-Ryu
+  // Organization, 2013). Complementam a ficha sem substituir nada. ---
+
+  /** Linhagem de origem: Shuri-te, Tomari-te ou Naha-te. */
+  origemLinhagem?: string;
+  /** Duração de referência da execução, em segundos. */
+  duracaoSegundos?: number;
+  /** Tradução do nome com a decomposição dos termos japoneses. */
+  significadoLiteral?: string;
+  /** Comentário técnico sobre o que o kata treina. */
+  comentario?: string[];
+  /** Posição do kata na série de 26. */
+  numeroNaSerie?: number;
+  /** Registrado quando a contagem da ISO difere da usada aqui. */
+  contagemAlternativa?: string;
+}
+
+/**
+ * Um movimento do kata nas colunas em que ele nasceu, antes de virar frase:
+ * número, técnica em japonês, tradução e o deslocamento/base.
+ */
+export interface MovimentoKata {
+  numero: number;
+  /** Sufixo de fase ("A-B", "A-C"): um movimento executado em duas ou três
+   *  partes no mesmo ponto, sem contar como movimento novo. */
+  fases?: string;
+  tecnica: string;
+  traducao: string;
+  direcao?: string;
+  kiai?: boolean;
+}
+
+/** O quadro "Origem dos katas básicos": de qual kata cada outro foi extraído. */
+export interface OrigemDosKatas {
+  raiz: string;
+  nota: string;
+  derivados: { de: string; para: string[] }[];
+  fonte: {
+    titulo: string;
+    entidade: string;
+    ano: number;
+    creditos: string;
+  };
 }
 
 export interface Graduacao {
@@ -174,6 +227,9 @@ export interface KarateData {
   curiosidades: Curiosidade[];
   preceitosFunakoshi: string[];
   katas26Detalhados: KataDetalhado[];
+  origemDosKatas: OrigemDosKatas;
+  /** Grafias alternativas de técnicas usadas nos katas -> nome da ficha. */
+  apelidosTecnicas?: Record<string, string>;
   textFiles: TextFiles;
 }
 

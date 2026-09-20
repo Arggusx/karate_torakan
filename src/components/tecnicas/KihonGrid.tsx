@@ -99,7 +99,12 @@ function CardTecnica({
   onAlternar: () => void;
 }) {
   return (
-    <article className="card card-hover">
+    /*
+      O id é a âncora usada pelos links vindos da página do kata: o aluno
+      clica em "Gedan Barai" no Heian Shodan e cai neste card. scroll-mt
+      compensa o header fixo, senão o card encosta atrás dele.
+    */
+    <article id={tecnica.nome} className="card card-hover scroll-mt-24">
       <button
         type="button"
         onClick={onAbrirModal}
