@@ -152,11 +152,40 @@ export const LINHAGEM_JAPAO: NoLinhagem = {
   ],
 };
 
+/**
+ * Busca do mestre na Wikipédia em português.
+ *
+ * É busca e não link direto de propósito. Fixar quarenta URLs significaria
+ * afirmar que quarenta artigos existem com aquele título exato — e link morto
+ * numa árvore de linhagem é pior que link genérico. A busca do MediaWiki
+ * redireciona sozinha para o artigo quando o nome bate, e mostra resultados
+ * quando não bate. Nunca dá 404.
+ */
+function buscaNaWikipedia(nome: string): string {
+  const termo = encodeURIComponent(nome.replace(/"/g, ""));
+  return `https://pt.wikipedia.org/w/index.php?search=${termo}`;
+}
+
 function NoCard({ no }: { no: NoLinhagem }) {
   return (
     <div className="card card-hover border-l-2 border-l-accent px-3 py-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-        <span className="text-xs font-semibold text-fg">{no.nome}</span>
+        <a
+          href={buscaNaWikipedia(no.nome)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-baseline gap-1 text-xs font-semibold text-fg transition-colors hover:text-accent"
+          title={`Procurar ${no.nome} na Wikipédia`}
+        >
+          {no.nome}
+          <span
+            aria-hidden
+            className="text-2xs text-subtle transition-colors group-hover:text-accent"
+          >
+            ↗
+          </span>
+          <span className="sr-only">(abre a Wikipédia em nova aba)</span>
+        </a>
         <span className="flex items-center gap-2">
           {no.org ? <Badge tone="accent">{no.org}</Badge> : null}
           {no.anos ? (

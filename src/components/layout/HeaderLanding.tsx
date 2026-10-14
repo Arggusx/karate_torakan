@@ -6,15 +6,16 @@ import {
   MenuMobileSeparador,
 } from "@/components/layout/MenuMobile";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { ButtonLink } from "@/components/ui/Button";
 
-const LINKS = [
-  { href: "#beneficios", label: "Benefícios" },
-  { href: "#pilares", label: "Pilares" },
-  { href: "#dojo", label: "O Dojo" },
-  { href: "#matricula", label: "Mensalidade" },
-  { href: "/estudos", label: "Portal de Estudos" },
-];
+/*
+  O header da vitrine ficou com um destino só.
+
+  Antes ele repetia as âncoras das seções (#beneficios, #pilares, #dojo), o que
+  competia com a própria rolagem da página e empurrava o único link que leva a
+  outro lugar para a ponta direita. Com um item só, o Portal de Estudos deixa
+  de disputar atenção com atalhos para algo que já está logo abaixo.
+*/
+const LINKS = [{ href: "/estudos", label: "Portal de Estudos" }];
 
 export function HeaderLanding() {
   return (
@@ -43,17 +44,6 @@ export function HeaderLanding() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {/* <ButtonLink
-            href="/login"
-            variant="secondary"
-            size="sm"
-            className="hidden sm:inline-flex"
-          >
-            Entrar
-          </ButtonLink>
-          <ButtonLink href="#matricula" size="sm" className="hidden sm:inline-flex">
-            Matricule-se
-          </ButtonLink> */}
 
           <MenuMobile className="lg:hidden" rotulo="Abrir menu do site">
             {LINKS.map((link) => (
@@ -62,7 +52,7 @@ export function HeaderLanding() {
               </MenuMobileLink>
             ))}
             <MenuMobileSeparador />
-            <MenuMobileLink href="#matricula">Matricule-se</MenuMobileLink>
+            <MenuMobileLink href="/planos">Planos e matrícula</MenuMobileLink>
             <MenuMobileLink href="/login">Entrar no portal</MenuMobileLink>
           </MenuMobile>
         </div>

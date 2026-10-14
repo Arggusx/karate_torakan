@@ -5,8 +5,6 @@ import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/Card";
 import {
   dados,
-  getCuriosidades,
-  getDicionario,
   getKatas,
   getPilares,
   getTecnicas,
@@ -18,6 +16,14 @@ export const metadata: Metadata = {
     "Os três pilares do estudo do Karatê Shotokan: história, técnicas e fundamentos.",
 };
 
+/*
+  Esta página é um índice, não um acervo.
+
+  Antes ela exibia o próprio conteúdo — dicionário e curiosidades impressos
+  aqui — e o aluno lia dois verbetes na entrada sem descobrir que existiam
+  mais noventa adiante. Agora cada cartão diz o que há lá dentro e manda o
+  leitor para o lugar onde aquilo mora de verdade.
+*/
 const PILARES_NAV = [
   {
     href: "/estudos/historia",
@@ -25,7 +31,13 @@ const PILARES_NAV = [
     titulo: "História",
     subtitulo: "Linhagem e Mestres",
     descricao:
-      "Linha do tempo de Okinawa aos dias atuais e a árvore de transmissão dos mestres, de Matsumura aos dojos brasileiros.",
+      "De Okinawa aos dojos brasileiros: quem ensinou quem, e o que mudou no caminho.",
+    dentro: [
+      "Linha do tempo, de 1868 aos dias de hoje",
+      "Três árvores de linhagem, com link para cada mestre",
+      "Como o karatê chegou a Alagoas",
+      "Os preceitos de Funakoshi",
+    ],
   },
   {
     href: "/estudos/tecnicas",
@@ -33,7 +45,13 @@ const PILARES_NAV = [
     titulo: "Técnicas",
     subtitulo: "Kihon e Katas",
     descricao:
-      "Socos, chutes, defesas e bases catalogados, mais o repertório de katas com ficha técnica, bunkai e sequência de movimentos.",
+      "O vocabulário e as frases: cada golpe catalogado, cada kata destrinchado movimento a movimento.",
+    dentro: [
+      "Socos, chutes, defesas, bases e guardas",
+      "26 katas com ficha, bunkai e vídeo",
+      "Sequência completa em tabela, com tradução",
+      "Embusen animado, passo a passo",
+    ],
   },
   {
     href: "/estudos/fundamentos",
@@ -41,7 +59,13 @@ const PILARES_NAV = [
     titulo: "Fundamentos",
     subtitulo: "Graduação e Filosofia",
     descricao:
-      "Sistema de faixas, Dojo Kun, Niju Kun, etiqueta do dojo e os princípios técnicos que sustentam a execução.",
+      "O que se exige em cada faixa, e os princípios que separam o movimento correto do movimento eficaz.",
+    dentro: [
+      "Sistema de faixas, do 7º Kyu ao 1º Dan",
+      "Dojo Kun, Niju Kun e etiqueta",
+      "De onde vem cada kata",
+      "Dicionário do dojo e curiosidades",
+    ],
   },
 ];
 
@@ -49,8 +73,6 @@ export default function EstudosHomePage() {
   const katas = getKatas();
   const tecnicas = getTecnicas();
   const pilares = getPilares();
-  const curiosidades = getCuriosidades().slice(0, 4);
-  const dicionario = getDicionario();
 
   const numeros = [
     { valor: String(katas.length), label: "Katas detalhados" },
@@ -124,6 +146,19 @@ export default function EstudosHomePage() {
             <p className="mt-2 text-xs leading-relaxed text-muted">
               {pilar.descricao}
             </p>
+
+            <ul className="mt-3 space-y-1 border-t border-line pt-3">
+              {pilar.dentro.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 text-2xs leading-relaxed text-fg/80"
+                >
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
             <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-fg group-hover:text-accent">
               Acessar →
             </span>
@@ -133,8 +168,8 @@ export default function EstudosHomePage() {
 
       </div>
 
-      {/* Os 3 pilares do treino — faixa que separa o bloco de navegação
-          do bloco de consulta (dicionário e curiosidades). */}
+      {/* Os 3 pilares do treino — fecha a página com o porquê do método,
+          depois de ter apresentado onde cada coisa mora. */}
       <section className="faixa-destacada py-12">
         <div className="section space-y-3">
         <SectionHeading
@@ -175,55 +210,6 @@ export default function EstudosHomePage() {
         </div>
       </section>
 
-      <div className="section space-y-10 py-10">
-      {/* Dicionário + curiosidades */}
-      <section className="grid gap-4 lg:grid-cols-[1fr_1.3fr]">
-        <div className="card">
-          <div className="border-b border-line px-4 py-2.5">
-            <h2 className="heading-md">Dicionário do dojo</h2>
-          </div>
-          <ul className="divide-y divide-line">
-            {dicionario.map((termo) => (
-              <li
-                key={termo.romaji}
-                className="flex items-baseline justify-between gap-3 px-4 py-2.5"
-              >
-                <span>
-                  <span className="text-sm font-medium text-fg">
-                    {termo.romaji}
-                  </span>
-                  <span className="ml-2 font-kanji text-sm text-subtle">{termo.jp}</span>
-                </span>
-                <span className="text-right text-xs text-muted">
-                  {termo.pt}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h2 className="heading-md">Curiosidades</h2>
-            <span className="text-2xs text-subtle">
-              {getCuriosidades().length} no acervo
-            </span>
-          </div>
-          <ul className="divide-y divide-line">
-            {curiosidades.map((curiosidade) => (
-              <li key={curiosidade.titulo} className="px-4 py-3">
-                <p className="text-sm font-medium text-fg">
-                  {curiosidade.titulo}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-muted">
-                  {curiosidade.text}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-      </div>
     </>
   );
 }

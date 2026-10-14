@@ -96,51 +96,6 @@ export default function HistoriaPage() {
           />
         </section>
 
-        <section className="card overflow-hidden">
-          <div className="border-b border-line px-4 py-2.5">
-            <h3 className="heading-md">JKA e Shotokan não são a mesma coisa</h3>
-            <p className="mt-0.5 text-xs text-muted">
-              Os dois nomes andam juntos com tanta frequência que viram
-              sinônimo — e não são.
-            </p>
-          </div>
-          <div className="grid gap-px bg-line sm:grid-cols-2">
-            <div className="bg-surface p-4">
-              <p className="text-sm font-semibold text-fg">
-                JKA
-                <span className="ml-2 text-2xs font-normal text-subtle">
-                  Japan Karate Association
-                </span>
-              </p>
-              <p className="mt-1 text-2xs uppercase tracking-[0.08em] text-gold">
-                Uma organização
-              </p>
-              <ul className="mt-3 space-y-1.5 text-xs leading-relaxed text-muted">
-                <li>Fundada em 1949, no Japão, com sede em Tóquio.</li>
-                <li>Tem regras, exames e certificações próprias.</li>
-                <li>Existe para padronizar o ensino e preservar o método.</li>
-              </ul>
-            </div>
-            <div className="bg-surface p-4">
-              <p className="text-sm font-semibold text-fg">
-                Shotokan
-                <span className="ml-2 text-2xs font-normal text-subtle">
-                  松濤館
-                </span>
-              </p>
-              <p className="mt-1 text-2xs uppercase tracking-[0.08em] text-gold">
-                Um estilo
-              </p>
-              <ul className="mt-3 space-y-1.5 text-xs leading-relaxed text-muted">
-                <li>É o karatê que nasce de Gichin Funakoshi.</li>
-                <li>Várias organizações e escolas ensinam Shotokan.</li>
-                <li>
-                  Nem todo Shotokan pertence à JKA — mas a JKA ensina Shotokan.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
       </div>
 
       <div className="section space-y-10 py-10">

@@ -249,7 +249,7 @@ export default async function LandingPage() {
                 ))}
               </ul>
 
-              <ButtonLink href="/login" size="sm" className="mt-5 w-full">
+              <ButtonLink href="/planos" size="sm" className="mt-5 w-full">
                 Quero me matricular
               </ButtonLink>
             </article>

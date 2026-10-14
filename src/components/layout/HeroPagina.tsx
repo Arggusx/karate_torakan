@@ -37,7 +37,16 @@ export function HeroPagina({
   compacto?: boolean;
 }) {
   return (
-    <section className="relative isolate overflow-hidden bg-[#0B0B0D] text-white">
+    /*
+      O hero segue o tema. Antes era preto fixo nos dois, o que no modo claro
+      abria um bloco quase preto no topo de toda página — a tela inteira clara
+      e uma faixa de breu em cima.
+
+      A foto é a mesma nos dois temas: o que muda é a cor por baixo e o véu por
+      cima. No claro vira um papel quente com a imagem desbotada atrás; no
+      escuro continua o breu de sempre.
+    */
+    <section className="relative isolate overflow-hidden bg-[#EDE4DE] text-fg dark:bg-[#0B0B0D] dark:text-white">
       {imagem ? (
         <div
           aria-hidden
@@ -49,10 +58,13 @@ export function HeroPagina({
         />
       ) : null}
 
-      {/* Escurece o lado do texto e deixa a foto respirar à direita. */}
+      {/*
+        Véu que clareia (ou escurece) o lado do texto e deixa a foto respirar à
+        direita. Os dois gradientes têm a mesma geometria — só a cor troca.
+      */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,#0B0B0D_30%,rgba(11,11,13,0.78)_65%,rgba(11,11,13,0.5)_100%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,#EDE4DE_30%,rgba(237,228,222,0.82)_65%,rgba(237,228,222,0.55)_100%)] dark:bg-[linear-gradient(100deg,#0B0B0D_30%,rgba(11,11,13,0.78)_65%,rgba(11,11,13,0.5)_100%)]"
       />
 
       {/*
@@ -63,7 +75,7 @@ export function HeroPagina({
       {kanji ? (
         <span
           aria-hidden
-          className="pointer-events-none absolute right-6 top-1/2 -z-10 hidden -translate-y-1/2 select-none font-kanji text-[9rem] leading-none text-white/[0.06] lg:block"
+          className="pointer-events-none absolute right-6 top-1/2 -z-10 hidden -translate-y-1/2 select-none font-kanji text-[9rem] leading-none text-fg/[0.07] dark:text-white/[0.06] lg:block"
         >
           {kanji}
         </span>
@@ -88,7 +100,7 @@ export function HeroPagina({
             {titulo}
           </h1>
           {descricao ? (
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/70">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg/70 dark:text-white/70">
               {descricao}
             </p>
           ) : null}

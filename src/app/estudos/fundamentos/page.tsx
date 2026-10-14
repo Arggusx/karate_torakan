@@ -7,6 +7,8 @@ import {
   getEtiquetaDojo,
   getGraduacoes,
   getNijuKun,
+  getCuriosidades,
+  getDicionario,
   getOrigemDosKatas,
   getPrincipiosTecnicos,
 } from "@/services/dataService";
@@ -24,6 +26,8 @@ export default function FundamentosPage() {
   const principios = getPrincipiosTecnicos();
   const etiqueta = getEtiquetaDojo();
   const origemDosKatas = getOrigemDosKatas();
+  const dicionario = getDicionario();
+  const curiosidades = getCuriosidades();
 
   return (
     <>
@@ -242,6 +246,74 @@ export default function FundamentosPage() {
         />
         <OrigemDosKatas dados={origemDosKatas} />
       </div>
+
+      {/*
+        Seção 4 — consulta. Dicionário e curiosidades moravam na entrada do
+        portal, onde o aluno via quatro verbetes e nunca descobria que havia
+        noventa. Aqui eles viram acervo completo, na página que já é a de
+        referência.
+      */}
+      <section className="faixa-destacada py-12">
+        <div className="section space-y-4">
+          <SectionHeading
+            eyebrow="Seção IV"
+            titulo="Dicionário e curiosidades"
+            descricao="O vocabulário que se ouve no tatame e as histórias que explicam por que as coisas são como são."
+          />
+
+          <div className="grid gap-4 lg:grid-cols-[1fr_1.3fr]">
+            <div className="card">
+              <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+                <h3 className="heading-md">Dicionário do dojo</h3>
+                <span className="text-2xs text-subtle">
+                  {dicionario.length} termos
+                </span>
+              </div>
+              <ul className="divide-y divide-line">
+                {dicionario.map((termo) => (
+                  <li
+                    key={termo.romaji}
+                    className="flex items-baseline justify-between gap-3 px-4 py-2.5"
+                  >
+                    <span>
+                      <span className="text-sm font-medium text-fg">
+                        {termo.romaji}
+                      </span>
+                      <span className="ml-2 font-kanji text-sm text-subtle">
+                        {termo.jp}
+                      </span>
+                    </span>
+                    <span className="text-right text-xs text-muted">
+                      {termo.pt}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="card">
+              <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+                <h3 className="heading-md">Curiosidades</h3>
+                <span className="text-2xs text-subtle">
+                  {curiosidades.length} no acervo
+                </span>
+              </div>
+              <ul className="divide-y divide-line">
+                {curiosidades.map((curiosidade) => (
+                  <li key={curiosidade.titulo} className="px-4 py-3">
+                    <p className="text-sm font-medium text-fg">
+                      {curiosidade.titulo}
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted">
+                      {curiosidade.text}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
