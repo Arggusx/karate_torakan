@@ -1,0 +1,525 @@
+/* =============================================================================
+   Animações de karatê (SVG + CSS).
+   Mesmo molde do animations.css do Oratio: cada cena de
+   src/components/animacoes/AnimacoesKarate.tsx tem aqui o seu bloco.
+   ============================================================================= */
+
+/* ------------------------------------------------- base comum das figuras */
+
+.anim-makiwara,
+.anim-bokken,
+.anim-enso,
+.anim-garra,
+.anim-bambu,
+.anim-lanterna,
+.anim-faixa {
+  overflow: visible;
+  color: rgb(var(--fg));
+}
+
+
+.anim-chao {
+  stroke: rgb(var(--line-strong));
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* -------------------------------------------------------------- Ensō */
+
+.anim-enso-traco {
+  fill: none;
+  stroke: #dc2626;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: enso-pincel 5s cubic-bezier(0.6, 0, 0.25, 1) infinite;
+}
+
+/* Desenha rápido como pincelada, segura, e apaga devagar antes de recomeçar. */
+@keyframes enso-pincel {
+  0% {
+    stroke-dashoffset: 100;
+    stroke-width: 3;
+    opacity: 1;
+  }
+  35% {
+    stroke-dashoffset: 0;
+    stroke-width: 8;
+  }
+  75% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  95%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* ----------------------------------------------------------- Makiwara */
+
+.anim-makiwara-base {
+  fill: rgb(var(--muted));
+}
+
+.anim-makiwara-madeira {
+  fill: #a8794a;
+}
+
+.anim-makiwara-palha {
+  fill: #e2c58b;
+}
+
+.anim-makiwara-amarra {
+  stroke: #7a5530;
+  stroke-width: 1.4;
+}
+
+/*
+  A tábua gira presa na base. O golpe a empurra para trás de uma vez, e a
+  volta é uma oscilação amortecida — cada balanço menor que o anterior, como
+  madeira flexível de verdade.
+*/
+.anim-makiwara-tabua {
+  transform-box: view-box;
+  transform-origin: 50px 90px;
+  animation: makiwara-verga 2.8s ease-out infinite;
+}
+
+@keyframes makiwara-verga {
+  0%,
+  30% {
+    transform: rotate(0deg);
+  }
+  34% {
+    transform: rotate(11deg);
+  }
+  46% {
+    transform: rotate(-5deg);
+  }
+  57% {
+    transform: rotate(2.5deg);
+  }
+  67% {
+    transform: rotate(-1deg);
+  }
+  76%,
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.anim-makiwara-vento {
+  stroke: rgb(var(--subtle));
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: makiwara-vento 2.8s ease-in infinite;
+}
+
+@keyframes makiwara-vento {
+  0%,
+  18% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  28% {
+    opacity: 0.9;
+    transform: translateX(4px);
+  }
+  34%,
+  100% {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
+/* ------------------------------------------------------ Bokken em choque */
+
+.anim-bokken-punho {
+  stroke: #3b2a1e;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.anim-bokken-tsuba {
+  stroke: #1f1712;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.anim-bokken-lamina {
+  fill: none;
+  stroke: #c79c62;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.anim-bokken-esq,
+.anim-bokken-dir {
+  transform-box: view-box;
+  animation-duration: 2.6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.6, 0, 0.3, 1);
+}
+
+.anim-bokken-esq {
+  transform-origin: 20px 92px;
+  animation-name: bokken-esq;
+}
+
+.anim-bokken-dir {
+  transform-origin: 100px 92px;
+  animation-name: bokken-dir;
+}
+
+/* Guarda quase na vertical, golpe até cruzar, tranco do choque, volta. */
+@keyframes bokken-esq {
+  0%,
+  20% {
+    transform: rotate(-6deg);
+  }
+  38% {
+    transform: rotate(40deg);
+  }
+  46% {
+    transform: rotate(33deg);
+  }
+  58% {
+    transform: rotate(38deg);
+  }
+  82%,
+  100% {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes bokken-dir {
+  0%,
+  20% {
+    transform: rotate(6deg);
+  }
+  38% {
+    transform: rotate(-40deg);
+  }
+  46% {
+    transform: rotate(-33deg);
+  }
+  58% {
+    transform: rotate(-38deg);
+  }
+  82%,
+  100% {
+    transform: rotate(6deg);
+  }
+}
+
+.anim-bokken-faisca {
+  stroke: #e8b64c;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-box: view-box;
+  transform-origin: 60px 44px;
+  opacity: 0;
+  animation: bokken-faisca 2.6s ease-out infinite;
+}
+
+@keyframes bokken-faisca {
+  0%,
+  36% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  39% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  52%,
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* --- kime: anel de impacto, compartilhado pelas duas cenas --- */
+.anim-kime {
+  fill: none;
+  stroke: #dc2626;
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+.anim-kime-makiwara {
+  animation: kime-makiwara 2.8s ease-out infinite;
+}
+
+.anim-kime-bokken {
+  stroke: #d4af5a;
+  animation: kime-bokken 2.6s ease-out infinite;
+}
+
+@keyframes kime-makiwara {
+  0%,
+  32% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes kime-bokken {
+  0%,
+  37% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  58%,
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------ Tōrō */
+
+.anim-pedra {
+  fill: rgb(var(--muted));
+}
+
+.anim-pedra-oca {
+  fill: rgb(var(--elevated));
+  stroke: rgb(var(--muted));
+  stroke-width: 3;
+}
+
+.anim-chama {
+  fill: #f59e0b;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: chama 1.6s ease-in-out infinite;
+}
+
+.anim-lanterna-brilho {
+  fill: #fbbf24;
+  filter: blur(7px);
+  opacity: 0.35;
+  animation: lanterna-brilho 1.6s ease-in-out infinite;
+}
+
+@keyframes chama {
+  0%,
+  100% {
+    transform: scale(1, 1) skewX(0deg);
+  }
+  25% {
+    transform: scale(0.92, 1.08) skewX(-4deg);
+  }
+  50% {
+    transform: scale(1.05, 0.94) skewX(2deg);
+  }
+  75% {
+    transform: scale(0.95, 1.04) skewX(3deg);
+  }
+}
+
+@keyframes lanterna-brilho {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  70% {
+    opacity: 0.25;
+  }
+}
+
+/* --------------------------------------------------------- Faixa ao vento */
+
+.anim-faixa {
+  color: #1f1f23;
+}
+
+.dark .anim-faixa {
+  color: #e7e7ea;
+}
+
+.anim-faixa-tecido,
+.anim-faixa-no {
+  fill: currentColor;
+}
+
+.anim-faixa-ponta {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 9;
+  stroke-linecap: round;
+  transform-box: view-box;
+  transform-origin: 50px 28px;
+}
+
+.anim-faixa-ponta-e {
+  animation: ponta-e 3.2s ease-in-out infinite;
+}
+
+.anim-faixa-ponta-d {
+  animation: ponta-d 3.2s ease-in-out infinite;
+}
+
+@keyframes ponta-e {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+}
+
+@keyframes ponta-d {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-6deg);
+  }
+}
+
+/* ------------------------------------------------------- Garra do tigre */
+
+.anim-garra-risco {
+  fill: none;
+  stroke: #dc2626;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: garra 3.4s cubic-bezier(0.8, 0, 0.2, 1) infinite;
+}
+
+@keyframes garra {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 1;
+  }
+  14% {
+    stroke-dashoffset: 0;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  90%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* -------------------------------------------------------------- Bambu */
+
+.anim-bambu-haste {
+  stroke: #4d7c4a;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.anim-bambu-no {
+  stroke: #355c33;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.anim-bambu-folha {
+  fill: #6a9a5c;
+}
+
+.anim-bambu-colmo {
+  animation: bambu 4.5s ease-in-out infinite;
+}
+
+@keyframes bambu {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+/* ---------------------------------------------------------- Hinomaru */
+
+.hinomaru-disco {
+  fill: #dc2626;
+  opacity: 0.85;
+}
+
+.hinomaru-anel {
+  fill: none;
+  stroke: rgba(220, 38, 38, 0.45);
+  stroke-width: 1.5;
+  transform-origin: 0 0;
+}
+
+.hinomaru-anel-fora {
+  stroke-dasharray: 3 9;
+  animation: sol-gira 60s linear infinite;
+}
+
+.hinomaru-anel-dentro {
+  stroke-dasharray: 14 6;
+  animation: sol-gira 45s linear infinite reverse;
+}
+
+.hinomaru-onda {
+  fill: none;
+  stroke: rgba(220, 38, 38, 0.5);
+  stroke-width: 2;
+  transform-origin: 0 0;
+  animation: sol-onda 6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+/* ----------------------------------------------- menos movimento: tudo parado */
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-enso-traco,
+  .anim-garra-risco {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .anim-makiwara-tabua,
+  .anim-makiwara-vento,
+  .anim-bokken-esq,
+  .anim-bokken-dir,
+  .anim-bokken-faisca,
+  .anim-chama,
+  .anim-lanterna-brilho,
+  .anim-faixa-ponta,
+  .anim-bambu-colmo,
+  .hinomaru-anel,
+  .hinomaru-onda {
+    animation: none;
+  }
+
+  .anim-kime {
+    display: none;
+  }
+}

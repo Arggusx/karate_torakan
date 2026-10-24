@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CampoBusca, paraBusca } from "@/components/portal/CampoBusca";
-import { Badge, StatusBadge } from "@/components/ui/Badge";
+import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { useAcademia } from "@/lib/academiaStore";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Paginacao } from "@/components/ui/Paginacao";
@@ -56,14 +57,35 @@ interface Cobranca {
  * professor ou pelo portal. Esta tela é onde professor e admin dão baixa no
  * que foi recebido fora do sistema — e desfazem lançamentos errados.
  */
-export function FinanceiroPanel() {
+export function FinanceiroPanel({
+  busca,
+  turmaFiltro,
+  diaFiltro,
+}: {
+  busca: string;
+  turmaFiltro: string;
+  /** Nome do dia ("Terça") ou "todos". */
+  diaFiltro: string;
+}) {
   const toast = useToast();
+  // A visão financeira vem da própria API; faixa e turma vêm do estado da
+  // academia. Cruzar os dois pelo id é o que permite filtrar por dia de aula
+  // aqui também, e mostrar a mesma informação geral das duas telas.
+  const { alunos, turmas } = useAcademia();
 
   const [linhas, setLinhas] = useState<LinhaSituacao[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
-  const [busca, setBusca] = useState("");
   const [pagina, setPagina] = useState(1);
   const [alunoAberto, setAlunoAberto] = useState<LinhaSituacao | null>(null);
+
+  const porId = useMemo(
+    () => new Map(alunos.map((aluno) => [aluno.id, aluno])),
+    [alunos],
+  );
+  const turmaPorId = useMemo(
+    () => new Map(turmas.map((turma) => [turma.id, turma])),
+    [turmas],
+  );
 
   const carregar = useCallback(async () => {
     setErro(null);
@@ -91,15 +113,26 @@ export function FinanceiroPanel() {
   const filtradas = useMemo(() => {
     const alvo = paraBusca(busca.trim());
     if (!linhas) return [];
-    if (!alvo) return linhas;
-    return linhas.filter(
-      (linha) =>
+    return linhas.filter((linha) => {
+      const aluno = porId.get(String(linha.aluno_id));
+      const naTurma =
+        turmaFiltro === "todas" || aluno?.turmaId === turmaFiltro;
+      const diasDaTurma =
+        turmaPorId.get(aluno?.turmaId ?? "")?.dias ?? [];
+      const noDia =
+        diaFiltro === "todos" ||
+        diasDaTurma.some((dia) =>
+          paraBusca(dia).startsWith(paraBusca(diaFiltro)),
+        );
+      const combina =
+        !alvo ||
         paraBusca(linha.nome).includes(alvo) ||
-        paraBusca(linha.usuario ?? "").includes(alvo),
-    );
-  }, [linhas, busca]);
+        paraBusca(linha.usuario ?? "").includes(alvo);
+      return naTurma && noDia && combina;
+    });
+  }, [linhas, busca, turmaFiltro, diaFiltro, porId, turmaPorId]);
 
-  useEffect(() => setPagina(1), [busca]);
+  useEffect(() => setPagina(1), [busca, turmaFiltro, diaFiltro]);
 
   const visiveis = filtradas.slice(
     (pagina - 1) * POR_PAGINA,
@@ -115,19 +148,12 @@ export function FinanceiroPanel() {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-muted">
-        O pagamento é voluntário: o aluno pode pagar em espécie, no PIX pessoal
-        do professor ou pelo portal. Use “Dar baixa” para registrar o que foi
-        recebido fora do sistema.
-      </p>
-
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <CampoBusca
-          id="busca-financeiro"
-          valor={busca}
-          onChange={setBusca}
-          className="sm:w-64"
-        />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="max-w-2xl text-xs text-muted">
+          O pagamento é voluntário: o aluno pode pagar em espécie, no PIX
+          pessoal do professor ou pelo portal. Use “Mensalidades” para dar baixa
+          no que foi recebido fora do sistema.
+        </p>
         <div className="flex items-center gap-3">
           <span className="text-2xs tabular-nums text-subtle">
             {filtradas.filter((l) => l.em_aberto > 0).length} com pendência ·
@@ -156,19 +182,23 @@ export function FinanceiroPanel() {
       ) : (
         <>
           <div className="hidden sm:block">
-            <Table minWidth="min-w-[760px]">
+            <Table minWidth="min-w-[860px]">
               <THead>
                 <TR>
                   <TH>Aluno</TH>
+                  <TH>Turma</TH>
+                  <TH>Faixa</TH>
                   <TH>Situação</TH>
                   <TH className="text-right">Meses em aberto</TH>
                   <TH className="text-right">Total em aberto</TH>
-                  <TH>Desde</TH>
                   <TH>Ações</TH>
                 </TR>
               </THead>
               <TBody>
-                {visiveis.map((linha) => (
+                {visiveis.map((linha) => {
+                  const aluno = porId.get(String(linha.aluno_id));
+                  const turma = turmaPorId.get(aluno?.turmaId ?? "");
+                  return (
                   <TR key={linha.aluno_id}>
                     <TD>
                       <span className="block font-medium text-fg">
@@ -177,6 +207,22 @@ export function FinanceiroPanel() {
                       <span className="block font-mono text-2xs text-subtle">
                         {linha.usuario}
                       </span>
+                    </TD>
+                    <TD>
+                      {turma ? (
+                        <Badge>{turma.nome}</Badge>
+                      ) : (
+                        <span className="text-2xs text-subtle">—</span>
+                      )}
+                    </TD>
+                    <TD>
+                      {aluno ? (
+                        <BeltBadge cor={aluno.corFaixa}>
+                          {aluno.faixa}
+                        </BeltBadge>
+                      ) : (
+                        <span className="text-2xs text-subtle">—</span>
+                      )}
                     </TD>
                     <TD>
                       <StatusBadge
@@ -194,11 +240,6 @@ export function FinanceiroPanel() {
                         .toFixed(2)
                         .replace(".", ",")}
                     </TD>
-                    <TD className="whitespace-nowrap text-muted">
-                      {linha.competencia_mais_antiga
-                        ? formatarCompetencia(linha.competencia_mais_antiga)
-                        : "—"}
-                    </TD>
                     <TD>
                       <Button
                         size="sm"
@@ -209,14 +250,18 @@ export function FinanceiroPanel() {
                       </Button>
                     </TD>
                   </TR>
-                ))}
+                  );
+                })}
               </TBody>
             </Table>
           </div>
 
           {/* Mobile: cartões */}
           <div className="space-y-2 sm:hidden">
-            {visiveis.map((linha) => (
+            {visiveis.map((linha) => {
+              const aluno = porId.get(String(linha.aluno_id));
+              const turma = turmaPorId.get(aluno?.turmaId ?? "");
+              return (
               <article key={linha.aluno_id} className="card p-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -230,6 +275,12 @@ export function FinanceiroPanel() {
                   <StatusBadge
                     status={linha.em_aberto === 0 ? "ativo" : "pendente"}
                   />
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  {turma ? <Badge>{turma.nome}</Badge> : null}
+                  {aluno ? (
+                    <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+                  ) : null}
                 </div>
                 <p className="mt-2 text-xs text-muted">
                   {linha.em_aberto} em aberto · R${" "}
@@ -246,7 +297,8 @@ export function FinanceiroPanel() {
                   Mensalidades
                 </Button>
               </article>
-            ))}
+              );
+            })}
           </div>
 
           <Paginacao

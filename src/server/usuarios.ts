@@ -91,6 +91,86 @@ export interface AlunoDoBanco {
   frequencia: number;
   proximo_exame: string | null;
   financial_status: string;
+  avatar_url: string | null;
+}
+
+// --------------------------------------------------------- conta própria
+
+/** Dados que o próprio usuário pode ver e editar da sua conta. */
+export interface MinhaConta {
+  id: number;
+  nome: string;
+  usuario: string;
+  email: string;
+  avatar_url: string | null;
+  precisa_trocar_senha: boolean;
+}
+
+export async function lerConta(id: number): Promise<MinhaConta | null> {
+  const linhas = await sql`
+    SELECT id, nome, usuario, email, avatar_url, precisa_trocar_senha
+      FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
+  return (linhas[0] as MinhaConta | undefined) ?? null;
+}
+
+/**
+ * Troca o nome de usuário do próprio usuário. Devolve o usuário normalizado
+ * em caso de sucesso, ou um erro de validação.
+ */
+export async function trocarUsuario(
+  id: number,
+  novoUsuario: string,
+): Promise<{ ok: boolean; erro?: string; usuario?: string }> {
+  const usuario = normalizarUsuario(novoUsuario);
+  if (usuario.length < 3) {
+    return { ok: false, erro: "O usuário precisa de ao menos 3 caracteres." };
+  }
+
+  const ocupado = await sql`
+    SELECT 1 FROM users WHERE usuario = ${usuario} AND id <> ${id} LIMIT 1`;
+  if (ocupado.length > 0) {
+    return { ok: false, erro: "Esse nome de usuário já está em uso." };
+  }
+
+  await sql`UPDATE users SET usuario = ${usuario} WHERE id = ${id}`;
+  return { ok: true, usuario };
+}
+
+/**
+ * Troca a senha do próprio usuário, conferindo a senha atual antes.
+ * Zera `precisa_trocar_senha`: depois de escolher a sua, o aviso some.
+ */
+export async function trocarSenha(
+  id: number,
+  senhaAtual: string,
+  novaSenha: string,
+): Promise<{ ok: boolean; erro?: string }> {
+  if (novaSenha.length < 6) {
+    return { ok: false, erro: "A nova senha precisa de ao menos 6 caracteres." };
+  }
+
+  const linhas = await sql`
+    SELECT senha_hash FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
+  const atual = linhas[0] as { senha_hash: string } | undefined;
+  if (!atual) return { ok: false, erro: "Conta não encontrada." };
+  if (!conferirSenha(senhaAtual, atual.senha_hash)) {
+    return { ok: false, erro: "A senha atual não confere." };
+  }
+
+  await sql`
+    UPDATE users
+       SET senha_hash = ${gerarHashSenha(novaSenha)},
+           precisa_trocar_senha = false
+     WHERE id = ${id}`;
+  return { ok: true };
+}
+
+/** Grava (ou remove, com null) a foto de perfil do próprio usuário. */
+export async function salvarAvatar(
+  id: number,
+  avatarUrl: string | null,
+): Promise<void> {
+  await sql`UPDATE users SET avatar_url = ${avatarUrl} WHERE id = ${id}`;
 }
 
 export async function listarAlunos(): Promise<AlunoDoBanco[]> {
@@ -105,7 +185,7 @@ export async function listarAlunos(): Promise<AlunoDoBanco[]> {
            ) AS idade,
            p.turma_id, p.faixa_atual,
            p.progresso, p.frequencia, p.proximo_exame,
-           u.financial_status
+           u.financial_status, u.avatar_url
       FROM users u
       JOIN alunos_perfil p ON p.user_id = u.id
      WHERE u.ativo = true

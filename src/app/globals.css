@@ -59,13 +59,40 @@
 }
 
 @layer components {
-  /* Superfície sólida padrão — sem transparência e sem blur. */
+  /*
+    Superfície sólida padrão — sem transparência e sem blur.
+
+    O raio maior e a sombra rasa são o que diferencia o cartão do fundo sem
+    precisar escurecer a borda: no tema claro a página inteira é quase branca,
+    e só a linha de 1px não bastava para o cartão parecer um objeto.
+  */
   .card {
-    @apply rounded-lg border border-line bg-surface;
+    @apply rounded-xl border border-line bg-surface shadow-painel;
+  }
+
+  .dark .card {
+    box-shadow: none;
   }
 
   .card-hover {
     @apply transition-colors duration-150 hover:border-line-strong;
+  }
+
+  /*
+    Painel: o cartão em versão maior, para blocos que são a própria seção
+    (lateral do portal, caixa de login, hero de preço). Mais raio e mais ar.
+  */
+  .painel {
+    @apply rounded-2xl border border-line bg-surface p-5 shadow-painel sm:p-6;
+  }
+
+  .dark .painel {
+    box-shadow: none;
+  }
+
+  /* Etiqueta arredondada de apoio — categoria, linguagem, dia da semana. */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-elevated px-2.5 py-1 text-2xs font-medium text-muted;
   }
 
   .section {
@@ -132,7 +159,7 @@
 
   /* Campos de formulário */
   .input {
-    @apply h-9 w-full rounded-md border border-line bg-canvas px-3 text-sm text-fg outline-none transition-colors placeholder:text-subtle focus:border-accent;
+    @apply h-10 w-full rounded-lg border border-line bg-canvas px-3.5 text-sm text-fg outline-none transition-colors placeholder:text-subtle focus:border-accent focus:ring-2 focus:ring-accent/15;
   }
 
   .label {
@@ -276,4 +303,480 @@ html[data-virada="tras"]::view-transition-old(root) {
 
 html[data-virada="tras"]::view-transition-new(root) {
   animation-name: folha-entra-tras;
+}
+
+/* ============================================================
+   Fundo decorativo — ondas seigaiha, halos e sakura
+   Ver src/components/ui/FundoAsiatico.tsx para a estrutura.
+   ============================================================ */
+
+/*
+  As ondas deslizam uma célula inteira do padrão (72px) e voltam ao ponto de
+  partida, então o laço é invisível: o quadro final é idêntico ao inicial.
+*/
+@keyframes ondas-deslizam {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-72px, 0, 0);
+  }
+}
+
+.fundo-ondas {
+  animation: ondas-deslizam 60s linear infinite;
+}
+
+/* Halos: duas manchas difusas que respiram fora de fase uma da outra. */
+.fundo-halo {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform, opacity;
+}
+
+.fundo-halo-vermelho {
+  top: -14vh;
+  left: -10vw;
+  width: 58vw;
+  height: 58vw;
+  background: radial-gradient(
+    circle,
+    rgba(220, 38, 38, 0.16),
+    rgba(220, 38, 38, 0) 70%
+  );
+  animation: halo-respira 26s ease-in-out infinite;
+}
+
+.fundo-halo-dourado {
+  right: -16vw;
+  bottom: -18vh;
+  width: 52vw;
+  height: 52vw;
+  background: radial-gradient(
+    circle,
+    rgba(176, 141, 61, 0.14),
+    rgba(176, 141, 61, 0) 70%
+  );
+  animation: halo-respira 34s ease-in-out infinite reverse;
+}
+
+.dark .fundo-halo-vermelho {
+  background: radial-gradient(
+    circle,
+    rgba(220, 38, 38, 0.2),
+    rgba(220, 38, 38, 0) 70%
+  );
+}
+
+.dark .fundo-halo-dourado {
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 90, 0.13),
+    rgba(212, 175, 90, 0) 70%
+  );
+}
+
+@keyframes halo-respira {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(4vw, 3vh, 0) scale(1.14);
+    opacity: 1;
+  }
+}
+
+/*
+  Sakura.
+
+  A pétala cai de cima da tela até abaixo dela, girando e derivando para o
+  lado — nunca em linha reta, que é o que denuncia pétala falsa. Cada uma
+  recebe duração, atraso, giro e deriva próprios por variável CSS, então as
+  onze nunca repetem a mesma trajetória ao mesmo tempo.
+*/
+.sakura {
+  position: absolute;
+  top: -8vh;
+  display: block;
+  width: var(--tamanho, 12px);
+  height: var(--tamanho, 12px);
+  color: #e8a0b4;
+  opacity: 0;
+  animation: sakura-cai var(--queda, 28s) linear var(--atraso, 0s) infinite;
+  will-change: transform, opacity;
+}
+
+.sakura svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sakura-corpo {
+  fill: currentColor;
+}
+
+.dark .sakura {
+  color: #b9607a;
+}
+
+@keyframes sakura-cai {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--opacidade, 0.4);
+  }
+  /* A deriva inverte no meio do caminho: a pétala vai e volta no ar. */
+  50% {
+    transform: translate3d(var(--deriva, 60px), 55vh, 0)
+      rotate(calc(var(--giro, 360deg) * 0.5));
+  }
+  88% {
+    opacity: var(--opacidade, 0.4);
+  }
+  100% {
+    transform: translate3d(0, 112vh, 0) rotate(var(--giro, 360deg));
+    opacity: 0;
+  }
+}
+
+/*
+  Quem pediu menos movimento no sistema fica com o fundo parado. As ondas e os
+  halos continuam desenhados — é só o movimento que sai.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .fundo-ondas,
+  .fundo-halo,
+  .sakura {
+    animation: none;
+  }
+
+  .sakura {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Botão de tema e o corte da katana
+   Ver src/components/theme/ThemeToggle.tsx.
+   ============================================================ */
+
+/* --- botão: a empunhadura desliza ao longo do eixo da espada (-37,6°) --- */
+.tema-punho {
+  transition: transform 220ms cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+/* Hover: o polegar empurra a tsuba e um fio de aço aparece. */
+.tema-botao:hover .tema-punho,
+.tema-botao:focus-visible .tema-punho {
+  transform: translate(2.2px, -1.7px);
+}
+
+/* Clique: a espada sai de vez. */
+.tema-botao[data-fase="sacando"] .tema-punho,
+.tema-botao[data-fase="cortando"] .tema-punho {
+  transform: translate(9px, -6.9px);
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+}
+
+.tema-petalas {
+  animation: tema-flutua 4s ease-in-out infinite;
+}
+
+.tema-estrelas {
+  animation: tema-cintila 2.8s ease-in-out infinite;
+}
+
+@keyframes tema-flutua {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1.2px);
+  }
+}
+
+@keyframes tema-cintila {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* --- a lâmina em tela cheia: fotografada à parte pela View Transition --- */
+.tema-lamina {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  view-transition-name: corte-lamina;
+}
+
+/*
+  A fenda. A página nova é recortada numa faixa ao redor da diagonal
+  x + y = 100%, de largura k. Os seis vértices são, em função de k:
+  (0, 100-k) (100-k, 0) (100, 0) (100, k) (k, 100) (0, 100).
+  Com k = 0 a faixa é só a linha; com k = 100 cobre a tela. Como cada vértice
+  anda em linha reta conforme k cresce, interpolar de um quadro ao outro é
+  exatamente a fenda abrindo.
+*/
+@keyframes corte-fenda {
+  from {
+    clip-path: polygon(0% 100%, 100% 0%, 100% 0%, 100% 0%, 0% 100%, 0% 100%);
+  }
+  to {
+    clip-path: polygon(0% 0%, 0% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%);
+  }
+}
+
+/* O risco: a lâmina aparece da esquerda para a direita, rápida. */
+@keyframes corte-risca {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes corte-apaga {
+  to {
+    opacity: 0;
+  }
+}
+
+/* A página antiga recua um pouco enquanto se abre — dá peso ao golpe. */
+@keyframes corte-recua {
+  to {
+    filter: brightness(0.8);
+  }
+}
+
+html[data-corte]::view-transition-old(root),
+html[data-corte]::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+html[data-corte]::view-transition-old(root) {
+  animation: corte-recua 640ms ease-in both;
+}
+
+html[data-corte]::view-transition-new(root) {
+  animation: corte-fenda 520ms cubic-bezier(0.8, 0, 0.2, 1) 130ms both;
+}
+
+html[data-corte]::view-transition-group(corte-lamina) {
+  animation: none;
+}
+
+html[data-corte]::view-transition-new(corte-lamina) {
+  mix-blend-mode: normal;
+  animation:
+    corte-risca 150ms cubic-bezier(0.5, 0, 0.1, 1) both,
+    corte-apaga 260ms ease-in 380ms forwards;
+}
+
+/* --- faíscas e pétalas, já sobre o tema novo --- */
+.tema-particulas {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tema-faisca,
+.tema-petala {
+  position: absolute;
+  opacity: 0;
+  animation: tema-lasca 900ms cubic-bezier(0.2, 0.7, 0.4, 1) var(--atraso, 0ms)
+    forwards;
+}
+
+.tema-faisca {
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: #ffe2ad;
+  box-shadow: 0 0 8px 2px rgba(255, 196, 110, 0.85);
+}
+
+.tema-petala {
+  width: 9px;
+  height: 9px;
+  border-radius: 100% 0 100% 0;
+  background: #7d2740;
+}
+
+.dark .tema-petala {
+  background: #a3405f;
+}
+
+@keyframes tema-lasca {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--giro)) scale(1);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-punho,
+  .tema-petalas,
+  .tema-estrelas {
+    transition: none;
+    animation: none;
+  }
+
+  .tema-particulas {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Hinomaru e vaga-lumes — segunda leva do fundo
+   ============================================================ */
+
+/*
+  O sol fica no alto à direita, meio fora da tela: aparece como um arco
+  grande, não como um alvo no meio da página. As cores ficam em variáveis
+  para o modo escuro só trocar a intensidade.
+*/
+.fundo-sol {
+  position: absolute;
+  top: -22vmin;
+  right: -18vmin;
+  width: 78vmin;
+  height: 78vmin;
+  --sol: 220, 38, 38;
+  --sol-disco: 0.1;
+  --sol-raio: 0.045;
+  --sol-anel: 0.14;
+}
+
+.dark .fundo-sol {
+  --sol-disco: 0.05;
+  --sol-raio: 0.025;
+  --sol-anel: 0.08;
+}
+
+.fundo-sol-raios {
+  transform-origin: 0 0;
+  animation: sol-gira 140s linear infinite;
+}
+
+.fundo-sol-raio {
+  fill: rgba(var(--sol), var(--sol-raio));
+}
+
+.fundo-sol-disco {
+  fill: rgba(var(--sol), var(--sol-disco));
+}
+
+.fundo-sol-anel {
+  fill: none;
+  stroke: rgba(var(--sol), var(--sol-anel));
+  stroke-width: 1.2;
+  stroke-dasharray: 2 7;
+}
+
+/* Onda de impacto: um anel que se abre a partir do disco e some. */
+.fundo-sol-onda {
+  fill: none;
+  stroke: rgba(var(--sol), 0.35);
+  stroke-width: 1.5;
+  transform-origin: 0 0;
+  animation: sol-onda 7s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+.fundo-sol-onda-2 {
+  animation-delay: 3.5s;
+}
+
+@keyframes sol-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sol-onda {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(3.1);
+    opacity: 0;
+  }
+}
+
+/* Vaga-lumes: pontos dourados subindo e piscando, com deriva lateral. */
+.vagalume {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #d4af5a;
+  box-shadow: 0 0 8px 2px rgba(212, 175, 90, 0.55);
+  opacity: 0;
+  animation:
+    vagalume-sobe var(--dur, 16s) ease-in-out var(--atraso, 0s) infinite,
+    vagalume-pisca 2.6s ease-in-out var(--atraso, 0s) infinite;
+}
+
+/* No claro o dourado precisa de mais corpo para não sumir no papel. */
+:root:not(.dark) .vagalume {
+  background: #b08d3d;
+  box-shadow: 0 0 6px 1px rgba(176, 141, 61, 0.45);
+}
+
+@keyframes vagalume-sobe {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(var(--dx, 20px), -30vh, 0);
+  }
+  100% {
+    transform: translate3d(0, -62vh, 0);
+  }
+}
+
+@keyframes vagalume-pisca {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fundo-sol-raios,
+  .fundo-sol-onda,
+  .vagalume {
+    animation: none;
+  }
+
+  .fundo-sol-onda,
+  .vagalume {
+    display: none;
+  }
 }

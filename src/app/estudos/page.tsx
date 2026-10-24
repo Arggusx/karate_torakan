@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { HeroPagina } from "@/components/layout/HeroPagina";
+import {
+  FaixaAoVento,
+  Makiwara,
+  Lanterna,
+} from "@/components/animacoes/AnimacoesKarate";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/Card";
 import {
@@ -28,6 +33,7 @@ const PILARES_NAV = [
   {
     href: "/estudos/historia",
     kanji: "歴史",
+    cena: Lanterna,
     titulo: "História",
     subtitulo: "Linhagem e Mestres",
     descricao:
@@ -42,6 +48,7 @@ const PILARES_NAV = [
   {
     href: "/estudos/tecnicas",
     kanji: "技術",
+    cena: Makiwara,
     titulo: "Técnicas",
     subtitulo: "Kihon e Katas",
     descricao:
@@ -56,6 +63,7 @@ const PILARES_NAV = [
   {
     href: "/estudos/fundamentos",
     kanji: "基本",
+    cena: FaixaAoVento,
     titulo: "Fundamentos",
     subtitulo: "Graduação e Filosofia",
     descricao:
@@ -139,6 +147,7 @@ export default function EstudosHomePage() {
             >
               {pilar.kanji}
             </span>
+            <pilar.cena className="mb-3 h-16 w-auto" />
             <h2 className="heading-md">{pilar.titulo}</h2>
             <p className="mt-0.5 text-xs font-medium text-accent">
               {pilar.subtitulo}

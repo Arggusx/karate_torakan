@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { AnaliseCurricular } from "@/components/portal/AnaliseCurricular";
+import { AvatarPerfil } from "@/components/portal/AvatarPerfil";
 import { CheckoutModal } from "@/components/portal/CheckoutModal";
 import { GuardaPortal } from "@/components/portal/GuardaPortal";
 import { HeroPagina } from "@/components/layout/HeroPagina";
+import { MinhaConta } from "@/components/portal/MinhaConta";
+import { NavPortal, type ItemNav } from "@/components/portal/NavPortal";
+import { PlanoSemanal } from "@/components/portal/PlanoSemanal";
+import { RodapePortal } from "@/components/portal/RodapePortal";
+import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { useAcademia } from "@/lib/academiaStore";
 import {
   formatarReais,
@@ -15,6 +21,14 @@ import {
 } from "@/services/dataService";
 
 const GRADUACOES = getGraduacoes();
+
+type Aba = "painel" | "curriculo" | "conta";
+
+const ITENS: ItemNav<Aba>[] = [
+  { value: "painel", label: "Meu painel", curto: "Painel", icone: "inicio" },
+  { value: "curriculo", label: "Análise curricular", curto: "Currículo", icone: "curriculo" },
+  { value: "conta", label: "Minha conta", curto: "Conta", icone: "perfil" },
+];
 
 /** Descobre o programa de exame a partir da faixa do aluno ("Verde · 3º Kyu"). */
 function programaDaFaixa(faixa: string) {
@@ -33,13 +47,14 @@ export default function PortalAlunoPage() {
 
 function ConteudoAluno() {
   const { turmas, alunos, sessao, mensalidadeCentavos } = useAcademia();
+  const [aba, setAba] = useState<Aba>("painel");
   const [checkoutAberto, setCheckoutAberto] = useState(false);
 
   const aluno = alunos.find((item) => item.id === sessao?.id);
 
   if (!aluno) {
     return (
-      <div className="section">
+      <div className="section py-10">
         <div className="card mx-auto max-w-md p-5 text-center">
           <h1 className="heading-md">Matrícula não encontrada</h1>
           <p className="body-muted mt-2">
@@ -54,7 +69,13 @@ function ConteudoAluno() {
   const programa = programaDaFaixa(aluno.faixa);
 
   return (
-    <>
+    <NavPortal
+      itens={ITENS}
+      valor={aba}
+      onChange={setAba}
+      titulo="Portal do Aluno"
+      rodape={<RodapePortal />}
+    >
       <HeroPagina
         compacto
         sobretitulo="Portal do Aluno"
@@ -64,15 +85,50 @@ function ConteudoAluno() {
       />
 
       <div className="section space-y-4 py-6">
+        {aba === "painel" ? (
+          <PainelAluno
+            aluno={aluno}
+            turma={turma}
+            programa={programa}
+            mensalidadeCentavos={mensalidadeCentavos}
+            onCheckout={() => setCheckoutAberto(true)}
+          />
+        ) : aba === "curriculo" ? (
+          <AnaliseCurricular />
+        ) : (
+          <MinhaConta iniciais={aluno.foto} />
+        )}
+      </div>
+
+      <CheckoutModal
+        aberto={checkoutAberto}
+        onClose={() => setCheckoutAberto(false)}
+        usuario={aluno.usuario}
+        valorCentavos={mensalidadeCentavos}
+      />
+    </NavPortal>
+  );
+}
+
+function PainelAluno({
+  aluno,
+  turma,
+  programa,
+  mensalidadeCentavos,
+  onCheckout,
+}: {
+  aluno: ReturnType<typeof useAcademia>["alunos"][number];
+  turma: ReturnType<typeof useAcademia>["turmas"][number] | undefined;
+  programa: (typeof GRADUACOES)[number] | undefined;
+  mensalidadeCentavos: number;
+  onCheckout: () => void;
+}) {
+  return (
+    <>
       {/* Identificação e progresso */}
       <section className="card p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-md border border-line bg-elevated text-lg font-semibold text-fg"
-            aria-hidden
-          >
-            {aluno.foto}
-          </div>
+          <AvatarPerfil src={aluno.avatarUrl} iniciais={aluno.foto} />
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -105,13 +161,8 @@ function ConteudoAluno() {
         </div>
       </section>
 
-      </div>
-
-      {/* Quadro de horários — faixa separando a identificação do aluno
-          (acima) do bloco financeiro e de estudo (abaixo). */}
+      {/* Quadro de horários */}
       {turma ? (
-        <div className="faixa-destacada py-8">
-          <div className="section">
         <section className="card">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-2.5">
             <div>
@@ -126,48 +177,18 @@ function ConteudoAluno() {
             </Badge>
           </div>
 
-          <div className="grid divide-y divide-line md:grid-cols-2 md:divide-y-0">
-            {turma.plano.map((aula, indice) => (
-              <div
-                key={aula.dia + aula.foco}
-                className={`px-4 py-3 ${indice === 0 ? "md:border-r md:border-line" : ""}`}
-              >
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="text-sm font-semibold text-fg">
-                    {aula.dia}
-                    <span className="ml-2 text-2xs font-normal text-subtle">
-                      {turma.inicio} às {turma.fim}
-                    </span>
-                  </p>
-                  <span className="text-2xs font-medium text-accent">
-                    {aula.foco}
-                  </span>
-                </div>
-                <ul className="mt-2 space-y-1.5">
-                  {aula.conteudo.filter(Boolean).map((item) => (
-                    <li
-                      key={item}
-                      className="flex gap-2 text-xs leading-relaxed text-fg/85"
-                    >
-                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <PlanoSemanal
+            plano={turma.plano}
+            horario={`${turma.inicio} às ${turma.fim}`}
+          />
 
           <p className="border-t border-line px-4 py-2.5 text-2xs text-subtle">
             Faixas típicas da turma: {turma.faixasTipicas}. O conteúdo pode ser
             ajustado pelo professor a cada semana.
           </p>
         </section>
-          </div>
-        </div>
       ) : null}
 
-      <div className="section space-y-4 py-6">
       {/* Financeiro, programa e atalhos */}
       <section className="grid gap-3 lg:grid-cols-3">
         <div className="card">
@@ -184,11 +205,7 @@ function ConteudoAluno() {
             <div className="mt-3">
               <StatusBadge status={aluno.status} />
             </div>
-            <Button
-              size="sm"
-              className="mt-4 w-full"
-              onClick={() => setCheckoutAberto(true)}
-            >
+            <Button size="sm" className="mt-4 w-full" onClick={onCheckout}>
               Ir para o checkout
             </Button>
           </div>
@@ -248,14 +265,6 @@ function ConteudoAluno() {
           </ul>
         </div>
       </section>
-
-      <CheckoutModal
-        aberto={checkoutAberto}
-        onClose={() => setCheckoutAberto(false)}
-        usuario={aluno.usuario}
-        valorCentavos={mensalidadeCentavos}
-      />
-      </div>
     </>
   );
 }

@@ -5,9 +5,11 @@ import {
   Yuji_Syuku,
 } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { FundoAsiatico } from "@/components/ui/FundoAsiatico";
 import { ToastProvider } from "@/components/ui/Toast";
 import { AcademiaProvider } from "@/lib/academiaStore";
 import "./globals.css";
+import "./animacoes.css";
 
 /**
  * Serifada de display, só para títulos de vitrine. Auto-hospedada pelo Next,
@@ -74,6 +76,8 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-canvas text-fg">
         <ThemeProvider>
+          {/* Ondas, halos e sakura: fica atrás de tudo e não recebe clique. */}
+          <FundoAsiatico />
           <AcademiaProvider>
             <ToastProvider>{children}</ToastProvider>
           </AcademiaProvider>

@@ -2,6 +2,13 @@ import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
 import { HeroLanding } from "@/components/layout/HeroLanding";
+import {
+  Bambu,
+  Enso,
+  BokkenChoque,
+  Makiwara,
+  Lanterna,
+} from "@/components/animacoes/AnimacoesKarate";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/Card";
@@ -16,6 +23,13 @@ import {
   formatarReais,
   getTecnicas,
 } from "@/services/dataService";
+
+/** Uma cena animada por pilar do método: o golpe, a forma e o combate. */
+const CENA_DO_PILAR: Record<string, React.ComponentType<{ className?: string }>> = {
+  Kihon: Makiwara,
+  Kata: Enso,
+  Kumite: BokkenChoque,
+};
 
 const INCLUSO = [
   "Três aulas por semana, terça, quinta e sexta",
@@ -140,8 +154,15 @@ export default async function LandingPage() {
           />
 
           <div className="mt-4 grid gap-2 lg:grid-cols-3">
-            {pilares.map((pilar) => (
+            {pilares.map((pilar) => {
+              const Cena = CENA_DO_PILAR[pilar.nome];
+              return (
               <article key={pilar.nome} className="card p-4">
+                {Cena ? (
+                  <div className="mb-3 flex h-24 items-center justify-center rounded-lg bg-elevated/60">
+                    <Cena className="h-20 w-auto" />
+                  </div>
+                ) : null}
                 <div className="flex items-baseline justify-between gap-2">
                   <h3 className="heading-md">{pilar.nome}</h3>
                   <span className="font-kanji text-sm text-subtle">{pilar.kanji}</span>
@@ -156,7 +177,8 @@ export default async function LandingPage() {
                   {pilar.para_que_serve}
                 </p>
               </article>
-            ))}
+              );
+            })}
           </div>
           </div>
         </section>
@@ -182,11 +204,20 @@ export default async function LandingPage() {
                 A equipe técnica é formada por faixas pretas graduadas em
                 linhagem direta da JKA, com atualização anual obrigatória.
               </p>
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-5 flex flex-wrap items-end gap-2">
                 <ButtonLink href="#matricula">Ver mensalidade</ButtonLink>
                 <ButtonLink href="/estudos/historia" variant="ghost">
                   Conhecer a linhagem →
                 </ButtonLink>
+                {/* Jardim do dojo: bambu e lanterna de pedra, assentados na
+                    mesma linha dos botões, onde sobra espaço. */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none ml-auto hidden items-end gap-1 sm:flex"
+                >
+                  <Bambu className="h-20 w-auto opacity-80" />
+                  <Lanterna className="h-16 w-auto" />
+                </div>
               </div>
             </div>
 

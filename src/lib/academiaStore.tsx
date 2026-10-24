@@ -129,6 +129,7 @@ interface RespostaAcademia {
     financial_status: string;
     apto_exame: boolean;
     criterios: CriteriosProgresso | null;
+    avatar_url: string | null;
   }[];
   professores: {
     id: number;
@@ -201,6 +202,7 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
                 ? "atrasado"
                 : "pendente",
           foto: iniciais(aluno.nome),
+          avatarUrl: aluno.avatar_url ?? null,
           frequencia: aluno.frequencia,
           aptoParaExame: aluno.apto_exame ?? false,
           criterios: aluno.criterios ?? null,

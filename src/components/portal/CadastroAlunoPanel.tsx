@@ -57,6 +57,7 @@ export function CadastroAlunoPanel() {
       progresso: 0,
       proximoExame: "A definir",
       status: "ativo",
+      avatarUrl: null,
       frequencia: 0,
       aptoParaExame: false,
       criterios: null,

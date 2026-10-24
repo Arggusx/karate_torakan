@@ -30,10 +30,22 @@ const config: Config = {
           bad: "#DC2626",
         },
       },
+      /*
+        Raio mais generoso em toda a interface. Os nomes continuam os mesmos,
+        então nenhuma classe precisou mudar de arquivo em arquivo: `rounded-md`
+        virou 8px e `rounded-lg` virou 12px em todo lugar de uma vez.
+      */
       borderRadius: {
-        DEFAULT: "0.375rem",
-        md: "0.375rem",
-        lg: "0.5rem",
+        DEFAULT: "0.5rem",
+        sm: "0.375rem",
+        md: "0.5rem",
+        lg: "0.75rem",
+        xl: "1rem",
+        "2xl": "1.25rem",
+      },
+      boxShadow: {
+        // Elevação discreta: no claro é sombra, no escuro é quase só a borda.
+        painel: "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -16px rgba(15, 23, 42, 0.18)",
       },
       fontSize: {
         "2xs": ["0.6875rem", { lineHeight: "1rem" }],

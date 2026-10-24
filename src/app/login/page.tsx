@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { GarraTigre } from "@/components/animacoes/AnimacoesKarate";
 import { MarcaTorakan } from "@/components/ui/MarcaTorakan";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -48,7 +49,9 @@ export default function LoginPage() {
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
-          <div className="card p-5">
+          <div className="card relative overflow-hidden p-5">
+            {/* A marca do Tigre: três riscos de garra no canto do cartão. */}
+            <GarraTigre className="pointer-events-none absolute -right-2 -top-2 h-16 w-16 opacity-70" />
             <h1 className="heading-lg">Área do Aluno / Professor</h1>
             <p className="body-muted mt-1">
               Entre com seu nome de usuário e senha.

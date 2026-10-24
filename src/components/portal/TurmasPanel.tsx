@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlunoCampo, AlunoCard } from "@/components/portal/AlunoCard";
 import { CampoBusca, paraBusca } from "@/components/portal/CampoBusca";
 import { AlunoDetalheModal } from "@/components/portal/DetalheModal";
+import { PlanoSemanal } from "@/components/portal/PlanoSemanal";
 import { SeletorTurma } from "@/components/portal/SeletorTurma";
 import { TurmaFormModal } from "@/components/portal/TurmaFormModal";
 import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
@@ -105,36 +106,10 @@ export function TurmasPanel() {
                 </div>
               </div>
 
-              <div className="divide-y divide-line">
-                {turma.plano.length === 0 ? (
-                  <p className="px-4 py-3 text-xs text-subtle">
-                    Nenhuma aula planejada. Use “Editar” para definir o
-                    conteúdo.
-                  </p>
-                ) : (
-                  turma.plano.map((aula) => (
-                    <div key={aula.dia + aula.foco} className="px-4 py-3">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <p className="text-xs font-semibold text-fg">
-                          {aula.dia}
-                        </p>
-                        <p className="text-2xs text-accent">{aula.foco}</p>
-                      </div>
-                      <ul className="mt-1.5 space-y-1">
-                        {aula.conteudo.filter(Boolean).map((item) => (
-                          <li
-                            key={item}
-                            className="flex gap-2 text-xs leading-relaxed text-muted"
-                          >
-                            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))
-                )}
-              </div>
+              <PlanoSemanal
+                plano={turma.plano}
+                vazio="Nenhuma aula planejada. Use “Editar” para definir o conteúdo."
+              />
             </article>
 
             <AlunosDaTurma alunos={matriculados} busca={busca} />

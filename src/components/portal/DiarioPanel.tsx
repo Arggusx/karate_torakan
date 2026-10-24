@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlunoCampo, AlunoCard } from "@/components/portal/AlunoCard";
 import { AlunoDetalheModal } from "@/components/portal/DetalheModal";
-import { CampoBusca, paraBusca } from "@/components/portal/CampoBusca";
+import { paraBusca } from "@/components/portal/CampoBusca";
 import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -16,24 +16,39 @@ import type { Aluno, Chamada } from "@/types";
 const POR_PAGINA = 10;
 
 /**
- * Diário de classe: uma única tabela com todos os alunos, distinguidos pela
- * coluna de turma, com busca, filtro de turma e paginação. A chamada começa
- * vazia — quem não for marcado é falta.
+ * Chamada do dia: uma única tabela com todos os alunos, distinguidos pela
+ * coluna de turma. A chamada começa vazia — quem não for marcado é falta.
+ *
+ * Os filtros (busca, turma, dia da semana) são do painel de Alunos, que
+ * envolve esta tela e a de mensalidades: as duas olham para a mesma lista, e
+ * refiltrar ao trocar de uma para a outra seria trabalho repetido.
  */
-export function DiarioPanel() {
+export function DiarioPanel({
+  busca,
+  turmaFiltro,
+  diaFiltro,
+}: {
+  busca: string;
+  turmaFiltro: string;
+  /** Nome do dia ("Terça") ou "todos". */
+  diaFiltro: string;
+}) {
   const { turmas, alunos, lerChamada, salvarChamada } = useAcademia();
   const toast = useToast();
   const [chamada, setChamada] = useState<Chamada>({});
   const [salva, setSalva] = useState<string | null>(null);
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
   const [salvando, setSalvando] = useState(false);
-  const [busca, setBusca] = useState("");
-  const [turmaFiltro, setTurmaFiltro] = useState("todas");
   const [pagina, setPagina] = useState(1);
   const [emDetalhe, setEmDetalhe] = useState<Aluno | null>(null);
 
   const nomeDaTurma = useMemo(
     () => new Map(turmas.map((turma) => [turma.id, turma.nome])),
+    [turmas],
+  );
+
+  const diasDaTurma = useMemo(
+    () => new Map(turmas.map((turma) => [turma.id, turma.dias])),
     [turmas],
   );
 
@@ -45,21 +60,28 @@ export function DiarioPanel() {
       .filter((aluno) => {
         const naTurma =
           turmaFiltro === "todas" || aluno.turmaId === turmaFiltro;
+        // "Terça" casa com "Terça-feira" e vice-versa: os dias vêm do banco
+        // escritos de um jeito e do filtro de outro.
+        const noDia =
+          diaFiltro === "todos" ||
+          (diasDaTurma.get(aluno.turmaId) ?? []).some((dia) =>
+            paraBusca(dia).startsWith(paraBusca(diaFiltro)),
+          );
         const combina =
           !alvo ||
           paraBusca(aluno.nome).includes(alvo) ||
           paraBusca(aluno.usuario).includes(alvo);
-        return naTurma && combina;
+        return naTurma && noDia && combina;
       })
       .sort((a, b) => {
         const turmaA = nomeDaTurma.get(a.turmaId) ?? "";
         const turmaB = nomeDaTurma.get(b.turmaId) ?? "";
         return turmaA.localeCompare(turmaB) || a.nome.localeCompare(b.nome);
       });
-  }, [alunos, busca, turmaFiltro, nomeDaTurma]);
+  }, [alunos, busca, turmaFiltro, diaFiltro, diasDaTurma, nomeDaTurma]);
 
   // Qualquer filtro novo volta para a primeira página.
-  useEffect(() => setPagina(1), [busca, turmaFiltro]);
+  useEffect(() => setPagina(1), [busca, turmaFiltro, diaFiltro]);
 
   const visiveis = filtrados.slice(
     (pagina - 1) * POR_PAGINA,
@@ -132,30 +154,8 @@ export function DiarioPanel() {
         ) : null}
       </p>
 
-      {/* Filtros */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <CampoBusca
-            id="busca-diario"
-            valor={busca}
-            onChange={setBusca}
-            className="sm:w-64"
-          />
-          <select
-            aria-label="Filtrar por turma"
-            className="input sm:w-44"
-            value={turmaFiltro}
-            onChange={(event) => setTurmaFiltro(event.target.value)}
-          >
-            <option value="todas">Todas as turmas</option>
-            {turmas.map((turma) => (
-              <option key={turma.id} value={turma.id}>
-                {turma.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
+      {/* Data da aula e gravação — os demais filtros vêm do painel de Alunos. */}
+      <div className="card flex flex-wrap items-end justify-between gap-3 p-3">
         <div>
           <label htmlFor="diario-data" className="label">
             Data da aula
@@ -163,7 +163,7 @@ export function DiarioPanel() {
           <input
             id="diario-data"
             type="date"
-            className="input mt-1"
+            className="input mt-1 sm:w-48"
             value={data}
             max={new Date().toISOString().slice(0, 10)}
             onChange={(evento) => setData(evento.target.value)}

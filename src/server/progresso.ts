@@ -202,6 +202,27 @@ export async function listarProgramaConcluido(
   return linhas as { tipo: string; item: string }[];
 }
 
+/**
+ * Histórico completo do programa por faixa, para a análise curricular.
+ * Diferente de `listarProgramaConcluido`, não filtra pela faixa atual: traz
+ * tudo que já foi validado em cada graduação, que é o que o aluno percorreu.
+ */
+export async function listarHistoricoPrograma(
+  alunoId: number,
+): Promise<{ faixa_alvo: string; tipo: string; item: string; concluido_em: string }[]> {
+  const linhas = await sql`
+    SELECT faixa_alvo, tipo, item, concluido_em::text AS concluido_em
+      FROM programa_concluido
+     WHERE aluno_id = ${alunoId}
+     ORDER BY concluido_em`;
+  return linhas as {
+    faixa_alvo: string;
+    tipo: string;
+    item: string;
+    concluido_em: string;
+  }[];
+}
+
 /** Marca ou desmarca um item do programa da faixa atual. */
 export async function definirItemPrograma(
   alunoId: number,

@@ -321,7 +321,10 @@ export interface Aluno {
   progresso: number;
   proximoExame: string;
   status: StatusPagamento;
+  /** Iniciais para o avatar quando não há foto. */
   foto: string;
+  /** Data URL da foto de perfil, ou null. */
+  avatarUrl: string | null;
   frequencia: number;
   aptoParaExame: boolean;
   /** Null enquanto a API não respondeu. */

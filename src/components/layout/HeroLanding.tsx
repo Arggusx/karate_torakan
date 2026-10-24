@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ButtonLink } from "@/components/ui/Button";
+import { Hinomaru } from "@/components/ui/Hinomaru";
 import { LuaVermelha } from "@/components/ui/LuaVermelha";
 
 /**
@@ -121,7 +122,7 @@ export function HeroLanding({
   return (
     <section
       ref={raiz}
-      className="relative isolate overflow-hidden bg-[#0B0B0D] text-white"
+      className="relative isolate overflow-hidden bg-[#EDE4DE] text-fg dark:bg-[#0B0B0D] dark:text-white"
     >
       {/*
         Foto de fundo em preto e branco: a cor viria competir com o vermelho do
@@ -129,13 +130,19 @@ export function HeroLanding({
       */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-[url('/imagens/hero-karate.jpg')] bg-cover bg-[position:70%_center] opacity-[0.45] grayscale"
+        className="absolute inset-0 -z-20 bg-[url('/imagens/hero-karate.jpg')] bg-cover bg-[position:70%_center] opacity-[0.3] grayscale dark:opacity-[0.45]"
       />
 
-      {/* Gradiente que garante contraste do texto com ou sem foto. */}
+      {/*
+        Gradiente que garante contraste do texto com ou sem foto.
+
+        A geometria é a mesma nos dois temas — mesma inclinação, mesmas paradas
+        — e só a cor base troca: papel quente no claro, carvão no escuro. Assim
+        a foto fica na mesma posição e só o que está por baixo dela muda.
+      */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(120%_80%_at_15%_20%,rgba(220,38,38,0.16),transparent_60%),linear-gradient(100deg,#0B0B0D_35%,rgba(11,11,13,0.72)_70%,rgba(11,11,13,0.45)_100%)]"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(120%_80%_at_15%_20%,rgba(220,38,38,0.12),transparent_60%),linear-gradient(100deg,#EDE4DE_35%,rgba(237,228,222,0.86)_70%,rgba(237,228,222,0.6)_100%)] dark:bg-[radial-gradient(120%_80%_at_15%_20%,rgba(220,38,38,0.16),transparent_60%),linear-gradient(100deg,#0B0B0D_35%,rgba(11,11,13,0.72)_70%,rgba(11,11,13,0.45)_100%)]"
       />
 
       {/* 224px + 40% = 314px. Mesma posição de antes: inteira dentro da tela,
@@ -145,7 +152,9 @@ export function HeroLanding({
         aria-hidden
         className="pointer-events-none absolute right-8 top-1/2 -z-10 hidden -translate-y-1/2 lg:block xl:right-16"
       >
-        <LuaVermelha className="h-[314px] w-[314px] opacity-40" />
+        {/* Escuro: lua em neon. Claro: hinomaru, o mesmo círculo como tinta. */}
+        <LuaVermelha className="hidden h-[314px] w-[314px] opacity-40 dark:block" />
+        <Hinomaru className="h-[314px] w-[314px] dark:hidden" />
       </div>
 
       <div className="section relative py-24 sm:py-32 lg:py-40">
@@ -165,7 +174,7 @@ export function HeroLanding({
 
         <p
           data-hero="texto"
-          className="mt-4 max-w-xl text-sm leading-relaxed text-gold sm:text-base"
+          className="mt-4 max-w-xl text-sm leading-relaxed text-[#8A6B23] dark:text-gold sm:text-base"
         >
           Academia de Karatê Shotokan com linhagem, método e acompanhamento
           individual — somada a um portal de estudos com {katas} katas
@@ -179,7 +188,8 @@ export function HeroLanding({
           <span data-hero="acao" className="inline-flex">
             <ButtonLink
               href="/estudos"
-              className="border border-white/35 bg-transparent text-white hover:border-white hover:bg-white/10"
+              variant="secondary"
+              className="bg-surface/75 backdrop-blur"
             >
               Explorar o portal de estudos
             </ButtonLink>
