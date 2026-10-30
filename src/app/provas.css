@@ -224,7 +224,7 @@
 .prova-vazia-kanji {
   fill: rgb(var(--accent));
   font-size: 15px;
-  font-family: var(--font-display, serif);
+  font-family: var(--fonte-kanji), serif;
   font-weight: 700;
 }
 

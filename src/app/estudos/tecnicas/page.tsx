@@ -6,7 +6,9 @@ import { DeslocamentosEmPreparo } from "@/components/tecnicas/DeslocamentosEmPre
 import { KihonGrid } from "@/components/tecnicas/KihonGrid";
 import { SkeletonCard, SkeletonTable } from "@/components/ui/Skeleton";
 import { HeroPagina } from "@/components/layout/HeroPagina";
-import { FilterChips, SegmentedControl } from "@/components/ui/Tabs";
+import { CampoBusca } from "@/components/portal/CampoBusca";
+import { PainelFiltros, type ValoresFiltro } from "@/components/ui/PainelFiltros";
+import { SegmentedControl } from "@/components/ui/Tabs";
 import {
   fetchKatas,
   fetchTecnicas,
@@ -24,25 +26,68 @@ const VISOES = [
   { value: "deslocamentos" as const, label: "Deslocamentos" },
 ];
 
-const CATEGORIAS_KIHON = [
-  { value: "todos", label: "Todos" },
-  ...getCategoriasTecnicas().map((categoria) => ({
-    value: categoria.id,
-    label: categoria.label,
-  })),
+/*
+  Filtros reunidos no botão "Filtros" (como no Oratio): a família da técnica
+  no kihon; a série e o nível nos katas. A busca fica sempre à vista.
+*/
+const GRUPOS_KIHON = [
+  {
+    id: "categoria",
+    rotulo: "Família",
+    opcoes: getCategoriasTecnicas().map((c) => ({ id: c.id, rotulo: c.label })),
+  },
 ];
 
-const CATEGORIAS_KATA = [
-  { value: "todos", label: "Todos" },
-  { value: "Heian", label: "Heian" },
-  { value: "Tekki", label: "Tekki" },
-  { value: "Avançados", label: "Avançados" },
+const GRUPOS_KATA = [
+  {
+    id: "categoria",
+    rotulo: "Série",
+    opcoes: [
+      { id: "Heian", rotulo: "Heian" },
+      { id: "Tekki", rotulo: "Tekki" },
+      { id: "Avançados", rotulo: "Avançados" },
+    ],
+  },
+  {
+    id: "nivel",
+    rotulo: "Nível",
+    opcoes: [
+      { id: "basico", rotulo: "Básico" },
+      { id: "intermediario", rotulo: "Intermediário" },
+      { id: "avancado", rotulo: "Avançado" },
+    ],
+  },
 ];
+
+const semAcento = (s: string) =>
+  s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+function filtrarTecnicas(lista: Tecnica[], filtros: ValoresFiltro, busca: string) {
+  const termo = semAcento(busca.trim());
+  return lista.filter(
+    (t) =>
+      (!filtros.categoria || t.cat === filtros.categoria) &&
+      (!termo || semAcento(`${t.nome} ${t.pt} ${t.tipo}`).includes(termo)),
+  );
+}
+
+function filtrarKatas(lista: KataCompleto[], filtros: ValoresFiltro, busca: string) {
+  const termo = semAcento(busca.trim());
+  return lista.filter(
+    (k) =>
+      (!filtros.categoria || k.categoria === filtros.categoria) &&
+      (!filtros.nivel || k.nivel === filtros.nivel) &&
+      (!termo || semAcento(`${k.nome} ${k.significadoNome}`).includes(termo)),
+  );
+}
 
 export default function TecnicasPage() {
   const [visao, setVisao] = useState<Visao>("kihon");
-  const [filtroKihon, setFiltroKihon] = useState("todos");
-  const [filtroKata, setFiltroKata] = useState("todos");
+  const [filtrosKihon, setFiltrosKihon] = useState<ValoresFiltro>({ categoria: null });
+  const [filtrosKata, setFiltrosKata] = useState<ValoresFiltro>({ categoria: null, nivel: null });
+  const [busca, setBusca] = useState("");
+  // Chegou por um link para uma técnica (#Gedan-Barai): mostra a grade inteira.
+  const [porAncora, setPorAncora] = useState(false);
   const [katas, setKatas] = useState<KataCompleto[]>([]);
   const [tecnicas, setTecnicas] = useState<Tecnica[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -72,6 +117,7 @@ export default function TecnicasPage() {
     if (carregando) return;
     const alvo = decodeURIComponent(window.location.hash.slice(1));
     if (!alvo) return;
+    setPorAncora(true);
 
     const elemento = document.getElementById(alvo);
     if (!elemento) return;
@@ -94,19 +140,13 @@ export default function TecnicasPage() {
   }, [carregando]);
 
   const tecnicasFiltradas = useMemo(
-    () =>
-      filtroKihon === "todos"
-        ? tecnicas
-        : tecnicas.filter((tecnica) => tecnica.cat === filtroKihon),
-    [tecnicas, filtroKihon],
+    () => filtrarTecnicas(tecnicas, filtrosKihon, busca),
+    [tecnicas, filtrosKihon, busca],
   );
 
   const katasFiltrados = useMemo(
-    () =>
-      filtroKata === "todos"
-        ? katas
-        : katas.filter((kata) => kata.categoria === filtroKata),
-    [katas, filtroKata],
+    () => filtrarKatas(katas, filtrosKata, busca),
+    [katas, filtrosKata, busca],
   );
 
   return (
@@ -134,17 +174,26 @@ export default function TecnicasPage() {
           onChange={setVisao}
           destaque
         />
-        {visao === "deslocamentos" ? null : visao === "kihon" ? (
-          <FilterChips
-            options={CATEGORIAS_KIHON}
-            value={filtroKihon}
-            onChange={setFiltroKihon}
-          />
-        ) : (
-          <FilterChips
-            options={CATEGORIAS_KATA}
-            value={filtroKata}
-            onChange={setFiltroKata}
+        {visao === "deslocamentos" ? null : (
+          <PainelFiltros
+            key={visao}
+            grupos={visao === "kihon" ? GRUPOS_KIHON : GRUPOS_KATA}
+            valores={visao === "kihon" ? filtrosKihon : filtrosKata}
+            onAplicar={visao === "kihon" ? setFiltrosKihon : setFiltrosKata}
+            contar={(rascunho) =>
+              visao === "kihon"
+                ? filtrarTecnicas(tecnicas, rascunho, busca).length
+                : filtrarKatas(katas, rascunho, busca).length
+            }
+            antes={
+              <CampoBusca
+                id="busca-tecnicas"
+                valor={busca}
+                onChange={setBusca}
+                placeholder={visao === "kihon" ? "Buscar técnica" : "Buscar kata"}
+                className="w-full sm:w-56"
+              />
+            }
           />
         )}
       </div>
@@ -165,7 +214,7 @@ export default function TecnicasPage() {
           </div>
         )
       ) : visao === "kihon" ? (
-        <KihonGrid tecnicas={tecnicasFiltradas} />
+        <KihonGrid tecnicas={tecnicasFiltradas} mostrarTudo={porAncora || busca.trim() !== ""} />
       ) : (
         <div className="space-y-8">
           <KataTable

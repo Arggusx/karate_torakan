@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CampoBusca } from "@/components/portal/CampoBusca";
 import { DiarioPanel } from "@/components/portal/DiarioPanel";
 import { FinanceiroPanel } from "@/components/portal/FinanceiroPanel";
+import { PainelFiltros, type ValoresFiltro } from "@/components/ui/PainelFiltros";
 import { SegmentedControl } from "@/components/ui/Tabs";
 import { useAcademia } from "@/lib/academiaStore";
 
@@ -24,64 +25,45 @@ const MODOS = [
   { value: "mensalidades" as const, label: "Mensalidades" },
 ];
 
-const DIAS = [
-  { value: "todos", label: "Todos os dias" },
-  { value: "Segunda", label: "Segunda" },
-  { value: "Terça", label: "Terça" },
-  { value: "Quarta", label: "Quarta" },
-  { value: "Quinta", label: "Quinta" },
-  { value: "Sexta", label: "Sexta" },
-  { value: "Sábado", label: "Sábado" },
-];
+const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 export function AlunosPanel() {
   const { turmas } = useAcademia();
   const [modo, setModo] = useState<"chamada" | "mensalidades">("chamada");
   const [busca, setBusca] = useState("");
-  const [turmaFiltro, setTurmaFiltro] = useState("todas");
-  const [diaFiltro, setDiaFiltro] = useState("todos");
+  // Turma e dia ficam no botão "Filtros"; a busca continua à vista.
+  const [filtros, setFiltros] = useState<ValoresFiltro>({ turma: null, dia: null });
+  const turmaFiltro = filtros.turma ?? "todas";
+  const diaFiltro = filtros.dia ?? "todos";
+
+  const grupos = useMemo(
+    () => [
+      { id: "turma", rotulo: "Turma", opcoes: turmas.map((t) => ({ id: t.id, rotulo: `Turma ${t.nome}` })) },
+      { id: "dia", rotulo: "Dia da aula", opcoes: DIAS.map((d) => ({ id: d, rotulo: d })) },
+    ],
+    [turmas],
+  );
 
   return (
     <div className="space-y-4">
-      {/* Filtros comuns às duas visões. Seletor numa linha, filtros na de baixo: lado a lado, os campos eram
-          espremidos quando o trilho lateral está aberto. */}
+      {/* Filtros comuns às duas visões: a busca à vista, turma e dia no botão "Filtros". */}
       <div className="flex flex-col items-start gap-3">
         <SegmentedControl options={MODOS} value={modo} onChange={setModo} />
 
-        <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-          <CampoBusca
-            id="busca-alunos"
-            valor={busca}
-            onChange={setBusca}
-            placeholder="Buscar aluno por nome ou usuário"
-            className="sm:w-64 sm:shrink-0"
-          />
-          <select
-            aria-label="Filtrar por turma"
-            className="input sm:w-48 sm:shrink-0"
-            value={turmaFiltro}
-            onChange={(event) => setTurmaFiltro(event.target.value)}
-          >
-            <option value="todas">Todas as turmas</option>
-            {turmas.map((turma) => (
-              <option key={turma.id} value={turma.id}>
-                Turma {turma.nome}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="Filtrar por dia da semana"
-            className="input sm:w-44 sm:shrink-0"
-            value={diaFiltro}
-            onChange={(event) => setDiaFiltro(event.target.value)}
-          >
-            {DIAS.map((dia) => (
-              <option key={dia.value} value={dia.value}>
-                {dia.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <PainelFiltros
+          grupos={grupos}
+          valores={filtros}
+          onAplicar={setFiltros}
+          antes={
+            <CampoBusca
+              id="busca-alunos"
+              valor={busca}
+              onChange={setBusca}
+              placeholder="Buscar aluno por nome ou usuário"
+              className="w-full sm:w-64"
+            />
+          }
+        />
       </div>
 
       {modo === "chamada" ? (

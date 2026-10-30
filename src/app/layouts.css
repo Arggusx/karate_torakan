@@ -1,0 +1,585 @@
+/*
+  Layouts das páginas de estudo. Cada tópico tem um desenho próprio — varal
+  de faixas, trilha, painel do Dojo Kun, pergaminho — para a leitura variar
+  em vez de repetir a mesma grade de cartões.
+*/
+
+/* ---------------------------------------------- Faixas: o varal */
+
+.fund-varal {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  border-radius: 1.1rem;
+  border: 1px solid rgb(var(--line));
+  padding: 1.5rem;
+  background:
+    radial-gradient(90% 120% at 100% 100%, rgb(var(--gold) / 0.12), transparent 60%),
+    rgb(var(--surface));
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 900px) {
+  .fund-varal {
+    grid-template-columns: 1fr 1.2fr;
+    padding: 2rem;
+  }
+}
+
+.fund-varal-faixas {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.1rem 0.75rem;
+  padding-top: 0.75rem;
+}
+
+/* O "varal": uma linha de bambu por cima de cada fileira. */
+.fund-varal-faixas::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgb(var(--gold) / 0.2), rgb(var(--gold) / 0.7), rgb(var(--gold) / 0.2));
+}
+
+.fund-varal-faixas li {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+  animation: fund-pendura 0.6s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+@keyframes fund-pendura {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) rotate(-3deg);
+  }
+}
+
+/* ---------------------------------------------- Faixas: a trilha */
+
+.fund-trilha {
+  position: relative;
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* A linha que liga os marcos, da primeira faixa à última. */
+.fund-trilha::before {
+  content: "";
+  position: absolute;
+  left: 0.95rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: linear-gradient(rgb(var(--line-strong)), rgb(var(--accent) / 0.4));
+}
+
+.fund-trilha-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.fund-trilha-marco {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 2rem;
+  width: 2rem;
+  margin-top: 1rem;
+  border-radius: 999px;
+  border: 3px solid rgb(var(--canvas));
+  background: var(--faixa-cor);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: rgb(255 255 255 / 0.95);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+}
+
+/* No desktop, a trilha vira zigue-zague: cartões alternando os lados. */
+@media (min-width: 900px) {
+  .fund-trilha::before {
+    left: 50%;
+    transform: translateX(-1px);
+  }
+
+  .fund-trilha-item {
+    grid-template-columns: 1fr 2rem 1fr;
+  }
+
+  .fund-trilha-marco {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .fund-trilha-item:nth-child(odd) > article {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .fund-trilha-item:nth-child(even) > article {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  /* Os cartões se encavalam pela metade: a trilha fica compacta. */
+  .fund-trilha-item + .fund-trilha-item {
+    margin-top: -3.5rem;
+  }
+}
+
+/* ------------------------------------------- Dojo Kun em destaque */
+
+.fund-dojokun {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  padding: 1.5rem;
+  background:
+    linear-gradient(135deg, rgb(var(--accent) / 0.07), transparent 55%),
+    rgb(var(--surface));
+  border: 1px solid rgb(var(--accent) / 0.2);
+  box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 768px) {
+  .fund-dojokun {
+    padding: 2rem 2.25rem;
+  }
+}
+
+.fund-dojokun-kanji {
+  position: absolute;
+  right: -0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-family: var(--fonte-kanji), serif;
+  font-size: clamp(5rem, 14vw, 9rem);
+  line-height: 1;
+  color: rgb(var(--accent) / 0.07);
+  pointer-events: none;
+}
+
+.fund-dojokun-lema {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0.75rem;
+  max-width: 46rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgb(var(--line));
+}
+
+.fund-dojokun-num {
+  font-family: var(--fonte-display), serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+  color: rgb(var(--accent));
+}
+
+/* --------------------------------------------------- Etiqueta */
+
+.fund-etiqueta-topo {
+  display: grid;
+  place-items: center;
+  height: 6rem;
+  background:
+    repeating-linear-gradient(90deg, rgb(var(--gold) / 0.08) 0 2px, transparent 2px 18px),
+    rgb(var(--elevated));
+  border-bottom: 1px solid rgb(var(--line));
+}
+
+.fund-etiqueta-topo span {
+  font-size: 3rem;
+  line-height: 1;
+  color: rgb(var(--accent));
+  transition: transform 0.4s var(--ease-out);
+}
+
+.card:hover .fund-etiqueta-topo span {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+/* --------------------------------------------- Niju Kun: pergaminho */
+
+.fund-pergaminho {
+  position: relative;
+  align-self: start;
+  border-radius: 0.65rem;
+  padding: 1.5rem 1.4rem;
+  background:
+    linear-gradient(rgb(var(--gold) / 0.06), rgb(var(--gold) / 0.06)),
+    rgb(var(--surface));
+  border: 1px solid rgb(var(--gold) / 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Os dois rolos do pergaminho, em cima e embaixo. */
+.fund-pergaminho::before,
+.fund-pergaminho::after {
+  content: "";
+  position: absolute;
+  left: -0.4rem;
+  right: -0.4rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(rgb(var(--gold) / 0.9), rgb(var(--gold) / 0.55));
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.12);
+}
+
+.fund-pergaminho::before {
+  top: -0.35rem;
+}
+
+.fund-pergaminho::after {
+  bottom: -0.35rem;
+}
+
+/* ----------------------------------------------------- Consulta */
+
+.fund-consulta-lado {
+  align-self: start;
+  border-radius: 1.1rem;
+  padding: 1.5rem;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgb(var(--accent) / 0.08), transparent 60%),
+    rgb(var(--elevated));
+}
+
+@media (min-width: 1024px) {
+  .fund-consulta-lado {
+    position: sticky;
+    top: 6.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fund-varal-faixas li {
+    animation: none;
+  }
+}
+
+/* ------------------------------------- Perfil do aluno, com a faixa */
+
+.perfil-faixa {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+  padding: 3.4rem 1.25rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 640px) {
+  .perfil-faixa {
+    padding: 3.4rem 1.5rem 1.5rem 1.75rem;
+  }
+}
+
+/* A faixa atravessando o topo do cartão, como se ele a vestisse. */
+.perfil-faixa-tira {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1.1rem;
+  height: 1.35rem;
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.07) 0 1px, transparent 1px 5px),
+    var(--faixa-cor);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.1),
+    0 2px 6px rgb(0 0 0 / 0.06);
+  opacity: 0.85;
+}
+
+/* O brilho que corre pela tira, como luz batendo no pano. */
+.perfil-faixa-tira::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: perfil-brilho 6s ease-in-out infinite;
+}
+
+@keyframes perfil-brilho {
+  0%,
+  35% {
+    transform: translateX(-100%);
+  }
+  75%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.perfil-faixa-kanji {
+  position: absolute;
+  right: 0.75rem;
+  bottom: -0.75rem;
+  font-family: var(--fonte-kanji), serif;
+  font-size: clamp(4rem, 12vw, 6.5rem);
+  line-height: 1;
+  color: rgb(var(--heading) / 0.05);
+  pointer-events: none;
+}
+
+/* A foto se apoia sobre a faixa. */
+.perfil-faixa-avatar {
+  position: relative;
+  align-self: flex-start;
+  margin-top: -3rem;
+  padding: 0.35rem;
+}
+
+/* Anel tracejado na cor da faixa, girando devagar em volta da foto. */
+.perfil-faixa-anel {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background:
+    repeating-conic-gradient(var(--faixa-cor) 0 14deg, transparent 14deg 24deg);
+  -webkit-mask: radial-gradient(circle, transparent calc(50% - 4px), #000 calc(50% - 3px));
+  mask: radial-gradient(circle, transparent calc(50% - 4px), #000 calc(50% - 3px));
+  filter: drop-shadow(0 0 0.5px rgb(0 0 0 / 0.35));
+  animation: perfil-anel 24s linear infinite;
+}
+
+@keyframes perfil-anel {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.perfil-faixa-avatar > :not(.perfil-faixa-anel) {
+  position: relative;
+}
+
+/* A foto fica sobre um disco claro, destacada da tira. */
+.perfil-faixa-avatar > div > div:first-child > div:first-child {
+  box-shadow: 0 0 0 3px rgb(var(--surface));
+}
+
+.perfil-faixa-lema {
+  margin-top: 0.85rem;
+  max-width: 34rem;
+  border-left: 3px solid var(--faixa-cor);
+  padding-left: 0.75rem;
+  font-family: var(--fonte-display), serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  line-height: 1.35;
+  color: rgb(var(--muted));
+}
+
+/* O nó da faixa, com as pontas caindo sobre o cartão. */
+/*
+  Desenhado só o nó (viewBox de 60 unidades) na escala 1,2 da tira: o centro
+  da tira do obi (y=23) cai no centro da faixa do cartão (1,1rem + metade).
+*/
+.perfil-faixa-obi {
+  position: absolute;
+  top: 0.35rem;
+  right: 1.5rem;
+  width: 4.5rem;
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.12));
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .perfil-faixa-obi {
+    right: 3rem;
+  }
+}
+
+/* Faixa preta: um brilho dourado no cartão. */
+.perfil-faixa-dan {
+  border-color: rgb(var(--gold) / 0.45);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgb(var(--gold) / 0.12), transparent 55%),
+    rgb(var(--surface));
+}
+
+.perfil-faixa-dan .perfil-faixa-anel {
+  background: repeating-conic-gradient(rgb(var(--gold)) 0 10deg, #18181b 10deg 20deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfil-faixa-tira::after,
+  .perfil-faixa-anel {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------- História: citação */
+
+.hist-citacao {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  padding: 1.75rem 1.5rem 1.5rem;
+  background:
+    radial-gradient(100% 120% at 0% 0%, rgb(var(--gold) / 0.14), transparent 60%),
+    rgb(var(--elevated));
+  border: 1px solid rgb(var(--gold) / 0.3);
+}
+
+.hist-citacao-aspas {
+  position: absolute;
+  right: 1rem;
+  top: -2.5rem;
+  font-family: var(--fonte-display), serif;
+  font-size: 11rem;
+  line-height: 1;
+  color: rgb(var(--gold) / 0.25);
+  pointer-events: none;
+}
+
+.hist-citacao li {
+  border-left: 2px solid rgb(var(--accent));
+  padding-left: 0.85rem;
+}
+
+/* ---------------------------------------- Estudos: chamada da Jornada */
+
+.cta-jornada {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: 15rem;
+  border-radius: 1.1rem;
+  border: 1px solid rgb(var(--line));
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out);
+}
+
+.cta-jornada:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.cta-jornada-foto {
+  object-fit: cover;
+  object-position: right center;
+}
+
+/* O texto fica sobre um degradê do creme, que deixa a foto à direita. */
+.cta-jornada-texto {
+  position: relative;
+  align-self: center;
+  padding: 1.75rem;
+  background: linear-gradient(90deg, rgb(var(--surface)) 0%, rgb(var(--surface) / 0.94) 55%, rgb(var(--surface) / 0.4));
+}
+
+@media (min-width: 768px) {
+  .cta-jornada-texto {
+    max-width: 62%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 2.5rem;
+    background: linear-gradient(90deg, rgb(var(--surface)) 60%, rgb(var(--surface) / 0));
+  }
+}
+
+.cta-jornada-enso {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.25rem;
+  width: 5.5rem;
+  opacity: 0.9;
+}
+
+:root.dark .cta-jornada-foto {
+  filter: brightness(0.75);
+}
+
+/* ------------------------------------------ Estudos: pilares em mosaico */
+
+.pilares-mosaico {
+  display: grid;
+  gap: 0.9rem;
+}
+
+@media (min-width: 1024px) {
+  .pilares-mosaico {
+    grid-template-columns: 1.25fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .pilar-destaque {
+    grid-row: span 2;
+  }
+}
+
+.pilar {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+  box-shadow: var(--shadow-sm);
+}
+
+.pilar-foto {
+  position: relative;
+  height: 12rem;
+}
+
+.pilar-foto img {
+  object-fit: cover;
+}
+
+:root.dark .pilar-foto img {
+  filter: brightness(0.8);
+}
+
+.pilar-corpo {
+  position: relative;
+  padding: 1.25rem 1.4rem 1.4rem;
+}
+
+.pilar-kanji {
+  position: absolute;
+  right: 1rem;
+  top: 0.6rem;
+  font-family: var(--fonte-kanji), serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: rgb(var(--accent) / 0.14);
+}
+
+.pilar-destaque .pilar-kanji {
+  top: -1.9rem;
+  font-size: 3.4rem;
+  color: rgb(var(--surface));
+  text-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+}
+
+/* No desktop, a foto do destaque cresce até o cartão ter a altura dos outros dois. */
+@media (min-width: 1024px) {
+  .pilar-destaque {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pilar-destaque .pilar-foto {
+    flex: 1;
+    min-height: 12rem;
+  }
+}

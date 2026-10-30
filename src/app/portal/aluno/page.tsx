@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnaliseCurricular } from "@/components/portal/AnaliseCurricular";
-import { AvatarPerfil } from "@/components/portal/AvatarPerfil";
 import { CheckoutModal } from "@/components/portal/CheckoutModal";
 import { GuardaPortal } from "@/components/portal/GuardaPortal";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import { MinhaConta } from "@/components/portal/MinhaConta";
 import { NavPortal, type ItemNav } from "@/components/portal/NavPortal";
 import { PlanoSemanal } from "@/components/portal/PlanoSemanal";
+import { PerfilFaixa } from "@/components/portal/PerfilFaixa";
 import { ProvaPanel } from "@/components/portal/ProvaPanel";
 import { RodapePortal } from "@/components/portal/RodapePortal";
 import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
@@ -137,11 +137,12 @@ function PainelAluno({
   return (
     <>
       {/* Identificação e progresso */}
-      <section className="card p-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <AvatarPerfil src={aluno.avatarUrl} iniciais={aluno.foto} />
-
-          <div className="min-w-0 flex-1">
+      <PerfilFaixa
+        cor={aluno.corFaixa}
+        programa={programa}
+        avatarUrl={aluno.avatarUrl}
+        iniciais={aluno.foto}
+      >
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base font-semibold text-fg">{aluno.nome}</h2>
               <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
@@ -168,9 +169,7 @@ function PainelAluno({
                 Próximo exame de graduação: {aluno.proximoExame}
               </p>
             </div>
-          </div>
-        </div>
-      </section>
+      </PerfilFaixa>
 
       {/* Quadro de horários */}
       {turma ? (

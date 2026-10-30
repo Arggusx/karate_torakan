@@ -1,13 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import {
+  Enso,
   FaixaAoVento,
   Makiwara,
   Lanterna,
 } from "@/components/animacoes/AnimacoesKarate";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/Card";
+import { Sanfona } from "@/components/ui/Sanfona";
 import {
   dados,
   getKatas,
@@ -178,48 +181,65 @@ export default function EstudosHomePage() {
 
       </div>
 
-      {/* Os 3 pilares do treino — fecha a página com o porquê do método,
-          depois de ter apresentado onde cada coisa mora. */}
+      {/* Chamada para a Jornada: faixa horizontal com foto, entre o índice e os pilares. */}
+      <div className="section py-10">
+        <Link href="/estudos/jornada" className="cta-jornada group">
+          <Image
+            src="/imagens/estudos.jpg"
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 1120px, 100vw"
+            className="cta-jornada-foto"
+          />
+          <div className="cta-jornada-texto">
+            <p className="eyebrow">Jornada · 旅</p>
+            <h2 className="heading-lg mt-1">Estudar jogando, sem nota</h2>
+            <p className="body-muted mt-1 max-w-md">
+              Caminhos por tema, desafios de katas e uma coleção de selos. Errar não tira nada — é só
+              tentar de novo.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-accent">
+              Abrir a Jornada <span className="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </div>
+          <Enso className="cta-jornada-enso" />
+        </Link>
+      </div>
+
+      {/* Os 3 pilares do treino, em mosaico: o Kihon com a foto do dojo em
+          destaque e os outros dois ao lado. "Para que serve" abre na sanfona. */}
       <section className="faixa-destacada py-12">
-        <div className="section space-y-3">
-        <SectionHeading
-          eyebrow="Kihon · Kata · Kumite"
-          titulo="Os três pilares do treino"
-          descricao="Como o acervo define cada frente de trabalho e para que ela serve."
-        />
-        <div className="grid gap-3 lg:grid-cols-3">
-          {pilares.map((pilar) => (
-            <article key={pilar.nome} className="card p-4">
-              <div className="flex items-baseline justify-between gap-2">
-                <h3 className="heading-md">{pilar.nome}</h3>
-                <span className="font-kanji text-sm text-subtle">{pilar.kanji}</span>
-              </div>
-              <p className="mt-0.5 text-xs font-medium text-accent">
-                {pilar.pt}
-              </p>
-              <p className="mt-2 text-xs italic leading-relaxed text-muted">
-                {pilar.tagline}
-              </p>
-              <dl className="mt-3 space-y-2 border-t border-line pt-3">
-                <div>
-                  <dt className="label">O que é</dt>
-                  <dd className="mt-0.5 text-xs leading-relaxed text-fg/85">
-                    {pilar.oque_e}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="label">Para que serve</dt>
-                  <dd className="mt-0.5 text-xs leading-relaxed text-muted">
+        <div className="section space-y-5">
+          <SectionHeading
+            eyebrow="Kihon · Kata · Kumite"
+            titulo="Os três pilares do treino"
+            descricao="Como o acervo define cada frente de trabalho e para que ela serve."
+          />
+          <div className="pilares-mosaico">
+            {pilares.map((pilar, i) => (
+              <article key={pilar.nome} className={i === 0 ? "pilar pilar-destaque" : "pilar"}>
+                {i === 0 ? (
+                  <div className="pilar-foto">
+                    <Image src="/imagens/dojo.jpg" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
+                  </div>
+                ) : null}
+                <div className="pilar-corpo">
+                  <span className="pilar-kanji" aria-hidden>
+                    {pilar.kanji}
+                  </span>
+                  <h3 className="heading-lg">{pilar.nome}</h3>
+                  <p className="mt-0.5 text-xs font-semibold text-accent">{pilar.pt}</p>
+                  <p className="mt-2 font-display text-lg italic leading-snug text-muted">{pilar.tagline}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-fg/85">{pilar.oque_e}</p>
+                  <Sanfona titulo="Para que serve" className="mt-3 shadow-none">
                     {pilar.para_que_serve}
-                  </dd>
+                  </Sanfona>
                 </div>
-              </dl>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
-
     </>
   );
 }

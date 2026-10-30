@@ -1,7 +1,11 @@
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import type { Metadata } from "next";
+import { ConsultaDojo } from "@/components/fundamentos/ConsultaDojo";
 import { OrigemDosKatas } from "@/components/fundamentos/OrigemDosKatas";
-import { SectionHeading } from "@/components/ui/Card";
+import { AbasSecao } from "@/components/ui/AbasSecao";
+import { Obi } from "@/components/ui/Obi";
+import { Sanfona } from "@/components/ui/Sanfona";
+import { VerMais } from "@/components/ui/VerMais";
 import {
   getDojoKun,
   getEtiquetaDojo,
@@ -16,9 +20,15 @@ import {
 export const metadata: Metadata = {
   title: "Fundamentos",
   description:
-    "Sistema de faixas Kyu/Dan, Dojo Kun, Niju Kun, etiqueta e princípios técnicos do Karatê Shotokan.",
+    "Sistema de faixas Kyu/Dan, Dojo Kun, Niju Kun, etiqueta, princípios técnicos, origem dos katas e o dicionário do dojo.",
 };
 
+/*
+  Fundamentos era uma "gaveta": quatro seções empilhadas numa página longa.
+  Agora cada uma é um tópico (abas em pílula, como no Oratio) e cada tópico
+  tem um desenho próprio — trilha de faixas, painel do Dojo Kun, árvore dos
+  katas e uma consulta em sanfonas — para a leitura não cansar.
+*/
 export default function FundamentosPage() {
   const graduacoes = getGraduacoes();
   const dojoKun = getDojoKun();
@@ -28,6 +38,213 @@ export default function FundamentosPage() {
   const origemDosKatas = getOrigemDosKatas();
   const dicionario = getDicionario();
   const curiosidades = getCuriosidades();
+
+  const faixas = (
+    <div className="grid gap-6">
+      {/* Abertura: as oito faixas lado a lado, como penduradas no dojo. */}
+      <section className="fund-varal">
+        <div className="max-w-md">
+          <p className="eyebrow">Do 7º Kyu ao 1º Dan</p>
+          <h2 className="heading-lg mt-1">A faixa registra um percurso</h2>
+          <p className="body-muted mt-2">
+            Cada graduação tem um tempo mínimo e um programa de exame: os katas e o kihon que o aluno
+            precisa mostrar no tatame. A cor escurece conforme o caminho avança.
+          </p>
+        </div>
+        <ul className="fund-varal-faixas" aria-label="Ordem das faixas">
+          {graduacoes.map((g, i) => (
+            <li key={g.id} style={{ "--i": i } as React.CSSProperties}>
+              <Obi cor={g.cor} dan={g.grau.toLowerCase().includes("dan")} className="w-full" />
+              <span>{g.faixa}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <ol className="fund-trilha">
+        {graduacoes.map((faixa, i) => (
+          <li
+            key={faixa.id}
+            className="fund-trilha-item"
+            style={{ "--faixa-cor": faixa.cor } as React.CSSProperties}
+          >
+            <span className="fund-trilha-marco" aria-hidden>
+              {i + 1}
+            </span>
+            <article className="card card-hover card-faixa p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-2xs font-bold uppercase tracking-[0.12em] text-accent">{faixa.grau}</p>
+                  <h3 className="heading-md mt-0.5">
+                    Faixa {faixa.faixa}
+                    <span className="ml-2 font-kanji text-base font-normal text-subtle">{faixa.jp}</span>
+                  </h3>
+                </div>
+                <Obi cor={faixa.cor} dan={faixa.grau.toLowerCase().includes("dan")} className="w-20 shrink-0" />
+              </div>
+              <dl className="mt-3 grid gap-2 border-t border-line pt-3 text-xs">
+                <div className="flex gap-2">
+                  <dt className="w-12 shrink-0 text-subtle">Tempo</dt>
+                  <dd className="text-muted">{faixa.tempoMinimo}</dd>
+                </div>
+                <div className="flex gap-2">
+                  <dt className="w-12 shrink-0 text-subtle">Katas</dt>
+                  <dd className="flex flex-wrap gap-1">
+                    {faixa.katasExigidos.length ? (
+                      faixa.katasExigidos.map((k) => (
+                        <span key={k} className="chip">
+                          {k}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
+                  </dd>
+                </div>
+                <div className="flex gap-2">
+                  <dt className="w-12 shrink-0 text-subtle">Kihon</dt>
+                  <dd className="text-muted">{faixa.kihonExigido.join(" · ") || "—"}</dd>
+                </div>
+              </dl>
+            </article>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+
+  const filosofia = (
+    <div className="grid gap-6">
+      {/* Dojo Kun em destaque: é o que se recita no fim de toda aula. */}
+      <section className="fund-dojokun">
+        <span className="fund-dojokun-kanji" aria-hidden>
+          道場訓
+        </span>
+        <div className="relative">
+          <p className="eyebrow">Dojo Kun · recitado em seiza</p>
+          <h2 className="heading-lg mt-1">Os {dojoKun.length} lemas do dojo</h2>
+        </div>
+        <ol className="relative mt-5 grid gap-3">
+          {dojoKun.map((lema, index) => (
+            <li key={lema.romaji} className="fund-dojokun-lema">
+              <span className="fund-dojokun-num">{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <p className="font-display text-xl font-semibold leading-tight text-heading">{lema.pt}</p>
+                <p className="mt-1 text-2xs text-subtle">
+                  {lema.romaji} · <span className="font-kanji">{lema.jp}</span>
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-muted">{lema.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Etiqueta: três cartões com o kanji grande como ilustração. */}
+      <section>
+        <p className="eyebrow">Etiqueta</p>
+        <h2 className="heading-lg mt-1">Como se comportar no dojo</h2>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {etiqueta.map((item) => (
+            <article key={item.nome} className="card card-hover overflow-hidden">
+              <div className="fund-etiqueta-topo">
+                <span className="font-kanji">{item.kanji}</span>
+              </div>
+              <div className="p-4">
+                <h3 className="heading-md">{item.nome}</h3>
+                <p className="mt-0.5 text-xs font-semibold text-accent">{item.traducao}</p>
+                <p className="mt-2 text-xs leading-relaxed text-fg/85">{item.oque_e}</p>
+                {(item.detalhes ?? []).length > 0 ? (
+                  <Sanfona titulo="Detalhes" className="mt-3 shadow-none">
+                    <p>{item.para_que_serve}</p>
+                    <dl className="mt-2 space-y-2">
+                      {(item.detalhes ?? []).map((detalhe) => (
+                        <div key={detalhe.titulo}>
+                          <dt className="font-semibold text-fg">{detalhe.titulo}</dt>
+                          <dd>{detalhe.desc}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </Sanfona>
+                ) : (
+                  <p className="mt-2 text-xs leading-relaxed text-muted">{item.para_que_serve}</p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+        {/* Princípios técnicos em sanfona: o nome à vista, a explicação ao abrir. */}
+        <section>
+          <p className="eyebrow">Princípios técnicos</p>
+          <h2 className="heading-lg mt-1">O que torna o movimento eficaz</h2>
+          <div className="mt-4">
+            <VerMais inicial={5} rotulo="Ver mais princípios">
+              {principios.map((p) => (
+                <Sanfona
+                  key={p.n}
+                  sobretitulo={p.traducao}
+                  titulo={p.n}
+                  lateral={<span className="font-kanji">{p.k}</span>}
+                >
+                  <p className="text-fg/85">{p.oque_e}</p>
+                  <p className="mt-2">{p.para_que_serve}</p>
+                </Sanfona>
+              ))}
+            </VerMais>
+          </div>
+        </section>
+
+        {/* Niju Kun como um pergaminho numerado. */}
+        <section className="fund-pergaminho">
+          <p className="eyebrow">Niju Kun</p>
+          <h2 className="heading-lg mt-1">Preceitos de Funakoshi</h2>
+          <VerMais inicial={6} como="ol" className="mt-4 grid gap-2.5" rotulo="Ver todos">
+            {nijuKun.map((principio, i) => (
+              <li key={principio} className="flex gap-3 text-sm leading-relaxed text-fg/85">
+                <span className="mt-0.5 font-display text-lg font-semibold leading-none text-accent">{i + 1}</span>
+                {/* O acervo já traz "1. " no texto; o número fica só no destaque. */}
+                {principio.replace(/^\s*\d+\.\s*/, "")}
+              </li>
+            ))}
+          </VerMais>
+        </section>
+      </div>
+    </div>
+  );
+
+  const origem = (
+    <div className="grid gap-4">
+      <div className="max-w-2xl">
+        <p className="eyebrow">Origem dos katas</p>
+        <h2 className="heading-lg mt-1">De onde vem cada kata</h2>
+        <p className="body-muted mt-2">
+          O Shotokan não tem 26 formas independentes. Quase tudo desce de um kata só, destrinchado por
+          Itosu para virar material de ensino — e é por isso que o programa tem a ordem que tem.
+        </p>
+      </div>
+      <OrigemDosKatas dados={origemDosKatas} />
+    </div>
+  );
+
+  const consulta = (
+    <div className="grid gap-6 lg:grid-cols-[1fr_17rem]">
+      <ConsultaDojo dicionario={dicionario} curiosidades={curiosidades} />
+      <aside className="fund-consulta-lado">
+        <span className="block font-kanji text-5xl text-accent" aria-hidden>
+          辞
+        </span>
+        <p className="eyebrow mt-3">Consulta</p>
+        <h2 className="heading-md mt-1">O que se ouve no tatame</h2>
+        <p className="body-muted mt-2 text-xs">
+          {dicionario.length} termos do dicionário e {curiosidades.length} curiosidades que explicam por
+          que as coisas são como são. Abra um verbete para ler.
+        </p>
+      </aside>
+    </div>
+  );
 
   return (
     <>
@@ -40,280 +257,17 @@ export default function FundamentosPage() {
         kanji="基本"
       />
 
-      <div className="section space-y-10 py-10">
-        {/* Seção 1 — Sistema de faixas */}
-      <section className="space-y-4">
-        <SectionHeading
-          eyebrow="Seção I"
-          titulo="Sistema de faixas — Kyu e Dan"
-          descricao="Ordem de progressão do 7º Kyu ao 1º Dan, com tempo mínimo recomendado e o programa exigido em cada exame."
+      <div className="section py-10">
+        <AbasSecao
+          rotulo="Tópicos de Fundamentos"
+          abas={[
+            { id: "faixas", label: "Faixas", conteudo: faixas },
+            { id: "filosofia", label: "Dojo e filosofia", conteudo: filosofia },
+            { id: "origem", label: "Origem dos katas", conteudo: origem },
+            { id: "consulta", label: "Dicionário", conteudo: consulta },
+          ]}
         />
-
-        {/*
-          Cartões compactos: quatro por linha no desktop. O programa do exame
-          virou uma linha corrida em vez de duas listas — a mesma informação
-          ocupando um terço da altura, e a sequência de faixas cabe de relance.
-        */}
-        <div className="grade-centrada grade-4 [--grade-gap:0.5rem]">
-          {graduacoes.map((faixa) => (
-            <article
-              key={faixa.id}
-              className="card card-hover card-faixa overflow-hidden px-3 py-2.5"
-              style={{ "--faixa-cor": faixa.cor } as React.CSSProperties}
-            >
-              <div className="flex items-center gap-1.5">
-                <span
-                  className="h-3 w-3 shrink-0 rounded-sm ring-1 ring-inset ring-black/20"
-                  style={{ backgroundColor: faixa.cor }}
-                />
-                <h3 className="min-w-0 flex-1 truncate text-2xs font-semibold text-fg">
-                  {faixa.faixa}
-                  <span className="ml-1 font-kanji font-normal text-subtle">
-                    {faixa.jp}
-                  </span>
-                </h3>
-                <span className="shrink-0 text-2xs font-medium uppercase tracking-[0.06em] text-accent">
-                  {faixa.grau}
-                </span>
-              </div>
-
-              {/*
-                Rótulo à esquerda na mesma linha do valor, em vez de acima:
-                economiza três linhas por cartão sem cortar nenhum texto. O
-                kihon continua quebrando em quantas linhas precisar.
-              */}
-              <dl className="mt-1.5 space-y-1 border-t border-line pt-1.5 text-2xs leading-snug">
-                <div className="flex gap-2">
-                  <dt className="w-9 shrink-0 text-subtle">Tempo</dt>
-                  <dd className="min-w-0 flex-1 text-muted">
-                    {faixa.tempoMinimo}
-                  </dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="w-9 shrink-0 text-subtle">Katas</dt>
-                  <dd className="min-w-0 flex-1 text-fg/85">
-                    {faixa.katasExigidos.join(" · ")}
-                  </dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="w-9 shrink-0 text-subtle">Kihon</dt>
-                  <dd className="min-w-0 flex-1 text-muted">
-                    {faixa.kihonExigido.join(" · ")}
-                  </dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-        </div>
-      </section>
-
       </div>
-
-      {/* Seção 2 — Filosofia. Faixa separando o programa técnico (acima)
-          da parte de princípio e etiqueta. */}
-      <section className="faixa-destacada py-12">
-        <div className="section space-y-4">
-        <SectionHeading
-          eyebrow="Seção II"
-          titulo="Pilares e filosofia do Shotokan"
-          descricao="Os códigos recitados no dojo e os conceitos que separam o movimento correto do movimento eficaz."
-        />
-
-        {/* Dojo Kun */}
-        <div className="card">
-          <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h3 className="heading-md">Dojo Kun</h3>
-            <span className="text-2xs text-subtle">
-              {dojoKun.length} lemas · recitados em seiza
-            </span>
-          </div>
-          <ol className="divide-y divide-line">
-            {dojoKun.map((lema, index) => (
-              <li key={lema.romaji} className="flex gap-3 px-4 py-3">
-                <span className="text-2xs font-medium tabular-nums text-accent">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-fg">{lema.pt}</p>
-                  <p className="mt-0.5 text-2xs text-muted">
-                    {lema.romaji} · {lema.jp}
-                  </p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                    {lema.text}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        {/* Niju Kun */}
-        <div className="card">
-          <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h3 className="heading-md">Niju Kun</h3>
-            <span className="text-2xs text-subtle">
-              Preceitos de Gichin Funakoshi
-            </span>
-          </div>
-          <ol className="grid divide-line sm:grid-cols-2">
-            {nijuKun.map((principio, index) => (
-              <li
-                key={principio}
-                className="border-b border-line px-4 py-2 text-xs leading-relaxed text-fg/85 sm:odd:border-r"
-              >
-                {principio}
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        {/* Etiqueta do dojo */}
-        <div className="grid gap-3 lg:grid-cols-3">
-          {etiqueta.map((item) => (
-            <article key={item.nome} className="card p-4">
-              <div className="flex items-baseline justify-between gap-2">
-                <h3 className="heading-md">{item.nome}</h3>
-                <span className="font-kanji text-sm text-subtle">{item.kanji}</span>
-              </div>
-              <p className="mt-0.5 text-xs font-medium text-accent">
-                {item.traducao}
-              </p>
-              <p className="mt-2 text-xs leading-relaxed text-fg/85">
-                {item.oque_e}
-              </p>
-              <p className="mt-2 text-xs leading-relaxed text-muted">
-                {item.para_que_serve}
-              </p>
-              <dl className="mt-3 space-y-2 border-t border-line pt-3">
-                {(item.detalhes ?? []).map((detalhe) => (
-                  <div key={detalhe.titulo}>
-                    <dt className="text-2xs font-medium text-fg">
-                      {detalhe.titulo}
-                    </dt>
-                    <dd className="mt-0.5 text-xs leading-relaxed text-muted">
-                      {detalhe.desc}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </article>
-          ))}
-        </div>
-
-        {/* Princípios técnicos */}
-        <div className="card overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h3 className="heading-md">Princípios técnicos</h3>
-            <span className="text-2xs text-subtle">
-              {principios.length} conceitos
-            </span>
-          </div>
-          <div className="grid divide-line sm:grid-cols-2 lg:grid-cols-3">
-            {principios.map((principio) => (
-              <article
-                key={principio.n}
-                className="border-b border-line px-4 py-3 lg:[&:nth-child(3n+1)]:border-r lg:[&:nth-child(3n+2)]:border-r"
-              >
-                <div className="flex items-baseline justify-between gap-2">
-                  <h4 className="text-sm font-semibold text-fg">
-                    {principio.n}
-                  </h4>
-                  <span className="text-xs text-subtle">{principio.k}</span>
-                </div>
-                <p className="mt-0.5 text-2xs font-medium uppercase tracking-[0.06em] text-accent">
-                  {principio.traducao}
-                </p>
-                <p className="mt-2 text-xs leading-relaxed text-fg/85">
-                  {principio.oque_e}
-                </p>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                  {principio.para_que_serve}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-        </div>
-      </section>
-
-      {/* Seção 3 — Origem dos katas. Sem faixa, alternando com a seção
-          anterior, que é destacada. */}
-      <div className="section space-y-4 py-12">
-        <SectionHeading
-          eyebrow="Seção III"
-          titulo="De onde vem cada kata"
-          descricao="O Shotokan não tem 26 formas independentes. Quase tudo desce de um kata só, destrinchado por Itosu para virar material de ensino — e é por isso que o programa tem a ordem que tem."
-        />
-        <OrigemDosKatas dados={origemDosKatas} />
-      </div>
-
-      {/*
-        Seção 4 — consulta. Dicionário e curiosidades moravam na entrada do
-        portal, onde o aluno via quatro verbetes e nunca descobria que havia
-        noventa. Aqui eles viram acervo completo, na página que já é a de
-        referência.
-      */}
-      <section className="faixa-destacada py-12">
-        <div className="section space-y-4">
-          <SectionHeading
-            eyebrow="Seção IV"
-            titulo="Dicionário e curiosidades"
-            descricao="O vocabulário que se ouve no tatame e as histórias que explicam por que as coisas são como são."
-          />
-
-          <div className="grid gap-4 lg:grid-cols-[1fr_1.3fr]">
-            <div className="card">
-              <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-                <h3 className="heading-md">Dicionário do dojo</h3>
-                <span className="text-2xs text-subtle">
-                  {dicionario.length} termos
-                </span>
-              </div>
-              <ul className="divide-y divide-line">
-                {dicionario.map((termo) => (
-                  <li
-                    key={termo.romaji}
-                    className="flex items-baseline justify-between gap-3 px-4 py-2.5"
-                  >
-                    <span>
-                      <span className="text-sm font-medium text-fg">
-                        {termo.romaji}
-                      </span>
-                      <span className="ml-2 font-kanji text-sm text-subtle">
-                        {termo.jp}
-                      </span>
-                    </span>
-                    <span className="text-right text-xs text-muted">
-                      {termo.pt}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="card">
-              <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-                <h3 className="heading-md">Curiosidades</h3>
-                <span className="text-2xs text-subtle">
-                  {curiosidades.length} no acervo
-                </span>
-              </div>
-              <ul className="divide-y divide-line">
-                {curiosidades.map((curiosidade) => (
-                  <li key={curiosidade.titulo} className="px-4 py-3">
-                    <p className="text-sm font-medium text-fg">
-                      {curiosidade.titulo}
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-muted">
-                      {curiosidade.text}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 }

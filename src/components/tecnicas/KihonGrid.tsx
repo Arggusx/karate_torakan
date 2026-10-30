@@ -2,13 +2,24 @@
 
 import { useMemo, useState } from "react";
 import { TecnicaDetalhe, TecnicaModal } from "@/components/tecnicas/TecnicaModal";
+import { VerMais } from "@/components/ui/VerMais";
 import { cn } from "@/lib/cn";
 import { getCategoriasTecnicas } from "@/services/dataService";
 import type { Tecnica } from "@/types";
 
 const CATEGORIAS = getCategoriasTecnicas();
 
-export function KihonGrid({ tecnicas }: { tecnicas: Tecnica[] }) {
+/**
+ * `mostrarTudo` desliga o "Ver mais": quando se chega por um link para uma
+ * técnica (#Gedan-Barai) ou numa busca, o card precisa estar na tela.
+ */
+export function KihonGrid({
+  tecnicas,
+  mostrarTudo = false,
+}: {
+  tecnicas: Tecnica[];
+  mostrarTudo?: boolean;
+}) {
   const [selecionada, setSelecionada] = useState<Tecnica | null>(null);
   const [expandida, setExpandida] = useState<string | null>(null);
 
@@ -56,7 +67,11 @@ export function KihonGrid({ tecnicas }: { tecnicas: Tecnica[] }) {
               </span>
             </div>
 
-            <div className="grade-centrada grade-3">
+            <VerMais
+              key={`${categoria.id}:${mostrarTudo}`}
+              inicial={mostrarTudo ? itens.length : 6}
+              className="grade-centrada grade-3"
+            >
               {itens.map((tecnica) => (
                 <CardTecnica
                   key={tecnica.nome}
@@ -70,7 +85,7 @@ export function KihonGrid({ tecnicas }: { tecnicas: Tecnica[] }) {
                   }
                 />
               ))}
-            </div>
+            </VerMais>
           </section>
         ))}
       </div>
