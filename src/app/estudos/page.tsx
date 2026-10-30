@@ -217,7 +217,11 @@ export default function EstudosHomePage() {
           />
           <div className="pilares-mosaico">
             {pilares.map((pilar, i) => (
-              <article key={pilar.nome} className={i === 0 ? "pilar pilar-destaque" : "pilar"}>
+              <article
+                key={pilar.nome}
+                className={i === 0 ? "pilar pilar-destaque" : "pilar"}
+                data-inclinar={i === 0 ? "4" : undefined}
+              >
                 {i === 0 ? (
                   <div className="pilar-foto">
                     <Image src="/imagens/dojo.jpg" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />

@@ -152,8 +152,9 @@ export default async function PlanosPage() {
               </div>
             </div>
 
-            {/* Cartão de preço */}
-            <div className="painel relative border-accent/60 ring-1 ring-accent/15">
+            {/* Cartão de preço em vidro, sobre bolhas de cor que se mexem. */}
+            <div className="vidro-palco">
+            <div className="painel vidro relative" data-inclinar="5">
               <span className="absolute -top-3 left-6 rounded-full bg-accent-solid px-3 py-1 text-2xs font-semibold uppercase tracking-[0.1em] text-on-accent">
                 Plano único
               </span>
@@ -192,6 +193,7 @@ export default async function PlanosPage() {
               <p className="mt-3 text-center text-2xs text-subtle">
                 Você só paga depois de treinar uma semana inteira.
               </p>
+            </div>
             </div>
           </div>
         </section>

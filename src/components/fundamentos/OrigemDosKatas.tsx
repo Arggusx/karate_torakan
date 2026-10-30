@@ -1,112 +1,130 @@
 import Link from "next/link";
+import { DossieKatas } from "@/components/fundamentos/DossieKatas";
+import { LINHAGENS, ORIGEM_KATAS } from "@/data/origemKatas";
 import { getKatas } from "@/services/dataService";
 import type { OrigemDosKatas as Dados } from "@/types";
 
 /**
- * De qual kata cada kata saiu.
+ * A origem dos katas em três partes, porque são duas perguntas diferentes:
  *
- * O Shotokan não tem 26 formas independentes: quase tudo desce do Kanku Dai,
- * que foi destrinchado por Itosu nos Heian para virar material de ensino. Ver
- * isso desenhado muda como o aluno lê o próprio programa — o Heian Nidan
- * deixa de ser "o segundo kata" e vira o rascunho do Bassai Dai.
- *
- * O grafo é raso de propósito: duas gerações. Passar disso vira árvore
- * genealógica, e já existe uma dessas na página de História.
+ * 1. De onde cada kata veio — as três escolas de Okinawa (Shuri, Tomari e
+ *    Naha), o nome antigo e a história. É a parte histórica.
+ * 2. Em que ordem se aprende — o quadro da ISO, que liga cada kata básico ao
+ *    avançado que ele prepara. É um caminho de ensino, não uma árvore
+ *    genealógica: antes os dois apareciam misturados e a página confundia.
+ * 3. O dossiê de cada kata, para ler com calma.
  */
 export function OrigemDosKatas({ dados }: { dados: Dados }) {
   const katas = getKatas();
   const idDe = new Map(katas.map((k) => [k.nome, k.id]));
+  const porLinhagem = (linhagem: string) => ORIGEM_KATAS.filter((o) => o.linhagem === linhagem).length;
 
-  const daRaiz = dados.derivados.find((d) => d.de === dados.raiz);
-  const filhos = daRaiz?.para ?? [];
+  const bases = dados.derivados.find((d) => d.de === dados.raiz)?.para ?? [];
+  const preparaPara = (nome: string) =>
+    dados.derivados.filter((d) => d.de === nome).flatMap((d) => d.para);
 
-  /** O que sai de um kata da segunda geração. */
-  function derivadosDe(nome: string) {
-    return dados.derivados
-      .filter((d) => d.de === nome)
-      .flatMap((d) => d.para);
-  }
-
-  function Chip({ nome, tom }: { nome: string; tom: "raiz" | "meio" | "folha" }) {
-    const estilo =
-      tom === "raiz"
-        ? "border-accent/50 bg-accent/10 text-fg font-semibold"
-        : tom === "meio"
-          ? "border-gold/45 bg-gold/10 text-fg font-medium"
-          : "border-line bg-elevated text-fg/85";
-
+  const LinkKata = ({ nome, className }: { nome: string; className: string }) => {
     const id = idDe.get(nome);
-    const conteudo = (
-      <span
-        className={`inline-block rounded-md border px-2.5 py-1 text-xs transition-colors ${estilo}`}
-      >
-        {nome}
-      </span>
-    );
-
     return id ? (
-      <Link href={`/estudos/tecnicas/kata/${id}`} className="hover:opacity-80">
-        {conteudo}
+      <Link href={`/estudos/tecnicas/kata/${id}`} className={className}>
+        {nome}
       </Link>
     ) : (
-      conteudo
+      <span className={className}>{nome}</span>
     );
-  }
+  };
 
   return (
-    <div className="card overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-2.5">
-        <h3 className="heading-md">De onde vem cada kata</h3>
-        <span className="text-2xs text-subtle">{dados.fonte.entidade}</span>
-      </div>
+    <div className="grid gap-8">
+      {/* 1. As escolas */}
+      <section>
+        <p className="eyebrow">1 · De onde vieram</p>
+        <h3 className="heading-lg mt-1">Três escolas de Okinawa</h3>
+        <p className="body-muted mt-2 max-w-2xl">
+          Antes de existir “Shotokan”, cada cidade de Okinawa guardava seus katas. Funakoshi reuniu o que
+          aprendeu e, ao levar tudo para o Japão nos anos 1920 e 1930, trocou muitos nomes chineses por
+          nomes japoneses — o Pinan virou Heian, o Kusanku virou Kanku.
+        </p>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {LINHAGENS.map((l) => (
+            <article key={l.id} className="origem-escola">
+              <span className="origem-escola-kanji" aria-hidden>
+                {l.kanji}
+              </span>
+              <p className="text-2xs font-bold uppercase tracking-[0.14em] text-accent">{l.lugar}</p>
+              <h4 className="heading-md mt-1">{l.id}</h4>
+              <p className="mt-2 text-xs leading-relaxed text-muted">{l.resumo}</p>
+              <p className="mt-3 text-2xs font-semibold text-fg">
+                {porLinhagem(l.id)} dos 26 katas
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-      <p className="border-b border-line px-4 py-3 text-xs leading-relaxed text-muted">
-        {dados.nota}
-      </p>
+      {/* 2. O caminho de ensino */}
+      <section className="origem-caminho">
+        <p className="eyebrow">2 · Em que ordem se aprende</p>
+        <h3 className="heading-lg mt-1">O caminho de aprendizado</h3>
+        <p className="body-muted mt-2 max-w-2xl">
+          Itosu desmontou o <strong>{dados.raiz}</strong> em katas menores para ensinar crianças: os Heian
+          e o Tekki Shodan. Cada um deles treina o que um kata avançado vai exigir depois. Leia cada linha
+          como “quem domina este, está pronto para aquele”.
+        </p>
 
-      <div className="p-4">
-        {/* Raiz */}
-        <div className="flex items-center gap-3">
-          <Chip nome={dados.raiz} tom="raiz" />
-          <span className="text-2xs uppercase tracking-[0.08em] text-subtle">
-            kata de origem
-          </span>
+        <div className="origem-fluxo">
+          <div className="origem-raiz">
+            <span className="text-2xs font-bold uppercase tracking-[0.14em] text-accent">Kata de origem</span>
+            <LinkKata nome={dados.raiz} className="origem-pilula origem-pilula-raiz" />
+          </div>
+
+          <ol className="origem-linhas">
+            {bases.map((base) => {
+              const avancados = preparaPara(base);
+              return (
+                <li key={base}>
+                  <LinkKata nome={base} className="origem-pilula origem-pilula-base" />
+                  <span className="origem-seta" aria-hidden>
+                    <span>prepara</span>
+                  </span>
+                  <span className="flex flex-wrap gap-1.5">
+                    {avancados.length ? (
+                      avancados.map((a) => (
+                        <LinkKata key={a} nome={a} className="origem-pilula origem-pilula-avancado" />
+                      ))
+                    ) : (
+                      <span className="text-2xs text-subtle">—</span>
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
         </div>
 
-        {/* Segunda geração e o que sai dela. */}
-        <ul className="mt-3 space-y-2 border-l border-line-strong pl-4">
-          {filhos.map((filho) => {
-            const netos = derivadosDe(filho);
-            return (
-              <li
-                key={filho}
-                className="flex flex-wrap items-center gap-x-2 gap-y-1.5"
-              >
-                <Chip nome={filho} tom="meio" />
-                {netos.length ? (
-                  <>
-                    <span aria-hidden className="text-subtle">
-                      →
-                    </span>
-                    {netos.map((neto) => (
-                      <Chip key={neto} nome={neto} tom="folha" />
-                    ))}
-                  </>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-
-        {/*
-          Jion aparece duas vezes acima, saindo do Heian Shodan e do Tekki
-          Shodan. Não é engano do desenho: o cartaz liga os dois a ele.
-        */}
-        <p className="mt-4 border-t border-line pt-3 text-2xs leading-relaxed text-subtle">
-          Fonte: {dados.fonte.titulo} — {dados.fonte.entidade}, {dados.fonte.ano}.{" "}
-          {dados.fonte.creditos}.
+        <p className="mt-4 text-2xs leading-relaxed text-subtle">
+          O Jion aparece duas vezes porque o cartaz o liga ao Heian Shodan e ao Tekki Shodan. Fonte:{" "}
+          {dados.fonte.titulo} — {dados.fonte.entidade}, {dados.fonte.ano}. {dados.fonte.creditos}.
         </p>
-      </div>
+      </section>
+
+      {/* 3. Dossiê */}
+      <section>
+        <p className="eyebrow">3 · Kata por kata</p>
+        <h3 className="heading-lg mt-1">A história de cada um</h3>
+        <p className="body-muted mt-2 max-w-2xl">
+          O nome antigo, quem trouxe ou criou e o que se sabe — e, onde a tradição diverge, o texto avisa.
+        </p>
+        <div className="mt-4">
+          <DossieKatas
+            itens={ORIGEM_KATAS.map((o) => ({
+              ...o,
+              nome: katas.find((k) => k.id === o.id)?.nome ?? o.id,
+              significado: katas.find((k) => k.id === o.id)?.significadoNome ?? "",
+            }))}
+          />
+        </div>
+      </section>
     </div>
   );
 }

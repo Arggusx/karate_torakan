@@ -70,7 +70,14 @@ export function Footer() {
       <div className="section flex flex-col gap-2 border-t border-line py-4 text-xs text-subtle sm:flex-row sm:items-center sm:justify-between">
         <p>
           © {new Date().getFullYear()} Academia Tigre de Karatê. Todos os
-          direitos reservados.
+          direitos reservados.{" "}
+          <Link href="/privacidade" className="underline-offset-2 hover:text-accent hover:underline">
+            Privacidade
+          </Link>{" "}
+          ·{" "}
+          <Link href="/termos" className="underline-offset-2 hover:text-accent hover:underline">
+            Termos de uso
+          </Link>
         </p>
         <p>空手に先手なし — No karatê, não existe atitude ofensiva.</p>
       </div>

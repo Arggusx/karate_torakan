@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/Badge";
-import type { Mestre } from "@/types";
 
 export interface NoLinhagem {
   nome: string;
@@ -328,24 +327,3 @@ export function ArvoreGenealogica({
   );
 }
 
-/** Ficha dos mestres do acervo, exibida abaixo da árvore. */
-export function FichasMestres({ mestres }: { mestres: Mestre[] }) {
-  return (
-    <div className="grid gap-2 md:grid-cols-2">
-      {mestres.map((mestre) => (
-        <article key={mestre.nome} className="card p-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-sm font-semibold text-fg">{mestre.nome}</h3>
-            <span className="shrink-0 text-2xs tabular-nums text-subtle">
-              {mestre.anos}
-            </span>
-          </div>
-          <p className="mt-0.5 text-xs text-muted">{mestre.kanji}</p>
-          <p className="mt-2 text-xs leading-relaxed text-fg/80">
-            {mestre.text}
-          </p>
-        </article>
-      ))}
-    </div>
-  );
-}

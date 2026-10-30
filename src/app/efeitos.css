@@ -1,0 +1,238 @@
+/*
+  Efeitos do site inteiro (a lista de referência do usuário):
+  1. animação ao rolar  2/9. 3D  3. líquido  6. vidro  7. expansão ao rolar
+  8. sobreposição  10. revelação pelo mouse  — e a luz que segue o cursor.
+  O JavaScript é só EfeitosGlobais.tsx (variáveis do mouse); o resto é CSS.
+  Tudo some com prefers-reduced-motion.
+*/
+
+/* ------------------------------------------- 1. aparecer ao rolar */
+
+/*
+  Animação ligada à rolagem (animation-timeline: view()), sem JavaScript: o
+  cartão sobe e aparece enquanto entra na tela. Usa as propriedades
+  `translate` e `opacity`, que não brigam com o `transform` do hover. Quem
+  já está na tela ao carregar aparece pronto. Navegador sem suporte: nada
+  muda.
+*/
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    main .card,
+    main .painel,
+    main .sanfona,
+    main .revelar,
+    main .origem-escola,
+    main .pilar,
+    main .fund-trilha-item {
+      animation: revelar-rolando linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 32%;
+    }
+  }
+}
+
+@keyframes revelar-rolando {
+  from {
+    opacity: 0;
+    translate: 0 28px;
+    scale: 0.97;
+  }
+}
+
+/* -------------------------------------- luz que segue o cursor */
+
+.luz {
+  background-image: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 50%),
+    rgb(var(--accent) / 0.07),
+    transparent 45%
+  );
+}
+
+:root.dark .luz {
+  background-image: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 50%),
+    rgb(var(--gold) / 0.09),
+    transparent 45%
+  );
+}
+
+/* ------------------------------------------- 2 e 9. inclinação 3D */
+
+[data-inclinar] {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.35s var(--ease-out);
+  will-change: transform;
+}
+
+/* Camada que "flutua" acima do plano inclinado. */
+[data-inclinar] .flutua {
+  transform: translateZ(28px);
+}
+
+/* ------------------------------------------------- 3. líquido */
+
+/*
+  Gota de cor que muda de forma devagar (border-radius animado), borrada
+  por trás dos títulos. Usada no hero das páginas.
+*/
+.liquido {
+  position: absolute;
+  pointer-events: none;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+  background: linear-gradient(135deg, rgb(var(--accent) / 0.22), rgb(var(--gold) / 0.2));
+  filter: blur(36px);
+  animation: liquido 16s ease-in-out infinite;
+}
+
+@keyframes liquido {
+  0%,
+  100% {
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    border-radius: 63% 37% 40% 60% / 55% 38% 62% 45%;
+    transform: translate(1.5rem, -1rem) rotate(35deg);
+  }
+  66% {
+    border-radius: 38% 62% 56% 44% / 63% 57% 43% 37%;
+    transform: translate(-1rem, 1rem) rotate(-20deg);
+  }
+}
+
+/* ------------------------------------------------- 6. vidro */
+
+.vidro-palco {
+  position: relative;
+  isolation: isolate;
+}
+
+/* As cores por trás do vidro. */
+.vidro-palco::before,
+.vidro-palco::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(8px);
+  animation: vidro-bolhas 12s ease-in-out infinite;
+}
+
+.vidro-palco::before {
+  width: 11rem;
+  height: 11rem;
+  top: -1.5rem;
+  right: -1rem;
+  background: radial-gradient(circle at 35% 35%, rgb(var(--accent) / 0.85), rgb(var(--accent) / 0.4));
+}
+
+.vidro-palco::after {
+  width: 8rem;
+  height: 8rem;
+  bottom: 2rem;
+  left: -1.5rem;
+  background: radial-gradient(circle at 35% 35%, rgb(var(--gold)), rgb(var(--gold) / 0.45));
+  animation-delay: -6s;
+}
+
+@keyframes vidro-bolhas {
+  50% {
+    transform: translate(-0.75rem, 1rem) scale(1.08);
+  }
+}
+
+.vidro {
+  background: rgb(var(--surface) / 0.55) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid rgb(255 255 255 / 0.55) !important;
+  box-shadow:
+    0 20px 45px rgb(94 59 36 / 0.14),
+    inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+:root.dark .vidro {
+  border-color: rgb(255 255 255 / 0.12) !important;
+  box-shadow:
+    0 20px 45px rgb(0 0 0 / 0.4),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+/* ------------------------------------ 7. imagem que cresce ao rolar */
+
+/*
+  A faixa de imagem entra recortada, com cantos redondos e margens, e se
+  abre até a largura toda enquanto sobe na tela — o "vídeo expansivo".
+*/
+.expande {
+  clip-path: inset(0 0 0 0 round 1.1rem);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .expande {
+      animation: expande linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+  }
+}
+
+@keyframes expande {
+  from {
+    clip-path: inset(0 7% 0 7% round 2.5rem);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 1.1rem);
+  }
+}
+
+/* --------------------------------------- 10. revelação pelo mouse */
+
+/*
+  Duas camadas: a de cima (texto, kanji) sempre visível; a de baixo (a foto)
+  só aparece num círculo em volta do cursor. Sem mouse, a foto fica de leve.
+*/
+.revelacao {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.revelacao-foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  transition: opacity 0.4s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .revelacao:hover .revelacao-foto {
+    opacity: 1;
+    -webkit-mask-image: radial-gradient(
+      circle 140px at var(--mx, 50%) var(--my, 50%),
+      #000 45%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(circle 140px at var(--mx, 50%) var(--my, 50%), #000 45%, transparent 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquido,
+  .vidro-palco::before,
+  .vidro-palco::after {
+    animation: none;
+  }
+
+  [data-inclinar] {
+    transform: none;
+  }
+}

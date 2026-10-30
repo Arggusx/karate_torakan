@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { KataTable } from "@/components/tecnicas/KataTable";
 import { DeslocamentosEmPreparo } from "@/components/tecnicas/DeslocamentosEmPreparo";
 import { KihonGrid } from "@/components/tecnicas/KihonGrid";
+import { AberturaTecnicas, VitrineKatas } from "@/components/tecnicas/AberturaTecnicas";
 import { SkeletonCard, SkeletonTable } from "@/components/ui/Skeleton";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import { CampoBusca } from "@/components/portal/CampoBusca";
@@ -166,6 +167,11 @@ export default function TecnicasPage() {
       />
 
       <div className="section space-y-6 py-10">
+      <AberturaTecnicas
+        tecnicas={tecnicas.length}
+        katas={katas.length}
+        familias={getCategoriasTecnicas().filter((c) => tecnicas.some((t) => t.cat === c.id)).length}
+      />
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <SegmentedControl
@@ -217,6 +223,7 @@ export default function TecnicasPage() {
         <KihonGrid tecnicas={tecnicasFiltradas} mostrarTudo={porAncora || busca.trim() !== ""} />
       ) : (
         <div className="space-y-8">
+          <VitrineKatas katas={katasFiltrados} />
           <KataTable
             titulo="Katas Básicos / Iniciantes"
             descricao="Série Heian e Tekki Shodan — a fundação técnica dos graus Kyu."

@@ -67,6 +67,9 @@ export function HeroPagina({
         className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgb(var(--hero))_30%,rgb(var(--hero)/0.82)_65%,rgb(var(--hero)/0.55)_100%)]"
       />
 
+      {/* Gota de cor que muda de forma devagar atrás do título (efeito líquido). */}
+      <div aria-hidden className="liquido -left-24 -top-28 -z-10" />
+
       {/*
         Marca-d'água apenas quando a página pede um kanji. O emblema do tigre
         fica reservado à abertura da landing: repetido em toda página interna

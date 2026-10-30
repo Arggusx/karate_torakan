@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
@@ -6,9 +7,12 @@ import {
   Bambu,
   Enso,
   BokkenChoque,
+  FaixaAoVento,
   Makiwara,
   Lanterna,
 } from "@/components/animacoes/AnimacoesKarate";
+import { VitrineKatas } from "@/components/tecnicas/AberturaTecnicas";
+import { CartazNumeros } from "@/components/ui/CartazNumeros";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/Card";
@@ -111,6 +115,21 @@ export default async function LandingPage() {
           </div>
         </section>
 
+        {/* Cartaz que revela a foto em volta do mouse, com os números do dojo. */}
+        <div className="section pt-12">
+          <CartazNumeros
+            kanji="道"
+            foto="/imagens/faixa.jpg"
+            sobretitulo="Dō · o caminho"
+            frase="Entre, cumprimente o tatame e deixe o resto lá fora."
+            numeros={[
+              { valor: katas.length, rotulo: "katas com ficha no portal", Arte: FaixaAoVento },
+              { valor: tecnicas.length, rotulo: "técnicas de kihon catalogadas", Arte: Makiwara },
+              { valor: 20, rotulo: "alunos no máximo por aula", Arte: BokkenChoque },
+            ]}
+          />
+        </div>
+
         {/* Benefícios */}
         <section id="beneficios" className="section scroll-mt-16 py-12">
           <SectionHeading
@@ -157,7 +176,7 @@ export default async function LandingPage() {
             {pilares.map((pilar) => {
               const Cena = CENA_DO_PILAR[pilar.nome];
               return (
-              <article key={pilar.nome} className="card card-faixa p-5">
+              <article key={pilar.nome} className="card card-faixa p-5" data-inclinar="5">
                 {Cena ? (
                   <div className="mb-3 flex h-24 items-center justify-center rounded-lg bg-elevated/60">
                     <Cena className="h-20 w-auto" />
@@ -182,6 +201,22 @@ export default async function LandingPage() {
           </div>
           </div>
         </section>
+
+        {/* Foto do dojo que se abre ao rolar, com o cartão sobreposto. */}
+        <div className="section py-12">
+          <div className="hist-banner">
+            <div className="hist-banner-foto expande">
+              <Image src="/imagens/dojo.jpg" alt="Aluno executando um chute no dojo" fill sizes="(min-width: 1120px) 1120px, 100vw" />
+            </div>
+            <div className="hist-banner-cartao" data-inclinar="4">
+              <p className="eyebrow">Shoshin · mente de principiante</p>
+              <p className="mt-2 font-display text-2xl leading-snug text-heading">
+                Ninguém chega pronto. A primeira aula é para conhecer o tatame, o sensei e o próprio corpo — sem
+                pressa e sem custo.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Dojo */}
         <section
@@ -221,7 +256,7 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            <div className="card">
+            <div className="card" data-inclinar="3">
               <div className="border-b border-line px-4 py-2.5">
                 <h3 className="heading-md">Quem já treina aqui</h3>
               </div>
@@ -246,6 +281,14 @@ export default async function LandingPage() {
           </div>
         </section>
 
+        {/* Vitrine dos primeiros katas: os mesmos cartões de Técnicas. */}
+        <div className="section pt-12">
+          <VitrineKatas
+            titulo="Os primeiros katas que você aprende"
+            katas={katas.filter((k) => k.nivel === "basico")}
+          />
+        </div>
+
         {/* Mensalidade */}
         <section id="matricula" className="section scroll-mt-16 py-12">
           <SectionHeading
@@ -255,7 +298,8 @@ export default async function LandingPage() {
           />
 
           <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_1.2fr]">
-            <article className="card border-accent p-5">
+            <div className="vidro-palco">
+            <article className="card vidro p-5" data-inclinar="5">
               <p className="label">Mensalidade</p>
               <p className="mt-2 flex items-baseline gap-1">
                 <span className="text-sm text-muted">R$</span>
@@ -284,6 +328,7 @@ export default async function LandingPage() {
                 Quero me matricular
               </ButtonLink>
             </article>
+            </div>
 
             <div className="card">
               <div className="border-b border-line px-4 py-2.5">

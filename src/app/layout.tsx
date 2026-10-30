@@ -5,6 +5,7 @@ import {
   Nanum_Brush_Script,
   Yuji_Syuku,
 } from "next/font/google";
+import { EfeitosGlobais } from "@/components/layout/EfeitosGlobais";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { FundoAsiatico } from "@/components/ui/FundoAsiatico";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -15,6 +16,7 @@ import "./jornada.css";
 import "./provas.css";
 import "./componentes.css";
 import "./layouts.css";
+import "./efeitos.css";
 
 /**
  * Títulos em Cormorant Garamond, o par tipográfico do Oratio: serifada de
@@ -102,6 +104,8 @@ export default function RootLayout({
         <ThemeProvider>
           {/* Ondas, halos e sakura: fica atrás de tudo e não recebe clique. */}
           <FundoAsiatico />
+          {/* Luz nos cartões, inclinação 3D e revelação pelo mouse. */}
+          <EfeitosGlobais />
           <AcademiaProvider>
             <ToastProvider>{children}</ToastProvider>
           </AcademiaProvider>

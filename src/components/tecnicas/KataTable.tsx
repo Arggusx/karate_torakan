@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BeltBadge, NivelTag } from "@/components/ui/Badge";
+import { NivelTag } from "@/components/ui/Badge";
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { cn } from "@/lib/cn";
 import { listarDestaques } from "@/services/dataService";
@@ -58,7 +59,7 @@ export function KataTable({
               <TH>Nível</TH>
               <TH>Significado</TH>
               <TH>Kiais</TH>
-              <TH>Faixa recomendada</TH>
+              <TH>Faixa</TH>
               <TH>Movimentos destaque</TH>
             </TR>
           </THead>
@@ -93,9 +94,7 @@ export function KataTable({
                   {kata.posicoesKiai}
                 </TD>
                 <TD>
-                  <BeltBadge cor={kata.corFaixa}>
-                    {kata.faixaRecomendada}
-                  </BeltBadge>
+                  <IconeFaixa cor={kata.corFaixa} nome={kata.faixaRecomendada} />
                 </TD>
                 <TD>
                   <div className="flex flex-wrap gap-1">
@@ -166,7 +165,7 @@ function CardKata({
           <Campo rotulo="Significado">{kata.significadoNome}</Campo>
           <Campo rotulo="Kiais">{kata.posicoesKiai}</Campo>
           <Campo rotulo="Faixa">
-            <BeltBadge cor={kata.corFaixa}>{kata.faixaRecomendada}</BeltBadge>
+            <IconeFaixa cor={kata.corFaixa} nome={kata.faixaRecomendada} />
           </Campo>
           <div className="px-3 py-2">
             <dt className="text-2xs uppercase tracking-[0.08em] text-muted">

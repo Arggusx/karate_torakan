@@ -53,14 +53,11 @@ export function KihonGrid({
         {grupos.map(({ categoria, itens }) => (
           <section key={categoria.id}>
             <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
-              <h3 className="heading-lg">
-                {categoria.label}
-                <span
-                  aria-hidden
-                  className="ml-2 font-kanji text-base font-normal text-subtle"
-                >
-                  {categoria.kanji}
+              <h3 className="heading-lg flex items-center gap-3">
+                <span aria-hidden className="familia-selo">
+                  <span>{categoria.kanji.charAt(0)}</span>
                 </span>
+                {categoria.label}
               </h3>
               <span className="text-2xs tabular-nums text-subtle">
                 {itens.length} técnicas

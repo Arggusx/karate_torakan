@@ -221,8 +221,8 @@ export default function FundamentosPage() {
         <p className="eyebrow">Origem dos katas</p>
         <h2 className="heading-lg mt-1">De onde vem cada kata</h2>
         <p className="body-muted mt-2">
-          O Shotokan não tem 26 formas independentes. Quase tudo desce de um kata só, destrinchado por
-          Itosu para virar material de ensino — e é por isso que o programa tem a ordem que tem.
+          Os 26 katas do Shotokan vieram de três escolas de Okinawa e chegaram ao Japão com outros nomes.
+          Aqui está de onde veio cada um e por que o programa tem a ordem que tem.
         </p>
       </div>
       <OrigemDosKatas dados={origemDosKatas} />

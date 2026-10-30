@@ -150,7 +150,16 @@ export default function LoginPage() {
 
             <p className="mt-4 border-t border-line pt-4 text-2xs leading-relaxed text-subtle">
               As contas são criadas pelo professor ou pelo admin no portal.
-              Esqueceu a senha? Peça ao professor para redefinir.
+              Esqueceu a senha? Peça ao professor para redefinir. Ao entrar, você
+              concorda com os{" "}
+              <Link href="/termos" className="text-accent hover:underline">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link href="/privacidade" className="text-accent hover:underline">
+                Política de Privacidade
+              </Link>
+              .
             </p>
           </div>
 

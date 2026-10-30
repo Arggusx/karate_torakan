@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import {
   ArvoreGenealogica,
-  FichasMestres,
   LINHAGEM_BRASIL,
   LINHAGEM_JAPAO,
   LINHAGEM_OKINAWA,
 } from "@/components/historia/LineageTree";
 import { HeroPagina } from "@/components/layout/HeroPagina";
+import { FichasMestres } from "@/components/historia/FichasMestres";
 import { LinhaDoTempo } from "@/components/historia/Timeline";
+import Image from "next/image";
 import { AbasSecao } from "@/components/ui/AbasSecao";
 import { SectionHeading } from "@/components/ui/Card";
 import {
@@ -42,6 +43,22 @@ export default function HistoriaPage() {
           </>
         }
       />
+
+      {/* A foto que se abre ao rolar, com o texto sobreposto a ela. */}
+      <section className="section pt-10">
+        <div className="hist-banner">
+          <div className="hist-banner-foto expande">
+            <Image src="/imagens/historia.jpg" alt="" fill sizes="(min-width: 1120px) 1120px, 100vw" />
+          </div>
+          <div className="hist-banner-cartao" data-inclinar="4">
+            <p className="eyebrow">Do castelo de Shuri ao mundo</p>
+            <p className="mt-2 font-display text-2xl leading-snug text-heading">
+              Um professor primário de Okinawa levou a arte ao Japão em 1922. Cem anos depois, ela se treina
+              em todos os continentes — e cada kata ainda carrega o nome de quem o guardou.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="section py-10">
         <AbasSecao
