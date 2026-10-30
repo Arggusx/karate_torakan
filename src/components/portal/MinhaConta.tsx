@@ -229,8 +229,8 @@ export function MinhaConta({
             </p>
           </div>
           <p className="text-2xs leading-relaxed text-muted">
-            A foto aparece no seu portal e nas listas do dojo. Se você entrar
-            com o Google sem ter enviado uma, usamos a da conta Google.
+            A foto aparece no seu portal e nas listas do dojo.
+            {comGoogle ? " Se você entrar com o Google sem ter enviado uma, usamos a da conta Google." : ""}
           </p>
         </section>
 
@@ -325,14 +325,12 @@ export function MinhaConta({
             </Button>
           </form>
 
-          {/* Conta Google */}
+          {/* Conta Google — só aparece quando o login com Google está ligado
+              (chaves GOOGLE_* configuradas). Desligado, some por inteiro. */}
+          {conta?.google_disponivel && comGoogle ? (
           <section className="card p-5">
             <h3 className="heading-md">Conta Google</h3>
-            {!conta?.google_disponivel || !comGoogle ? (
-              <p className="mt-1 text-xs text-muted">
-                O login com Google ainda não está ativado neste site.
-              </p>
-            ) : conta.google_email ? (
+            {conta.google_email ? (
               <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs text-muted">
                   Vinculada a <strong className="text-fg">{conta.google_email}</strong>. Você pode
@@ -356,6 +354,7 @@ export function MinhaConta({
               </div>
             )}
           </section>
+          ) : null}
         </div>
       </div>
     </div>
