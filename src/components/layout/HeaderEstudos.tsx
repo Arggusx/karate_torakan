@@ -7,6 +7,7 @@ import {
   BarraInferiorSite,
   type ItemBarra,
 } from "@/components/layout/BarraInferiorSite";
+import { IconePortal } from "@/components/portal/IconePortal";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ButtonLink } from "@/components/ui/Button";
 
@@ -15,6 +16,7 @@ const LINKS = [
   { href: "/estudos/historia", label: "História" },
   { href: "/estudos/tecnicas", label: "Técnicas" },
   { href: "/estudos/fundamentos", label: "Fundamentos" },
+  { href: "/estudos/jornada", label: "Jornada" },
 ];
 
 /** No celular, os mesmos destinos vão para a barra inferior. */
@@ -23,7 +25,7 @@ const BARRA: ItemBarra[] = [
   { href: "/estudos/historia", label: "História", icone: "historia" },
   { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
   { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
-  { href: "/login", label: "Entrar", icone: "entrar" },
+  { href: "/estudos/jornada", label: "Jornada", icone: "jornada" },
 ];
 
 export function HeaderEstudos() {
@@ -66,6 +68,15 @@ export function HeaderEstudos() {
           <ButtonLink href="/login" size="sm" className="hidden md:inline-flex">
             Área do Aluno / Professor
           </ButtonLink>
+          {/* No celular, "Entrar" cede o lugar da barra inferior à Jornada e
+              fica aqui, como ícone. */}
+          <Link
+            href="/login"
+            aria-label="Entrar na área do aluno ou do professor"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-elevated text-muted transition-colors hover:text-accent md:hidden"
+          >
+            <IconePortal nome="entrar" className="h-5 w-5" />
+          </Link>
 
         </div>
       </div>

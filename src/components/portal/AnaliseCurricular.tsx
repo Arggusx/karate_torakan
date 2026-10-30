@@ -31,13 +31,22 @@ type Situacao = "concluida" | "atual" | "futura";
  * faixa atual é o período em curso; as anteriores aparecem concluídas; as
  * seguintes, como o que vem pela frente.
  *
- * Nota honesta: o sistema ainda não guarda a nota do exame de faixa, só quais
- * itens foram validados. Então aqui mostramos o cumprimento do programa, não um
- * boletim — e dizemos isso em vez de inventar uma nota.
+ * Cada faixa mostra também a prova teórica feita no portal (aba Provas). O
+ * exame prático é no tatame e não passa pelo sistema — a tela diz isso em vez
+ * de inventar uma nota.
  */
 export function AnaliseCurricular() {
   const [dados, setDados] = useState<Curriculo | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [provas, setProvas] = useState<ProvaFeita[]>([]);
+
+  // Provas teóricas entregues. Se a tabela ainda não existir, só não mostra.
+  useEffect(() => {
+    fetch("/api/provas", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { historico: [] }))
+      .then((d) => setProvas(d.historico ?? []))
+      .catch(() => setProvas([]));
+  }, []);
 
   useEffect(() => {
     fetch("/api/conta/curriculo", { cache: "no-store" })
@@ -93,7 +102,7 @@ export function AnaliseCurricular() {
           Como os períodos de uma faculdade, cada faixa reúne o kihon e os katas
           que você precisa treinar nela. Abra uma faixa para ver o programa e o
           que já foi validado pelo professor. O sistema registra os itens
-          cumpridos, não a nota do exame.
+          validados e a sua prova teórica; o exame prático é com o sensei.
         </p>
       </div>
 
@@ -128,6 +137,7 @@ export function AnaliseCurricular() {
                 feitos={feitos}
                 totalFeitos={totalFeitos}
                 total={programa.length}
+                prova={melhorProva(provas, grad.faixa)}
               />
             </li>
           );
@@ -145,7 +155,9 @@ function Periodo({
   feitos,
   totalFeitos,
   total,
+  prova,
 }: {
+  prova?: ProvaFeita;
   grad: (typeof GRADUACOES)[number];
   situacao: Situacao;
   ordem: number;
@@ -288,20 +300,56 @@ function Periodo({
             </ul>
           )}
 
-          {/* Resultado do exame — honesto sobre o que o sistema guarda hoje */}
+          {/*
+            Resultado: a prova teórica feita no portal, quando existe. O exame
+            prático é no tatame e não passa pelo sistema — isso é dito, não
+            inventado.
+          */}
           <div className="border-t border-line bg-elevated/40 px-4 py-2.5">
-            <p className="text-2xs text-subtle">
-              {situacao === "concluida"
-                ? "Exame concluído — você graduou a partir desta faixa. A nota detalhada do exame ainda não é registrada no sistema."
-                : situacao === "atual"
-                  ? "Exame em preparação. Complete o programa acima para ficar apto."
-                  : "Faixa ainda não iniciada."}
-            </p>
+            {prova ? (
+              <p className="text-2xs text-fg">
+                Prova teórica:{" "}
+                <strong className={prova.aprovado ? "text-status-ok" : "text-fg"}>
+                  {prova.aprovado ? "aprovado" : "ainda não aprovado"}, {prova.acertos}/{prova.total}
+                </strong>{" "}
+                <span className="text-muted">
+                  em {new Date(prova.concluidaEm).toLocaleDateString("pt-BR")}
+                </span>
+              </p>
+            ) : (
+              <p className="text-2xs text-subtle">
+                {situacao === "concluida"
+                  ? "Você graduou a partir desta faixa. Não há prova teórica registrada para ela."
+                  : situacao === "atual"
+                    ? "Prova teórica ainda não feita — ela fica na aba Provas."
+                    : "Faixa ainda não iniciada."}
+              </p>
+            )}
+            {situacao !== "futura" ? (
+              <p className="mt-0.5 text-2xs text-subtle">O exame prático é avaliado pelo sensei no tatame.</p>
+            ) : null}
           </div>
         </div>
       </Expandir>
     </article>
   );
+}
+
+interface ProvaFeita {
+  faixa: string;
+  acertos: number;
+  total: number;
+  aprovado: boolean;
+  concluidaEm: string;
+}
+
+/**
+ * A prova que representa a faixa: a aprovada mais recente, se houver; senão a
+ * mais recente. A faixa gravada é "Amarela · 6º Kyu"; o período, "Amarela".
+ */
+function melhorProva(provas: ProvaFeita[], faixa: string) {
+  const daFaixa = provas.filter((p) => normalizar(p.faixa).startsWith(normalizar(faixa)));
+  return daFaixa.find((p) => p.aprovado) ?? daFaixa[0];
 }
 
 /** Sem acento, minúsculas, sem espaço extra: casa itens escritos diferente. */

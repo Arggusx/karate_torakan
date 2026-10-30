@@ -1,0 +1,1062 @@
+/* =============================================================================
+   Jornada — minigames do portal de estudos e prova do portal do aluno.
+   Adaptado de references/jornada-hub.css (skill oratio-gamificacao): os nomes
+   de variável do Oratio viraram os tokens do Torakan (rgb(var(--surface)) etc.).
+   ============================================================================= */
+
+/* ---------------------------------------------------------------- painel */
+.jornada-painel {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-areas: "lado" "principal" "prateleiras";
+}
+
+.jornada-lado {
+  grid-area: lado;
+  min-width: 0;
+}
+
+.jornada-principal {
+  grid-area: principal;
+  display: grid;
+  gap: 1.1rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.jornada-prateleiras {
+  grid-area: prateleiras;
+  display: grid;
+  gap: 1.8rem;
+  margin-top: 0.6rem;
+  min-width: 0;
+}
+
+@media (min-width: 960px) {
+  .jornada-painel {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+    grid-template-areas: "principal lado" "prateleiras prateleiras";
+    column-gap: 1.4rem;
+  }
+
+  .jornada-lado .medalhao {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+/* ------------------------------------------------------------- medalhão */
+.medalhao {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.medalhao-topo {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.medalhao-numeros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+
+.medalhao-numeros > div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.1rem;
+  padding: 0.55rem 0.25rem;
+  border-radius: 0.8rem;
+  background: rgb(var(--gold) / 0.1);
+  text-align: center;
+}
+
+.medalhao-numeros dt {
+  font-size: 0.68rem;
+  line-height: 1.2;
+  color: rgb(var(--muted));
+}
+
+.medalhao-numeros dd {
+  font-family: var(--fonte-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgb(var(--heading));
+}
+
+@media (min-width: 960px) {
+  .medalhao-numeros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.medalhao-molduras {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0.15rem;
+}
+
+.medalhao-molduras::-webkit-scrollbar {
+  display: none;
+}
+
+.medalhao-moldura {
+  flex: none;
+  border-radius: 999px;
+  padding: 0.1rem;
+  border: 2px solid transparent;
+  transition: border-color var(--duration-fast);
+}
+
+.medalhao-moldura[aria-pressed="true"] {
+  border-color: rgb(var(--accent));
+}
+
+.avatar-moldura-fundo {
+  fill: rgb(var(--surface));
+}
+
+.avatar-moldura-iniciais {
+  font-family: var(--fonte-display);
+  font-size: 26px;
+  font-weight: 700;
+  fill: rgb(var(--heading));
+}
+
+/* ------------------------------------------- "Continue de onde parou" */
+.continue {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1.3rem;
+  border: 1px solid color-mix(in srgb, var(--game) 45%, rgb(var(--line)));
+  border-bottom-width: 5px;
+  background:
+    radial-gradient(circle at 12% 50%, color-mix(in srgb, var(--game) 22%, transparent), transparent 55%),
+    linear-gradient(135deg, color-mix(in srgb, var(--game) 9%, rgb(var(--surface))), rgb(var(--surface)));
+  overflow: hidden;
+  transition: transform 0.15s var(--ease-out);
+}
+
+.continue:hover {
+  transform: translateY(-2px);
+}
+
+.continue-arte {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 1.1rem;
+  background: color-mix(in srgb, var(--game) 14%, transparent);
+  font-family: var(--fonte-kanji);
+  font-size: 2.8rem;
+  line-height: 1;
+  color: var(--game);
+}
+
+.continue-corpo {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.continue-corpo > strong {
+  font-family: var(--fonte-display);
+  font-size: 1.55rem;
+  line-height: 1.1;
+  color: rgb(var(--heading));
+}
+
+.continue-corpo > small {
+  color: rgb(var(--muted));
+}
+
+.continue-cta {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--game);
+  color: #fffaf4;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--game) 60%, #000);
+}
+
+@media (max-width: 560px) {
+  .continue {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .continue-arte {
+    width: 4.5rem;
+    height: 4.5rem;
+    font-size: 2rem;
+  }
+
+  .continue-corpo > strong {
+    font-size: 1.25rem;
+  }
+}
+
+/* ------------------------------------------------------------ Para hoje */
+.para-hoje li a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.25rem;
+  border-bottom: 1px solid rgb(var(--line));
+}
+
+.para-hoje li:last-child a {
+  border-bottom: 0;
+}
+
+.para-hoje-marca {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid rgb(var(--gold));
+  font-size: 0.75rem;
+  color: transparent;
+}
+
+.para-hoje li.is-feito .para-hoje-marca {
+  background: #5e8c63;
+  border-color: #5e8c63;
+  color: #fff;
+}
+
+.para-hoje li.is-feito strong {
+  text-decoration: line-through;
+  text-decoration-color: rgb(var(--fg) / 0.4);
+}
+
+/* ------------------------------------------------------------ prateleiras */
+.prateleira > header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.prateleira > header h2 {
+  font-size: 1.6rem;
+}
+
+.prateleira > header small {
+  color: rgb(var(--muted));
+}
+
+.prateleira-grade {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.jogo-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--game) 35%, rgb(var(--line)));
+  border-bottom-width: 4px;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--game) 14%, transparent), transparent 60%),
+    rgb(var(--surface));
+  color: rgb(var(--fg));
+  text-align: left;
+  overflow: hidden;
+  transition:
+    transform 0.15s var(--ease-out),
+    border-bottom-width 0.15s;
+}
+
+.jogo-tile:hover {
+  transform: translateY(-3px);
+}
+
+.jogo-tile:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
+.jogo-tile-cabeca {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.jogo-icone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.8rem;
+  background: var(--game);
+  color: #fffaf4;
+  font-family: var(--fonte-kanji);
+  font-size: 1.15rem;
+  line-height: 1;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--game) 60%, #000);
+}
+
+.jogo-tile-texto {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.jogo-tile-texto strong {
+  font-size: 1rem;
+  line-height: 1.2;
+  color: rgb(var(--heading));
+}
+
+.jogo-tile-texto small {
+  color: rgb(var(--muted));
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.jogo-tile-previa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.jogo-tile-cta {
+  align-self: flex-start;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--game);
+}
+
+.jogo-tile-conta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+}
+
+/* Praticar: em linhas (texto à esquerda, miniatura à direita) */
+.prateleira.is-linhas .jogo-tile {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prateleira.is-linhas .jogo-tile-cabeca {
+  flex: 1;
+  min-width: 0;
+}
+
+.prateleira.is-linhas .jogo-tile-previa {
+  flex: none;
+  align-items: flex-end;
+}
+
+@media (min-width: 900px) {
+  .prateleira.is-linhas .prateleira-grade {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Aprender: os caminhos em destaque e o Randori ao lado */
+@media (min-width: 760px) {
+  .prateleira.is-destaque .prateleira-grade {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.jogo-ilhas {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.7rem 0.4rem 0.3rem;
+  border-radius: 0.9rem;
+  background:
+    radial-gradient(ellipse at 50% 120%, rgb(var(--brilho-b) / 0.2), transparent 70%),
+    color-mix(in srgb, var(--game) 6%, transparent);
+}
+
+.jogo-ilhas > span:nth-child(odd) {
+  transform: translateY(-6px);
+}
+
+.jogo-ilha {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px dashed rgb(var(--muted) / 0.4);
+  font-family: var(--fonte-kanji);
+  font-size: 0.95rem;
+  color: rgb(var(--muted) / 0.6);
+}
+
+.jogo-ilha.is-feita {
+  border: 2px solid var(--ilha);
+  background: color-mix(in srgb, var(--ilha) 22%, transparent);
+  color: var(--ilha);
+}
+
+.jogo-ilha.is-agora {
+  border: 2px solid var(--ilha);
+  color: var(--ilha);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ilha) 22%, transparent);
+}
+
+.jogo-tile.is-listrado {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--game) 7%, transparent) 14px 28px),
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--game) 24%, transparent), transparent 60%),
+    rgb(var(--surface));
+}
+
+.jogo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.jogo-chips span {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--game) 45%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--game);
+}
+
+/* Colecionar: mosaico — o Livro de selos largo, os outros ao lado */
+.prateleira.is-mosaico .prateleira-grade {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.jogo-tile.is-largo {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 760px) {
+  .prateleira.is-mosaico .prateleira-grade {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .jogo-tile.is-largo {
+    grid-column: auto;
+  }
+}
+
+/* ------------------------------------------------------------ miniaturas */
+.mini-selos {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.mini-leque {
+  display: grid;
+  grid-template-columns: repeat(9, 0.7rem);
+  gap: 0.22rem;
+}
+
+.mini-leque span {
+  aspect-ratio: 1;
+  border-radius: 0.2rem;
+  background: rgb(var(--muted) / 0.15);
+}
+
+.mini-leque span.is-feito {
+  background: var(--game);
+}
+
+.mini-cartas {
+  display: flex;
+}
+
+.mini-cartas span {
+  width: 1.6rem;
+  height: 2.2rem;
+  margin-left: -0.45rem;
+  border-radius: 0.3rem;
+  border: 1px solid rgb(var(--line-strong));
+  background: rgb(var(--surface));
+  box-shadow: var(--shadow-sm);
+  transform: rotate(var(--giro));
+}
+
+.mini-cartas span.is-feito {
+  background: color-mix(in srgb, var(--game) 25%, rgb(var(--surface)));
+  border-color: var(--game);
+}
+
+.mini-ordem {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.mini-ordem span {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, var(--game) 14%, transparent);
+  color: var(--game);
+}
+
+/* ------------------------------------------------------------ barra de jogos */
+.jogos-barra {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0 0 1.2rem;
+  padding: 0.2rem 0 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.jogos-barra::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .jogos-barra {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+  }
+}
+
+.jogos-barra a {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--game) 40%, rgb(var(--line)));
+  background: rgb(var(--surface));
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+}
+
+.jogos-barra a .jogos-barra-kanji {
+  font-family: var(--fonte-kanji);
+  color: var(--game);
+}
+
+.jogos-barra a[aria-current="page"] {
+  background: var(--game);
+  border-color: var(--game);
+  color: #fffaf4;
+}
+
+.jogos-barra a[aria-current="page"] .jogos-barra-kanji {
+  color: #fffaf4;
+}
+
+/* ------------------------------------------------------------ Como funciona */
+.jogo-intro {
+  margin: 0 0 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px dashed rgb(var(--gold));
+  background: rgb(var(--gold) / 0.08);
+}
+
+.jogo-intro header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.jogo-intro header strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.05rem;
+  color: rgb(var(--heading));
+}
+
+.jogo-intro ol {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.75rem 0;
+  padding-left: 1.3rem;
+  list-style: decimal;
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+
+.jogo-intro-nota {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  color: rgb(var(--muted));
+}
+
+.jogo-intro-fechar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 1.2rem;
+  color: rgb(var(--muted));
+}
+
+.jogo-intro-fechar:hover {
+  background: rgb(var(--elevated));
+}
+
+.jogo-intro-interrogacao {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.jogo-intro-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated));
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+}
+
+.jogo-intro-botao:hover {
+  color: rgb(var(--heading));
+}
+
+/* ------------------------------------------------------------ contas */
+.contas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.conta {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--game) 45%, rgb(var(--line)));
+  background: rgb(var(--surface));
+}
+
+.contas-sm .conta {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-width: 1.5px;
+}
+
+.conta.is-feita {
+  background: var(--game);
+  border-color: var(--game);
+}
+
+.conta.is-agora {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--game) 25%, transparent);
+  animation: conta-pulsa 1.8s ease-in-out infinite;
+}
+
+@keyframes conta-pulsa {
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--game) 12%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------ quiz */
+.quiz-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.quiz-contador {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+}
+
+.quiz-enunciado {
+  margin: 1.1rem 0 0.9rem;
+  font-family: var(--fonte-display);
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgb(var(--heading));
+}
+
+.quiz-alternativas {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.quiz-alternativa {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgb(var(--line));
+  border-bottom-width: 3px;
+  background: rgb(var(--surface));
+  text-align: left;
+  font-size: 0.93rem;
+  line-height: 1.45;
+  color: rgb(var(--fg));
+  transition:
+    border-color var(--duration-fast),
+    transform 0.12s var(--ease-out),
+    background-color var(--duration-fast);
+}
+
+.quiz-alternativa:not(:disabled):hover {
+  border-color: var(--game);
+  transform: translateY(-1px);
+}
+
+.quiz-alternativa[aria-pressed="true"] {
+  border-color: var(--game);
+  background: color-mix(in srgb, var(--game) 10%, rgb(var(--surface)));
+}
+
+.quiz-alternativa.is-certa {
+  border-color: #5e8c63;
+  background: rgb(94 140 99 / 0.14);
+}
+
+.quiz-alternativa.is-errada {
+  border-color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.08);
+}
+
+.quiz-letra {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated));
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgb(var(--muted));
+}
+
+.quiz-alternativa[aria-pressed="true"] .quiz-letra {
+  background: var(--game);
+  color: #fffaf4;
+}
+
+.quiz-porque {
+  margin-top: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.9rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.quiz-porque.is-certo {
+  background: rgb(94 140 99 / 0.12);
+}
+
+.quiz-porque.is-errado {
+  background: rgb(var(--gold) / 0.12);
+}
+
+.quiz-fim-titulo {
+  font-family: var(--fonte-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--game);
+}
+
+/* ------------------------------------------------------------ selo */
+.selo-vazio {
+  fill: none;
+  stroke: rgb(var(--muted) / 0.35);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+}
+
+.selo-kanji {
+  font-family: var(--fonte-kanji);
+}
+
+/* O carimbo "bate": desce grande e assenta com um tranco. */
+.selo-carimba {
+  animation: selo-bate 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes selo-bate {
+  0% {
+    opacity: 0;
+    transform: scale(1.8) rotate(-12deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.94) rotate(var(--inclinacao, -4deg));
+  }
+  100% {
+    transform: scale(1) rotate(var(--inclinacao, -4deg));
+  }
+}
+
+/* ------------------------------------------------------------ karuta */
+.karuta-mesa {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+@media (min-width: 640px) {
+  .karuta-mesa {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.karuta-carta {
+  position: relative;
+  min-height: 6.5rem;
+  border-radius: 0.9rem;
+  perspective: 600px;
+}
+
+.karuta-carta button {
+  width: 100%;
+  height: 100%;
+  min-height: 6.5rem;
+  border-radius: 0.9rem;
+  transform-style: preserve-3d;
+  transition: transform 0.4s var(--ease-out);
+}
+
+.karuta-carta.is-virada button,
+.karuta-carta.is-par button {
+  transform: rotateY(180deg);
+}
+
+.karuta-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0.6rem;
+  border-radius: 0.9rem;
+  backface-visibility: hidden;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.karuta-verso {
+  border: 1px solid color-mix(in srgb, var(--game) 40%, rgb(var(--line)));
+  background:
+    repeating-linear-gradient(45deg, transparent 0 8px, color-mix(in srgb, var(--game) 10%, transparent) 8px 16px),
+    rgb(var(--surface));
+  font-family: var(--fonte-kanji);
+  font-size: 1.6rem;
+  color: var(--game);
+}
+
+.karuta-frente {
+  transform: rotateY(180deg);
+  border: 1px solid var(--game);
+  background: rgb(var(--surface));
+  color: rgb(var(--fg));
+}
+
+.karuta-frente.is-termo {
+  font-weight: 700;
+  color: rgb(var(--heading));
+}
+
+.karuta-carta.is-par .karuta-frente {
+  background: color-mix(in srgb, var(--game) 14%, rgb(var(--surface)));
+}
+
+/* ------------------------------------------------------------ sequência */
+.sequencia-fila {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sequencia-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgb(var(--line));
+  border-bottom-width: 3px;
+  background: rgb(var(--surface));
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.sequencia-item:not(:disabled):hover {
+  border-color: var(--game);
+}
+
+.sequencia-item.is-posto {
+  border-color: color-mix(in srgb, var(--game) 50%, rgb(var(--line)));
+  background: color-mix(in srgb, var(--game) 8%, rgb(var(--surface)));
+}
+
+.sequencia-item.is-errado {
+  animation: sequencia-treme 0.35s ease-in-out;
+  border-color: rgb(var(--accent));
+}
+
+.sequencia-numero {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 0.5rem;
+  background: rgb(var(--elevated));
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgb(var(--muted));
+}
+
+.sequencia-item.is-posto .sequencia-numero {
+  background: var(--game);
+  color: #fffaf4;
+}
+
+@keyframes sequencia-treme {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* ------------------------------------------------------------ menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .conta.is-agora,
+  .selo-carimba,
+  .sequencia-item.is-errado {
+    animation: none;
+  }
+
+  .karuta-carta button,
+  .jogo-tile,
+  .continue {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------ mapa do caminho */
+.parada {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: calc(50% + 1.5rem);
+  padding: 0.75rem;
+  border-radius: 1.1rem;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  transition: transform 0.15s var(--ease-out);
+}
+
+.parada:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.parada:disabled {
+  opacity: 0.45;
+}
+
+.parada.is-agora {
+  border-color: var(--game);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--game) 15%, transparent);
+}
+
+.parada-icone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--game) 50%, transparent);
+  font-family: var(--fonte-kanji);
+  font-size: 1.05rem;
+  color: var(--game);
+}
+
+.parada.is-feita .parada-icone {
+  border-color: var(--game);
+  background: var(--game);
+  color: #fffaf4;
+}
+
+@media (max-width: 520px) {
+  .parada {
+    width: calc(75% + 1rem);
+  }
+}
+
+/* Ilhas com tamanho de ícone, não de coluna: no tile largo viravam bolas de 100px. */
+.jogo-ilhas {
+  justify-items: center;
+}
+
+.jogo-ilha {
+  width: min(100%, 3.4rem);
+}
+
+/* Na prateleira em linhas o cartão inteiro é o link; o "Abrir →" só sobrava. */
+.prateleira.is-linhas .jogo-tile-cta {
+  display: none;
+}

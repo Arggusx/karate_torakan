@@ -10,6 +10,7 @@ import { HeroPagina } from "@/components/layout/HeroPagina";
 import { MinhaConta } from "@/components/portal/MinhaConta";
 import { NavPortal, type ItemNav } from "@/components/portal/NavPortal";
 import { PlanoSemanal } from "@/components/portal/PlanoSemanal";
+import { ProvaPanel } from "@/components/portal/ProvaPanel";
 import { RodapePortal } from "@/components/portal/RodapePortal";
 import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -22,10 +23,11 @@ import {
 
 const GRADUACOES = getGraduacoes();
 
-type Aba = "painel" | "curriculo" | "conta";
+type Aba = "painel" | "provas" | "curriculo" | "conta";
 
 const ITENS: ItemNav<Aba>[] = [
   { value: "painel", label: "Meu painel", curto: "Painel", icone: "inicio" },
+  { value: "provas", label: "Provas", icone: "prova" },
   { value: "curriculo", label: "Análise curricular", curto: "Currículo", icone: "curriculo" },
   { value: "conta", label: "Minha conta", curto: "Conta", icone: "perfil" },
 ];
@@ -93,6 +95,8 @@ function ConteudoAluno() {
             mensalidadeCentavos={mensalidadeCentavos}
             onCheckout={() => setCheckoutAberto(true)}
           />
+        ) : aba === "provas" ? (
+          <ProvaPanel faixa={aluno.faixa} />
         ) : aba === "curriculo" ? (
           <AnaliseCurricular />
         ) : (

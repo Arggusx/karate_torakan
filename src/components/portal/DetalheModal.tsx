@@ -262,6 +262,51 @@ function ProgramaDaFaixa({ aluno }: { aluno: Aluno }) {
 }
 
 /** Ficha completa do aluno, aberta ao clicar nele em qualquer listagem. */
+/** Provas teóricas que o aluno entregou no portal (as mais recentes primeiro). */
+function ProvasDoAluno({ alunoId }: { alunoId: string }) {
+  const [provas, setProvas] = useState<
+    { id: number; faixa: string; acertos: number; total: number; aprovado: boolean; concluidaEm: string }[] | null
+  >(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  useEffect(() => {
+    let valido = true;
+    fetch(`/api/provas?alunoId=${alunoId}`, { cache: "no-store" })
+      .then(async (r) => ({ ok: r.ok, dados: await r.json() }))
+      .then(({ ok, dados }) => {
+        if (!valido) return;
+        if (!ok) setAviso(dados.erro ?? "Não foi possível ler as provas.");
+        setProvas(ok ? dados.historico : []);
+      })
+      .catch(() => valido && setProvas([]));
+    return () => {
+      valido = false;
+    };
+  }, [alunoId]);
+
+  if (provas === null) return <p className="mt-1 text-2xs text-subtle">Carregando…</p>;
+  if (aviso) return <p className="mt-1 text-2xs text-subtle">{aviso}</p>;
+  if (provas.length === 0) {
+    return <p className="mt-1 text-2xs text-subtle">Nenhuma prova entregue ainda.</p>;
+  }
+
+  return (
+    <ul className="mt-1 divide-y divide-line rounded-md border border-line">
+      {provas.slice(0, 5).map((p) => (
+        <li key={p.id} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+          <span>
+            <span className="font-medium text-fg">{p.faixa}</span>
+            <span className="ml-2 text-subtle">{new Date(p.concluidaEm).toLocaleDateString("pt-BR")}</span>
+          </span>
+          <span className={p.aprovado ? "font-semibold text-status-ok" : "text-muted"}>
+            {p.acertos}/{p.total} · {p.aprovado ? "aprovado" : "ainda não"}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function AlunoDetalheModal({
   aluno: alunoAberto,
   onClose,
@@ -397,6 +442,13 @@ export function AlunoDetalheModal({
               maior peso.
             </p>
             <ProgramaDaFaixa aluno={aluno} />
+          </div>
+        ) : null}
+
+        {equipe ? (
+          <div>
+            <p className="label">Provas teóricas</p>
+            <ProvasDoAluno alunoId={aluno.id} />
           </div>
         ) : null}
 

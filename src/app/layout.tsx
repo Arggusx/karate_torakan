@@ -11,6 +11,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { AcademiaProvider } from "@/lib/academiaStore";
 import "./globals.css";
 import "./animacoes.css";
+import "./jornada.css";
 
 /**
  * Títulos em Cormorant Garamond, o par tipográfico do Oratio: serifada de
