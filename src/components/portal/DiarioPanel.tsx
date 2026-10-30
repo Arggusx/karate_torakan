@@ -1,10 +1,11 @@
 "use client";
 
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { useEffect, useMemo, useState } from "react";
 import { AlunoCampo, AlunoCard } from "@/components/portal/AlunoCard";
 import { AlunoDetalheModal } from "@/components/portal/DetalheModal";
 import { paraBusca } from "@/components/portal/CampoBusca";
-import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Paginacao } from "@/components/ui/Paginacao";
@@ -215,7 +216,7 @@ export function DiarioPanel({
                 </AlunoCampo>
                 <AlunoCampo rotulo="Idade">{aluno.idade} anos</AlunoCampo>
                 <AlunoCampo rotulo="Faixa">
-                  <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+                  <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
                 </AlunoCampo>
                 <AlunoCampo rotulo="Frequência">
                   <span className="tabular-nums">{aluno.frequencia}%</span>
@@ -264,7 +265,7 @@ export function DiarioPanel({
                       <Badge>{nomeDaTurma.get(aluno.turmaId) ?? "—"}</Badge>
                     </TD>
                     <TD>
-                      <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+                      <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
                     </TD>
                     <TD className="text-right tabular-nums">
                       {aluno.frequencia}%

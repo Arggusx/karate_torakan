@@ -1,0 +1,12 @@
+Coloque aqui as fotos dos mestres com estes nomes (jpg, png ou webp):
+
+gichin-funakoshi.jpg
+gigo-funakoshi.jpg
+masatoshi-nakayama.jpg
+hidetaka-nishiyama.jpg
+hirokazu-kanazawa.jpg
+keinosuke-enoeda.jpg
+taiji-kase.jpg
+tetsuhiko-asai.jpg
+
+So use fotos com direito de uso (dominio publico, licenca ou suas).

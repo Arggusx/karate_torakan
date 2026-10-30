@@ -1,8 +1,9 @@
 "use client";
 
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CampoBusca, paraBusca } from "@/components/portal/CampoBusca";
-import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { useAcademia } from "@/lib/academiaStore";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -217,9 +218,7 @@ export function FinanceiroPanel({
                     </TD>
                     <TD>
                       {aluno ? (
-                        <BeltBadge cor={aluno.corFaixa}>
-                          {aluno.faixa}
-                        </BeltBadge>
+                        <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
                       ) : (
                         <span className="text-2xs text-subtle">—</span>
                       )}
@@ -279,7 +278,7 @@ export function FinanceiroPanel({
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   {turma ? <Badge>{turma.nome}</Badge> : null}
                   {aluno ? (
-                    <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+                    <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
                   ) : null}
                 </div>
                 <p className="mt-2 text-xs text-muted">

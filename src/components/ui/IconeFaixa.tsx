@@ -9,18 +9,21 @@ import { cn } from "@/lib/cn";
 export function IconeFaixa({
   cor,
   nome,
+  lado = "direita",
   className,
 }: {
   cor: string;
   nome: string;
+  /** Para onde a dica abre: "esquerda" quando o ícone fica na borda direita. */
+  lado?: "direita" | "esquerda";
   className?: string;
 }) {
   return (
     <span
-      className={cn("icone-faixa", className)}
+      className={cn("icone-faixa", lado === "esquerda" && "icone-faixa-esquerda", className)}
       tabIndex={0}
       role="img"
-      aria-label={`Faixa recomendada: ${nome}`}
+      aria-label={`Faixa: ${nome}`}
       data-dica={nome}
     >
       <Obi cor={cor} dan={/dan/i.test(nome)} className="icone-faixa-obi" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { useEffect, useMemo, useState } from "react";
 import { AlunoCampo, AlunoCard } from "@/components/portal/AlunoCard";
 import { CampoBusca, paraBusca } from "@/components/portal/CampoBusca";
@@ -7,7 +8,7 @@ import { AlunoDetalheModal } from "@/components/portal/DetalheModal";
 import { PlanoSemanal } from "@/components/portal/PlanoSemanal";
 import { SeletorTurma } from "@/components/portal/SeletorTurma";
 import { TurmaFormModal } from "@/components/portal/TurmaFormModal";
-import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Paginacao } from "@/components/ui/Paginacao";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
@@ -188,7 +189,7 @@ function AlunosDaTurma({ alunos, busca }: { alunos: Aluno[]; busca: string }) {
               <span className="font-mono">{aluno.usuario}</span>
             </AlunoCampo>
             <AlunoCampo rotulo="Faixa">
-              <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+              <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
             </AlunoCampo>
             <AlunoCampo rotulo="Frequência">
               <span className="tabular-nums">{aluno.frequencia}%</span>
@@ -240,7 +241,7 @@ function AlunosDaTurma({ alunos, busca }: { alunos: Aluno[]; busca: string }) {
                   </button>
                 </TD>
                 <TD>
-                  <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+                  <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
                 </TD>
                 <TD className="text-right tabular-nums">{aluno.frequencia}%</TD>
                 <TD className="whitespace-nowrap text-muted">

@@ -1,9 +1,10 @@
 "use client";
 
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { useEffect, useState, type ReactNode } from "react";
 import { RedefinirSenha } from "@/components/portal/RedefinirSenha";
 import { SeletorTurma } from "@/components/portal/SeletorTurma";
-import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { AvatarMini } from "@/components/portal/AvatarMini";
@@ -365,7 +366,7 @@ export function AlunoDetalheModal({
               : `${aluno.idade} anos · sem data de nascimento`}
           </Campo>
           <Campo rotulo="Faixa">
-            <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+            <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
           </Campo>
           <Campo rotulo="Turma">
             {turma ? (

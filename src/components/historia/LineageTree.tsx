@@ -199,6 +199,46 @@ function NoCard({ no }: { no: NoLinhagem }) {
   );
 }
 
+/**
+ * A mesma árvore no celular: cada mestre é uma sanfona. Fechada, mostra nome
+ * e data; aberta, o papel, o link e os discípulos — que também abrem, um
+ * nível mais para dentro. Sem rolagem lateral e sem encolher a letra.
+ */
+function RamoMovel({ no }: { no: NoLinhagem }) {
+  const sub = [no.org, no.anos].filter(Boolean).join(" · ");
+  return (
+    <li>
+      <details className="linhagem-movel">
+        <summary>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-heading">{no.nome}</span>
+            {sub ? <span className="block text-2xs text-subtle">{sub}</span> : null}
+          </span>
+          {no.filhos?.length ? (
+            <span className="linhagem-movel-conta">{no.filhos.length}</span>
+          ) : null}
+          <svg className="sanfona-seta" viewBox="0 0 24 24" aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+        <div className="linhagem-movel-corpo">
+          {no.papel ? <p>{no.papel}</p> : null}
+          <a href={buscaNaWikipedia(no.nome)} target="_blank" rel="noopener noreferrer">
+            Procurar na Wikipédia ↗
+          </a>
+          {no.filhos?.length ? (
+            <ul className="linhagem-movel-filhos">
+              {no.filhos.map((filho) => (
+                <RamoMovel key={filho.nome} no={filho} />
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </details>
+    </li>
+  );
+}
+
 function Ramo({ no }: { no: NoLinhagem }) {
   return (
     <li className="tree-item">
@@ -307,7 +347,17 @@ export function ArvoreGenealogica({
         ) : null}
       </div>
 
-      <div className="overflow-x-auto p-4">
+      {/* Celular: raiz à vista e os ramos em sanfonas. */}
+      <div className="p-3 sm:hidden">
+        <NoCard no={raiz} />
+        <ul className="linhagem-movel-filhos mt-2">
+          {raiz.filhos?.map((filho) => (
+            <RamoMovel key={filho.nome} no={filho} />
+          ))}
+        </ul>
+      </div>
+
+      <div className="hidden overflow-x-auto p-4 sm:block">
         <div className="min-w-[420px]">
           <NoCard no={raiz} />
           <ul className="tree-children mt-2">

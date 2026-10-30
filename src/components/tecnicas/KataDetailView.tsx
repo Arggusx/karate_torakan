@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { Embusen } from "@/components/tecnicas/Embusen";
 import { EmbusenImage } from "@/components/tecnicas/EmbusenImage";
 import { NavegacaoKata } from "@/components/tecnicas/NavegacaoKata";
 import { SequenciaMovimentos } from "@/components/tecnicas/SequenciaMovimentos";
-import { Badge, BeltBadge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { acharTecnica, listarDestaques } from "@/services/dataService";
 import { tracadoDoKata } from "@/services/embusen";
 import type { KataCompleto } from "@/types";
@@ -47,7 +48,7 @@ export function KataDetailView({
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge tone="accent">{kata.categoria}</Badge>
-          <BeltBadge cor={kata.corFaixa}>{kata.faixaRecomendada}</BeltBadge>
+          <IconeFaixa cor={kata.corFaixa} nome={kata.faixaRecomendada} />
         </div>
 
         <div className="mt-3 flex flex-wrap items-baseline gap-3">

@@ -1,9 +1,10 @@
 "use client";
 
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AvatarMini } from "@/components/portal/AvatarMini";
 import { EditorProva, perguntaEmBranco, type ProvaEmEdicao } from "@/components/portal/EditorProva";
-import { Badge, BeltBadge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
@@ -217,7 +218,7 @@ export function ProvasEquipePanel() {
             >
               <div className="flex items-start justify-between gap-2">
                 <h3 className="heading-md">{m.titulo}</h3>
-                {m.faixa ? <BeltBadge cor={corDaFaixa(m.faixa)}>{m.faixa}</BeltBadge> : <Badge>Livre</Badge>}
+                {m.faixa ? <IconeFaixa cor={corDaFaixa(m.faixa)} nome={m.faixa} lado="esquerda" /> : <Badge>Livre</Badge>}
               </div>
               <p className="text-2xs text-muted">
                 {m.total} perguntas · aprova com {m.minimo}
@@ -419,7 +420,7 @@ function LiberarModal({
                   <input type="checkbox" checked={marcados.has(a.id)} onChange={() => alternar(a.id)} />
                   <AvatarMini src={a.avatarUrl} iniciais={a.foto} />
                   <span className="min-w-0 flex-1 truncate text-sm text-fg">{a.nome}</span>
-                  <BeltBadge cor={a.corFaixa}>{graduacaoDaFaixa(a.faixa)?.faixa ?? a.faixa}</BeltBadge>
+                  <IconeFaixa cor={a.corFaixa} nome={graduacaoDaFaixa(a.faixa)?.faixa ?? a.faixa} lado="esquerda" />
                 </label>
               </li>
             ))

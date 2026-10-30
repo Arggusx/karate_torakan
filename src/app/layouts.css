@@ -1198,3 +1198,97 @@ a.origem-pilula:hover {
 .icone-faixa:focus-visible {
   box-shadow: 0 0 0 2px rgb(var(--accent) / 0.5);
 }
+
+/* ------------------------------------ Linhagem no celular (sanfonas) */
+
+.linhagem-movel-filhos {
+  display: grid;
+  gap: 0.4rem;
+  border-left: 2px solid rgb(var(--accent) / 0.25);
+  padding-left: 0.6rem;
+}
+
+.linhagem-movel {
+  border-radius: 0.8rem;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+}
+
+.linhagem-movel[open] {
+  border-color: rgb(var(--accent) / 0.3);
+}
+
+.linhagem-movel summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  list-style: none;
+  cursor: pointer;
+}
+
+.linhagem-movel summary::-webkit-details-marker {
+  display: none;
+}
+
+.linhagem-movel[open] > summary .sanfona-seta {
+  transform: rotate(180deg);
+  stroke: rgb(var(--accent));
+}
+
+/* Quantos discípulos há dentro: dá para saber antes de abrir. */
+.linhagem-movel-conta {
+  display: grid;
+  place-items: center;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 999px;
+  background: rgb(var(--accent) / 0.1);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgb(var(--accent));
+}
+
+.linhagem-movel-corpo {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 0.75rem 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: rgb(var(--muted));
+}
+
+.linhagem-movel-corpo > a {
+  justify-self: start;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgb(var(--accent));
+}
+
+/* Banner de foto no celular: cartão menor e texto mais curto na altura. */
+@media (max-width: 639px) {
+  .hist-banner-foto {
+    height: 13rem;
+  }
+
+  .hist-banner-cartao {
+    margin: -2.25rem 0.75rem 0;
+    padding: 0.85rem 1rem;
+  }
+
+  .hist-banner-cartao .font-display {
+    font-size: 1.05rem;
+    line-height: 1.4;
+  }
+}
+
+.icone-faixa-esquerda::after {
+  left: auto;
+  right: calc(100% + 0.5rem);
+  transform: translate(4px, -50%);
+}
+
+.icone-faixa-esquerda:hover::after,
+.icone-faixa-esquerda:focus-visible::after {
+  transform: translate(0, -50%);
+}

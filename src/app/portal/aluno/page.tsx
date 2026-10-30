@@ -1,5 +1,6 @@
 "use client";
 
+import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnaliseCurricular } from "@/components/portal/AnaliseCurricular";
@@ -12,7 +13,7 @@ import { PlanoSemanal } from "@/components/portal/PlanoSemanal";
 import { PerfilFaixa } from "@/components/portal/PerfilFaixa";
 import { ProvaPanel } from "@/components/portal/ProvaPanel";
 import { RodapePortal } from "@/components/portal/RodapePortal";
-import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
+import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { useAcademia } from "@/lib/academiaStore";
 import {
@@ -145,7 +146,7 @@ function PainelAluno({
       >
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base font-semibold text-fg">{aluno.nome}</h2>
-              <BeltBadge cor={aluno.corFaixa}>{aluno.faixa}</BeltBadge>
+              <IconeFaixa cor={aluno.corFaixa} nome={aluno.faixa} />
               <Badge>Frequência {aluno.frequencia}%</Badge>
             </div>
             <p className="mt-1 text-xs text-muted">

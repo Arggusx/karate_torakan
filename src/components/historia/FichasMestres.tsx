@@ -1,12 +1,30 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import Image from "next/image";
 import type { Mestre } from "@/types";
 
 /**
- * Fotos dos mestres em /public/imagens/mestres/<arquivo>. Só entram fotos com
- * direito de uso (domínio público ou licença); quem não tem foto aparece
- * com um selo (hanko) com o primeiro kanji do sobrenome.
+ * Fotos dos mestres: basta pôr o arquivo em public/imagens/mestres/ com o nome
+ * do mestre sem acento e com hífens (gichin-funakoshi.jpg, .png ou .webp). A
+ * página procura sozinha na hora do build. Só use fotos com direito de uso
+ * (domínio público, licença ou suas). Quem não tem foto aparece com um selo
+ * (hanko) com o primeiro kanji do sobrenome.
+ *
+ * Crédito opcional, mostrado embaixo do texto: acrescente aqui.
  */
-const FOTOS: Record<string, { arquivo: string; credito: string }> = {};
+const CREDITOS: Record<string, string> = {};
+
+const EXTENSOES = ["jpg", "jpeg", "png", "webp"];
+
+function fotoDe(slugMestre: string) {
+  for (const ext of EXTENSOES) {
+    const arquivo = `${slugMestre}.${ext}`;
+    if (existsSync(join(process.cwd(), "public", "imagens", "mestres", arquivo))) {
+      return { arquivo, credito: CREDITOS[slugMestre] };
+    }
+  }
+  return null;
+}
 
 const slug = (nome: string) =>
   nome
@@ -32,7 +50,7 @@ export function FichasMestres({ mestres }: { mestres: Mestre[] }) {
   return (
     <div className="mestres-grade">
       {mestres.map((mestre, i) => {
-        const foto = FOTOS[slug(mestre.nome)];
+        const foto = fotoDe(slug(mestre.nome));
         const primeiroKanji = mestre.kanji.trim().charAt(0);
         return (
           <article
