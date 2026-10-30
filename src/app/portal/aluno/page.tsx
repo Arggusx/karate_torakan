@@ -103,7 +103,7 @@ function ConteudoAluno() {
             onCheckout={() => setCheckoutAberto(true)}
           />
         ) : aba === "provas" ? (
-          <ProvaPanel faixa={aluno.faixa} />
+          <ProvaPanel />
         ) : aba === "curriculo" ? (
           <AnaliseCurricular />
         ) : (

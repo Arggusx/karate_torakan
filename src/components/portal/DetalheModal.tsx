@@ -264,10 +264,10 @@ function ProgramaDaFaixa({ aluno }: { aluno: Aluno }) {
 }
 
 /** Ficha completa do aluno, aberta ao clicar nele em qualquer listagem. */
-/** Provas teóricas que o aluno entregou no portal (as mais recentes primeiro). */
+/** Provas que o aluno entregou no portal (as mais recentes primeiro). */
 function ProvasDoAluno({ alunoId }: { alunoId: string }) {
   const [provas, setProvas] = useState<
-    { id: number; faixa: string; acertos: number; total: number; aprovado: boolean; concluidaEm: string }[] | null
+    { id: number; titulo?: string; faixa: string; acertos: number; total: number; aprovado: boolean; concluidaEm: string }[] | null
   >(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
@@ -297,7 +297,7 @@ function ProvasDoAluno({ alunoId }: { alunoId: string }) {
       {provas.slice(0, 5).map((p) => (
         <li key={p.id} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
           <span>
-            <span className="font-medium text-fg">{p.faixa}</span>
+            <span className="font-medium text-fg">{p.titulo ?? p.faixa}</span>
             <span className="ml-2 text-subtle">{new Date(p.concluidaEm).toLocaleDateString("pt-BR")}</span>
           </span>
           <span className={p.aprovado ? "font-semibold text-status-ok" : "text-muted"}>

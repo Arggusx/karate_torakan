@@ -1,0 +1,260 @@
+/*
+  Provas do portal: o painel da equipe (montar, liberar, acompanhar) e o
+  estado vazio do aluno. Mesmos tokens do resto; nada de cor solta além das
+  faixas, que vêm por --faixa-cor.
+*/
+
+/* ---------------------------------------------------------- equipe */
+
+.prova-equipe-hero {
+  display: grid;
+  gap: 1.25rem;
+  border-radius: 1.1rem;
+  border: 1px solid rgb(var(--line));
+  padding: 1.25rem;
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(var(--accent) / 0.09), transparent 55%),
+    rgb(var(--surface));
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 768px) {
+  .prova-equipe-hero {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 1.5rem 1.75rem;
+  }
+}
+
+.prova-equipe-passos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  counter-reset: passo;
+}
+
+@media (min-width: 768px) {
+  .prova-equipe-passos {
+    grid-template-columns: 1fr;
+    min-width: 13rem;
+  }
+}
+
+.prova-equipe-passos li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated));
+  padding: 0.35rem 0.85rem 0.35rem 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+}
+
+.prova-equipe-passos span {
+  display: grid;
+  place-items: center;
+  height: 1.5rem;
+  width: 1.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: rgb(var(--accent-solid));
+  color: rgb(var(--on-accent));
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.prova-equipe-uso {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: rgb(var(--muted));
+}
+
+.prova-equipe-uso strong {
+  font-size: 1rem;
+  color: rgb(var(--heading));
+  font-variant-numeric: tabular-nums;
+}
+
+/* Escolha de faixa no "Gerar pela faixa": um pedaço de obi na cor. */
+.faixa-escolha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+  padding: 0.85rem 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  transition:
+    transform 0.25s var(--ease-out, ease),
+    box-shadow 0.25s var(--ease-out, ease),
+    border-color 0.25s;
+}
+
+.faixa-escolha:hover,
+.faixa-escolha:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--faixa-cor);
+  box-shadow: var(--shadow-md);
+  outline: none;
+}
+
+.faixa-escolha-obi {
+  position: relative;
+  height: 0.7rem;
+  width: 80%;
+  border-radius: 0.2rem;
+  background: var(--faixa-cor);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+}
+
+/* O nó no meio da faixa. */
+.faixa-escolha-obi::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 1.05rem;
+  width: 0.75rem;
+  border-radius: 0.2rem;
+  background: var(--faixa-cor);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+  transform: translate(-50%, -50%) rotate(8deg);
+  transition: transform 0.35s var(--ease-out, ease);
+}
+
+.faixa-escolha:hover .faixa-escolha-obi::after {
+  transform: translate(-50%, -50%) rotate(-10deg) scale(1.08);
+}
+
+/* Dificuldade da pergunta no editor. */
+.nivel-pilula {
+  border-radius: 999px;
+  padding: 0 0.5rem;
+  font-weight: 700;
+}
+
+.nivel-1 {
+  background: rgb(22 163 74 / 0.12);
+  color: #16a34a;
+}
+
+.nivel-2 {
+  background: rgb(217 119 6 / 0.14);
+  color: #d97706;
+}
+
+.nivel-3 {
+  background: rgb(var(--accent) / 0.12);
+  color: rgb(var(--accent));
+}
+
+/* Salvar fica sempre à mão, mesmo numa prova de 20 perguntas. */
+.barra-salvar-prova {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface) / 0.9);
+  padding: 0.5rem;
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 1023px) {
+  /* Acima da barra inferior do portal. */
+  .barra-salvar-prova {
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* ----------------------------------------------------------- aluno */
+
+.prova-vazia {
+  display: grid;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .prova-vazia {
+    grid-template-columns: 9rem 1fr;
+  }
+}
+
+.prova-vazia-arte {
+  width: 9rem;
+  justify-self: center;
+}
+
+.prova-vazia-folha {
+  fill: rgb(var(--surface));
+  stroke: rgb(var(--line-strong));
+  stroke-width: 1.5;
+  animation: prova-folha 4.5s ease-in-out infinite;
+  transform-origin: 50px 43px;
+}
+
+.prova-vazia-linhas {
+  fill: none;
+  stroke: rgb(var(--line-strong));
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 36;
+  animation: prova-linhas 4.5s ease-in-out infinite;
+}
+
+.prova-vazia-selo {
+  fill: rgb(var(--accent) / 0.12);
+  stroke: rgb(var(--accent));
+  stroke-width: 1.5;
+}
+
+.prova-vazia-kanji {
+  fill: rgb(var(--accent));
+  font-size: 15px;
+  font-family: var(--font-display, serif);
+  font-weight: 700;
+}
+
+@keyframes prova-folha {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-2px);
+  }
+}
+
+/* As linhas "se escrevem" e se apagam, como quem espera a prova chegar. */
+@keyframes prova-linhas {
+  0% {
+    stroke-dashoffset: 36;
+  }
+  45%,
+  70% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -36;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prova-vazia-folha,
+  .prova-vazia-linhas {
+    animation: none;
+  }
+}

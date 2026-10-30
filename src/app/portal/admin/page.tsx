@@ -7,15 +7,17 @@ import { MinhaConta } from "@/components/portal/MinhaConta";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import { NavPortal, type ItemNav } from "@/components/portal/NavPortal";
 import { ProfessoresPanel } from "@/components/portal/ProfessoresPanel";
+import { ProvasEquipePanel } from "@/components/portal/ProvasEquipePanel";
 import { RodapePortal } from "@/components/portal/RodapePortal";
 import { TurmasPanel } from "@/components/portal/TurmasPanel";
 import { Badge } from "@/components/ui/Badge";
 
-type Aba = "turmas" | "alunos" | "professores" | "conta";
+type Aba = "turmas" | "alunos" | "provas" | "professores" | "conta";
 
 const ITENS: ItemNav<Aba>[] = [
   { value: "turmas", label: "Turmas", icone: "turmas" },
   { value: "alunos", label: "Alunos", icone: "alunos" },
+  { value: "provas", label: "Provas", icone: "prova" },
   { value: "professores", label: "Professores", curto: "Equipe", icone: "professores" },
   { value: "conta", label: "Minha conta", curto: "Conta", icone: "perfil" },
 ];
@@ -60,6 +62,8 @@ function ConteudoAdmin() {
           <TurmasPanel />
         ) : aba === "alunos" ? (
           <AlunosPanel />
+        ) : aba === "provas" ? (
+          <ProvasEquipePanel />
         ) : aba === "conta" ? (
           <MinhaConta volta="/portal/admin?aba=conta" />
         ) : (

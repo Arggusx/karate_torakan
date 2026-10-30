@@ -12,6 +12,7 @@ import { AcademiaProvider } from "@/lib/academiaStore";
 import "./globals.css";
 import "./animacoes.css";
 import "./jornada.css";
+import "./provas.css";
 
 /**
  * Títulos em Cormorant Garamond, o par tipográfico do Oratio: serifada de

@@ -499,72 +499,135 @@ export function perguntasMisturadas(quantas: number, semente: number, nivel?: Ni
 // ------------------------------------------------------------- a prova
 
 export const PROVA = {
-  /** Perguntas sobre a prática (kihon e katas da faixa). */
-  pratica: 8,
-  /** Perguntas de teoria (dojo, filosofia, vocabulário, história). */
-  teoria: 4,
-  /** Acertos para aprovar: 9 de 12 (75%). */
-  minimo: 9,
+  /** Perguntas de uma prova gerada pela faixa. */
+  total: 20,
+  /** Quantas de cada dificuldade: 7 fáceis, 8 médias e 5 difíceis. */
+  porNivel: { 1: 7, 2: 8, 3: 5 } as Record<Nivel, number>,
+  /** Fração de acertos para aprovar (15 de 20). */
+  aprovacao: 0.75,
 } as const;
 
-/**
- * A prova da faixa: o programa que o aluno precisa dominar para graduar.
- *
- * A parte prática sai do kihon e dos katas exigidos na faixa atual dele. Se
- * o programa da faixa for curto demais para 8 perguntas (o 1º Dan, por
- * exemplo, pede "Bunkai completo", que não vira pergunta de múltipla
- * escolha), completa com técnicas e katas do acervo inteiro.
- */
-export function montarProva(graduacao: GraduacaoCompleta | undefined, semente: number) {
-  const s = criarSorteio(semente);
+/** Acertos para aprovar numa prova de `total` perguntas (75%, para cima). */
+export const minimoPara = (total: number) => Math.max(1, Math.ceil(total * PROVA.aprovacao));
 
+/** Geradores de prática da faixa (kihon e katas do programa) e do acervo inteiro. */
+function geradoresPratica(graduacao: GraduacaoCompleta | undefined) {
   const tecnicasDaFaixa = (graduacao?.kihonExigido ?? [])
     .map((nome) => acharTecnica(nome))
     .filter((t): t is Tecnica => Boolean(t));
   const katasDaFaixa = getKatas().filter((k) =>
     (graduacao?.katasExigidos ?? []).some((nome) => normal(nome) === normal(k.nome)),
   );
+  return {
+    daFaixa: [...tecnicasDaFaixa.flatMap(geradoresTecnica), ...katasDaFaixa.flatMap(geradoresKata)],
+    // Fora do programa da faixa, só katas que o aluno já aprendeu (das faixas
+    // até a atual): um kata de faixa preta na prova da amarela é injusto.
+    acervo: [...getTecnicas().flatMap(geradoresTecnica), ...katasAteAFaixa(graduacao).flatMap(geradoresKata)],
+  };
+}
 
-  // Prática é só prática: "o que significa o nome do kata" sai do gerador de
-  // kata, mas é teoria — sem este filtro, ocupava vaga de prática.
-  const soPratica = { aceita: (p: Pergunta) => p.tipo === "pratica", porSujeito: 2 };
+/** Katas exigidos da primeira faixa até a atual (todos, se a faixa for desconhecida). */
+function katasAteAFaixa(graduacao: GraduacaoCompleta | undefined) {
+  const todas = getGraduacoes();
+  const indice = todas.findIndex((g) => g.faixa === graduacao?.faixa);
+  if (indice === -1) return getKatas();
+  const nomes = todas.slice(0, indice + 1).flatMap((g) => g.katasExigidos).map(normal);
+  return getKatas().filter((k) => nomes.includes(normal(k.nome)));
+}
 
-  const pratica = colher(
-    s,
-    [...tecnicasDaFaixa.flatMap(geradoresTecnica), ...katasDaFaixa.flatMap(geradoresKata)],
-    PROVA.pratica,
-    soPratica,
-  );
-  if (pratica.length < PROVA.pratica) {
-    // Programa curto (o 1º Dan pede "Bunkai completo", que não vira múltipla
-    // escolha): completa com o acervo inteiro.
-    pratica.push(
-      ...colher(
-        s,
-        [...getTecnicas().flatMap(geradoresTecnica), ...getKatas().flatMap(geradoresKata)],
-        PROVA.pratica - pratica.length,
-        { ...soPratica, ja: pratica },
-      ),
+const geradoresTeoria = () => [
+  ...geradoresDojo(),
+  ...geradoresFilosofia(),
+  ...geradoresVocabulario(),
+  ...geradoresHistoria(),
+];
+
+/** Faixas de iniciante (até a Laranja): teoria só no fácil e no médio. */
+function ehIniciante(graduacao: GraduacaoCompleta | undefined) {
+  const indice = getGraduacoes().findIndex((g) => g.faixa === graduacao?.faixa);
+  return indice !== -1 && indice < 4;
+}
+
+/**
+ * A prova da faixa: 20 perguntas, da mais fácil para a mais difícil.
+ *
+ * A prática sai do kihon e dos katas exigidos na faixa; se o programa for
+ * curto demais (o 1º Dan pede "Bunkai completo", que não vira múltipla
+ * escolha), completa com o acervo. A teoria cobre Dojo Kun, princípios,
+ * vocabulário e história. Nas faixas de iniciante a teoria não passa do
+ * médio — as difíceis delas ficam na prática, que é o que elas treinam.
+ */
+export function montarProva(graduacao: GraduacaoCompleta | undefined, semente: number) {
+  const s = criarSorteio(semente);
+  const { daFaixa, acervo } = geradoresPratica(graduacao);
+
+  // Teoria por nível (7 no total): iniciante 3/4/0, os demais 2/3/2.
+  const teoriaPorNivel: Record<Nivel, number> = ehIniciante(graduacao)
+    ? { 1: 3, 2: 4, 3: 0 }
+    : { 1: 2, 2: 3, 3: 2 };
+
+  const escolhidas: Pergunta[] = [];
+  for (const nivel of [1, 2, 3] as Nivel[]) {
+    const teoria = colher(s, geradoresTeoria(), teoriaPorNivel[nivel], {
+      porSujeito: 1,
+      ja: escolhidas,
+      aceita: (p) => p.tipo === "teoria" && p.nivel === nivel,
+    });
+    escolhidas.push(...teoria);
+
+    const regraPratica = {
+      porSujeito: 2,
+      aceita: (p: Pergunta) => p.tipo === "pratica" && p.nivel === nivel,
+    };
+    const pratica = colher(s, daFaixa, PROVA.porNivel[nivel] - teoria.length, {
+      ...regraPratica,
+      ja: escolhidas,
+    });
+    escolhidas.push(...pratica);
+
+    const falta = PROVA.porNivel[nivel] - teoria.length - pratica.length;
+    if (falta > 0) escolhidas.push(...colher(s, acervo, falta, { ...regraPratica, ja: escolhidas }));
+  }
+
+  // Se algum nível ficou curto, completa com qualquer pergunta de prática.
+  if (escolhidas.length < PROVA.total) {
+    escolhidas.push(
+      ...colher(s, acervo, PROVA.total - escolhidas.length, {
+        porSujeito: 2,
+        ja: escolhidas,
+        aceita: (p) => p.tipo === "pratica",
+      }),
     );
   }
 
-  // Nas faixas de iniciante (até a Laranja), a teoria fica no fácil e no
-  // médio: perguntar kanji de técnica a uma faixa amarela é pegadinha.
-  const indice = getGraduacoes().findIndex((g) => g.faixa === graduacao?.faixa);
-  const iniciante = indice !== -1 && indice < 4;
+  // Embaralha e ordena do fácil para o difícil (o sort é estável).
+  return s.embaralhar(escolhidas).sort((a, b) => a.nivel - b.nivel);
+}
 
-  const teoria = colher(
-    s,
-    [...geradoresDojo(), ...geradoresFilosofia(), ...geradoresVocabulario(), ...geradoresHistoria()],
-    PROVA.teoria,
-    {
-      porSujeito: 1,
-      ja: pratica,
-      aceita: (p) => p.tipo === "teoria" && (!iniciante || p.nivel <= 2),
-    },
-  );
-
-  return s.embaralhar([...pratica, ...teoria]);
+/**
+ * Uma pergunta nova do banco, para o professor trocar uma da prova.
+ * Respeita o tipo e, se der, o nível da que sai; não repete enunciado.
+ */
+export function outraPergunta(
+  graduacao: GraduacaoCompleta | undefined,
+  semente: number,
+  molde: Pick<Pergunta, "tipo" | "nivel">,
+  ja: Pergunta[],
+): Pergunta | undefined {
+  const s = criarSorteio(semente);
+  const { daFaixa, acervo } = geradoresPratica(graduacao);
+  const fontes = molde.tipo === "pratica" ? [daFaixa, acervo] : [geradoresTeoria()];
+  for (const nivel of [molde.nivel, undefined]) {
+    for (const fonte of fontes) {
+      const [achada] = colher(s, fonte, 1, {
+        porSujeito: 2,
+        ja,
+        aceita: (p) => p.tipo === molde.tipo && (nivel === undefined || p.nivel === nivel),
+      });
+      if (achada) return achada;
+    }
+  }
+  return undefined;
 }
 
 /** Tira o gabarito e a explicação antes de mandar ao navegador. */

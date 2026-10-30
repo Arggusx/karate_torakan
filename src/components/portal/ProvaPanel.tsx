@@ -1,30 +1,44 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ComoFunciona } from "@/components/jornada/ComoFunciona";
 import { Contas } from "@/components/jornada/Contas";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/cn";
-import { graduacaoDaFaixa } from "@/services/dataService";
 import { PROVA, type PerguntaPublica } from "@/services/perguntas";
 
 /**
- * Prova da faixa, no portal do aluno.
+ * Provas do aluno.
  *
- * É a "prova de verdade": o servidor monta as perguntas a partir do programa
- * da faixa atual, guarda o gabarito e corrige na entrega. Diferente dos
- * minigames da Jornada, aqui a resposta certa só aparece no fim.
+ * O aluno não começa prova sozinho: o professor monta (ou gera pela faixa),
+ * revisa e libera. Aqui aparecem as liberadas, prontas para fazer, e as já
+ * entregues. O servidor guarda o gabarito e corrige na entrega — a resposta
+ * certa só aparece no fim.
  *
- * O que continua igual aos jogos: sem relógio, sem punição — dá para refazer
- * quando quiser, e o resultado é informação, não sentença.
+ * Sem relógio e sem punição: o resultado é informação, não sentença.
  */
 
 const COR = "#B91C1C";
+const LETRAS = "ABCDEF";
+const NIVEL: Record<number, string> = { 1: "fácil", 2: "média", 3: "difícil" };
+
+interface Pendente {
+  id: number;
+  titulo: string;
+  faixa: string;
+  total: number;
+  minimo: number;
+  liberadaEm: string;
+  iniciada: boolean;
+}
 
 interface ProvaAberta {
   id: number;
+  titulo: string;
   faixa: string;
+  minimo: number;
   perguntas: PerguntaPublica[];
 }
 
@@ -38,6 +52,7 @@ interface Correcao {
 }
 
 interface Resultado {
+  titulo: string;
   faixa: string;
   acertos: number;
   total: number;
@@ -48,6 +63,7 @@ interface Resultado {
 
 interface ItemHistorico {
   id: number;
+  titulo: string;
   faixa: string;
   acertos: number;
   total: number;
@@ -60,36 +76,39 @@ const chaveRespostas = (id: number) => `torakan:prova:${id}`;
 const dataCurta = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 
-export function ProvaPanel({ faixa }: { faixa: string }) {
-  const [historico, setHistorico] = useState<ItemHistorico[] | null>(null);
+export function ProvaPanel() {
+  const [pendentes, setPendentes] = useState<Pendente[] | null>(null);
+  const [historico, setHistorico] = useState<ItemHistorico[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [prova, setProva] = useState<ProvaAberta | null>(null);
   const [resultado, setResultado] = useState<Resultado | null>(null);
-  const [carregando, setCarregando] = useState(false);
+  const [abrindo, setAbrindo] = useState<number | null>(null);
 
-  const carregarHistorico = useCallback(async () => {
+  const carregar = useCallback(async () => {
     const resposta = await fetch("/api/provas", { cache: "no-store" });
     const dados = await resposta.json();
     if (!resposta.ok) {
       setErro(dados.erro ?? "Não foi possível carregar as provas.");
-      setHistorico([]);
+      setPendentes([]);
       return;
     }
     setErro(null);
-    setHistorico(dados.historico);
+    setPendentes(dados.pendentes ?? []);
+    setHistorico(dados.historico ?? []);
   }, []);
 
   useEffect(() => {
-    carregarHistorico();
-  }, [carregarHistorico]);
+    carregar();
+  }, [carregar]);
 
-  async function comecar() {
-    setCarregando(true);
-    const resposta = await fetch("/api/provas", { method: "POST" });
+  async function abrir(id: number) {
+    setAbrindo(id);
+    const resposta = await fetch(`/api/provas/${id}`, { cache: "no-store" });
     const dados = await resposta.json();
-    setCarregando(false);
+    setAbrindo(null);
     if (!resposta.ok) {
-      setErro(dados.erro ?? "Não foi possível montar a prova.");
+      setErro(dados.erro ?? "Não foi possível abrir a prova.");
+      carregar();
       return;
     }
     setResultado(null);
@@ -100,10 +119,11 @@ export function ProvaPanel({ faixa }: { faixa: string }) {
     return (
       <EmProva
         prova={prova}
+        onSair={() => setProva(null)}
         onEntregue={(r) => {
           setProva(null);
           setResultado(r);
-          carregarHistorico();
+          carregar();
         }}
       />
     );
@@ -113,43 +133,19 @@ export function ProvaPanel({ faixa }: { faixa: string }) {
     return <ResultadoDaProva resultado={resultado} onVoltar={() => setResultado(null)} />;
   }
 
-  const graduacao = graduacaoDaFaixa(faixa);
-
   return (
     <div className="grid gap-4">
       <ComoFunciona
-        id="prova"
+        id="prova-liberada"
         passos={[
-          `São ${PROVA.pratica + PROVA.teoria} perguntas de múltipla escolha.`,
-          `${PROVA.pratica} são sobre a prática da sua faixa: o kihon e os katas do seu programa — bases, técnicas, ordem dos movimentos.`,
-          `${PROVA.teoria} são de teoria: Dojo Kun, princípios, vocabulário e história.`,
-          `Aprova com ${PROVA.minimo} acertos. Não tem relógio, e você pode voltar e mudar respostas antes de entregar.`,
+          "A prova aparece aqui quando o seu sensei liberar — não precisa pedir nem procurar.",
+          `As provas da faixa têm ${PROVA.total} perguntas, das fáceis às difíceis: o kihon e os katas do seu programa, mais Dojo Kun, princípios, vocabulário e história.`,
+          "Aprova com 75% de acertos. Não tem relógio, e dá para voltar e mudar respostas antes de entregar.",
+          "Pode sair e continuar depois: o que você marcou fica guardado neste aparelho.",
           "Depois de entregar, você vê a correção com a explicação de cada pergunta.",
         ]}
         nota="A prova cobre o conhecimento. A execução no tatame continua sendo avaliada pelo sensei no exame de faixa."
       />
-
-      <section className="painel card-faixa grid gap-4 [--faixa-cor:#B91C1C] sm:grid-cols-[1fr_auto] sm:items-center">
-        <div>
-          <p className="eyebrow">Prova teórica</p>
-          <h2 className="heading-lg mt-1">Faixa {faixa}</h2>
-          {graduacao ? (
-            <dl className="mt-3 grid gap-1.5 text-xs">
-              <div className="flex gap-2">
-                <dt className="w-14 shrink-0 text-muted">Katas</dt>
-                <dd className="text-fg">{graduacao.katasExigidos.join(" · ") || "—"}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="w-14 shrink-0 text-muted">Kihon</dt>
-                <dd className="text-fg">{graduacao.kihonExigido.join(" · ") || "—"}</dd>
-              </div>
-            </dl>
-          ) : null}
-        </div>
-        <Button onClick={comecar} disabled={carregando || Boolean(erro && historico?.length === 0 && erro.includes("migração"))}>
-          {carregando ? "Montando a prova…" : "Começar a prova"}
-        </Button>
-      </section>
 
       {erro ? (
         <p className="rounded-lg border border-status-warn/40 bg-status-warn/10 px-3 py-2 text-xs text-fg">
@@ -157,14 +153,56 @@ export function ProvaPanel({ faixa }: { faixa: string }) {
         </p>
       ) : null}
 
+      {pendentes === null ? (
+        <section className="painel">
+          <p className="text-xs text-muted">Carregando…</p>
+        </section>
+      ) : pendentes.length === 0 ? (
+        <section className="painel prova-vazia">
+          <svg viewBox="0 0 120 80" className="prova-vazia-arte" aria-hidden>
+            <rect x="22" y="14" width="56" height="58" rx="6" className="prova-vazia-folha" />
+            <path d="M32 30h36M32 40h36M32 50h24" className="prova-vazia-linhas" />
+            <circle cx="88" cy="54" r="15" className="prova-vazia-selo" />
+            <text x="88" y="55" textAnchor="middle" dominantBaseline="central" className="prova-vazia-kanji">
+              待
+            </text>
+          </svg>
+          <div>
+            <p className="eyebrow">Nenhuma prova liberada</p>
+            <h2 className="heading-md mt-1">Quando o sensei liberar, ela aparece aqui</h2>
+            <p className="body-muted mt-1 max-w-md">
+              Enquanto isso, dá para treinar o mesmo conteúdo nos jogos da Jornada, sem nota.
+            </p>
+            <Link href="/estudos/jornada" className="mt-3 inline-block text-xs font-semibold text-accent underline-offset-2 hover:underline">
+              Abrir a Jornada →
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {pendentes.map((p) => (
+            <article key={p.id} className="painel card-faixa flex flex-col gap-3 [--faixa-cor:#B91C1C]">
+              <div>
+                <p className="eyebrow">{p.iniciada ? "Em andamento" : "Liberada para você"}</p>
+                <h2 className="heading-md mt-1">{p.titulo}</h2>
+                <p className="mt-1 text-2xs text-muted">
+                  {p.total} perguntas · aprova com {p.minimo} · liberada em {dataCurta(p.liberadaEm)}
+                </p>
+              </div>
+              <Button size="sm" className="self-start" onClick={() => abrir(p.id)} disabled={abrindo !== null}>
+                {abrindo === p.id ? "Abrindo…" : p.iniciada ? "Continuar a prova" : "Começar a prova"}
+              </Button>
+            </article>
+          ))}
+        </div>
+      )}
+
       <section className="card">
         <header className="flex items-center justify-between border-b border-line px-4 py-3">
           <h3 className="heading-md">Suas provas</h3>
-          <span className="text-2xs text-muted">{historico?.length ?? 0} entregues</span>
+          <span className="text-2xs text-muted">{historico.length} entregues</span>
         </header>
-        {historico === null ? (
-          <p className="px-4 py-4 text-xs text-muted">Carregando…</p>
-        ) : historico.length === 0 ? (
+        {historico.length === 0 ? (
           <p className="px-4 py-4 text-xs text-muted">
             Nenhuma prova entregue ainda. Quando você fizer a primeira, ela aparece aqui.
           </p>
@@ -172,11 +210,13 @@ export function ProvaPanel({ faixa }: { faixa: string }) {
           <ul className="divide-y divide-line">
             {historico.map((h) => (
               <li key={h.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                <span>
-                  <span className="block text-sm font-semibold text-heading">Faixa {h.faixa}</span>
-                  <span className="block text-2xs text-muted">{dataCurta(h.concluidaEm)}</span>
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-heading">{h.titulo}</span>
+                  <span className="block text-2xs text-muted">
+                    Faixa {h.faixa} · {dataCurta(h.concluidaEm)}
+                  </span>
                 </span>
-                <span className="flex items-center gap-3">
+                <span className="flex shrink-0 items-center gap-3">
                   <span className="text-sm font-semibold tabular-nums text-fg">
                     {h.acertos}/{h.total}
                   </span>
@@ -199,7 +239,15 @@ export function ProvaPanel({ faixa }: { faixa: string }) {
 }
 
 /** A prova em andamento: uma pergunta por vez, com volta livre. */
-function EmProva({ prova, onEntregue }: { prova: ProvaAberta; onEntregue: (r: Resultado) => void }) {
+function EmProva({
+  prova,
+  onEntregue,
+  onSair,
+}: {
+  prova: ProvaAberta;
+  onEntregue: (r: Resultado) => void;
+  onSair: () => void;
+}) {
   const total = prova.perguntas.length;
   const [respostas, setRespostas] = useState<(number | null)[]>(() => Array(total).fill(null));
   const [atual, setAtual] = useState(0);
@@ -257,10 +305,21 @@ function EmProva({ prova, onEntregue }: { prova: ProvaAberta; onEntregue: (r: Re
 
   return (
     <div className="painel" style={{ "--game": COR } as React.CSSProperties}>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onSair}
+          className="text-xs font-semibold text-muted underline-offset-2 hover:text-accent hover:underline"
+        >
+          ← Sair e continuar depois
+        </button>
+        <span className="text-2xs text-subtle">{prova.titulo}</span>
+      </div>
+
       <div className="quiz-topo">
         <Contas total={total} feitas={respondidas} proxima={atual} cor={COR} rotulo={`${respondidas.length} de ${total} respondidas`} />
         <span className="quiz-contador">
-          Pergunta {atual + 1} de {total} · {p.tipo === "pratica" ? "prática" : "teoria"}
+          Pergunta {atual + 1} de {total} · {p.tipo === "pratica" ? "prática" : "teoria"} · {NIVEL[p.nivel] ?? ""}
         </span>
       </div>
 
@@ -268,14 +327,14 @@ function EmProva({ prova, onEntregue }: { prova: ProvaAberta; onEntregue: (r: Re
 
       <ul className="quiz-alternativas">
         {p.alternativas.map((alt, i) => (
-          <li key={alt}>
+          <li key={`${i}-${alt}`}>
             <button
               type="button"
               onClick={() => marcar(i)}
               aria-pressed={respostas[atual] === i}
               className="quiz-alternativa"
             >
-              <span className="quiz-letra" aria-hidden>{"ABCD"[i]}</span>
+              <span className="quiz-letra" aria-hidden>{LETRAS[i]}</span>
               {alt}
             </button>
           </li>
@@ -345,7 +404,7 @@ function ResultadoDaProva({ resultado, onVoltar }: { resultado: Resultado; onVol
   return (
     <div className="grid gap-4">
       <section className={cn("painel card-faixa text-center", resultado.aprovado ? "[--faixa-cor:#16A34A]" : "[--faixa-cor:rgb(var(--gold))]")}>
-        <p className="eyebrow">Faixa {resultado.faixa}</p>
+        <p className="eyebrow">{resultado.titulo}</p>
         <p className="mt-2 font-display text-5xl font-bold tabular-nums text-heading">
           {resultado.acertos}
           <span className="text-2xl text-muted">/{resultado.total}</span>
@@ -355,8 +414,8 @@ function ResultadoDaProva({ resultado, onVoltar }: { resultado: Resultado; onVol
         </p>
         <p className="body-muted mx-auto mt-1 max-w-md">
           {resultado.aprovado
-            ? "O resultado ficou registrado no seu histórico e na análise curricular. O exame de faixa no tatame é com o sensei."
-            : `Faltaram ${faltaram} ${faltaram === 1 ? "acerto" : "acertos"} para os ${resultado.minimo}. Leia a correção abaixo e refaça quando quiser.`}
+            ? "O resultado ficou registrado no seu histórico e o sensei já pode ver. O exame de faixa no tatame é com ele."
+            : `Faltaram ${faltaram} ${faltaram === 1 ? "acerto" : "acertos"} para os ${resultado.minimo}. Leia a correção abaixo; o sensei pode liberar uma nova prova quando você estiver pronto.`}
         </p>
         <Button size="sm" className="mt-4" onClick={onVoltar}>
           Voltar às provas
@@ -392,7 +451,7 @@ function ResultadoDaProva({ resultado, onVoltar }: { resultado: Resultado; onVol
                     </span>
                   ) : null}
                 </p>
-                <p className="mt-1 pl-7 text-xs leading-relaxed text-muted">{c.porque}</p>
+                {c.porque ? <p className="mt-1 pl-7 text-xs leading-relaxed text-muted">{c.porque}</p> : null}
               </li>
             );
           })}

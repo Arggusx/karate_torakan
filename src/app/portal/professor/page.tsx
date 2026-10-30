@@ -7,16 +7,18 @@ import { GuardaPortal } from "@/components/portal/GuardaPortal";
 import { MinhaConta } from "@/components/portal/MinhaConta";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import { NavPortal, type ItemNav } from "@/components/portal/NavPortal";
+import { ProvasEquipePanel } from "@/components/portal/ProvasEquipePanel";
 import { RodapePortal } from "@/components/portal/RodapePortal";
 import { TurmasPanel } from "@/components/portal/TurmasPanel";
 import { Badge } from "@/components/ui/Badge";
 import { useAcademia } from "@/lib/academiaStore";
 
-type Aba = "turmas" | "alunos" | "cadastro" | "conta";
+type Aba = "turmas" | "alunos" | "provas" | "cadastro" | "conta";
 
 const ITENS: ItemNav<Aba>[] = [
   { value: "turmas", label: "Turmas", icone: "turmas" },
   { value: "alunos", label: "Alunos", icone: "alunos" },
+  { value: "provas", label: "Provas", icone: "prova" },
   { value: "cadastro", label: "Cadastrar aluno", curto: "Novo", icone: "cadastro" },
   { value: "conta", label: "Minha conta", curto: "Conta", icone: "perfil" },
 ];
@@ -54,7 +56,7 @@ function ConteudoProfessor() {
         compacto
         sobretitulo="Portal do Professor"
         titulo={professor?.nome ?? sessao?.nome ?? ""}
-        descricao="Turmas, plano de aulas, chamada, mensalidades e cadastro de alunos."
+        descricao="Turmas, plano de aulas, chamada, mensalidades, provas e cadastro de alunos."
         imagem="/imagens/dojo.jpg"
         acao={
           professor ? (
@@ -68,6 +70,8 @@ function ConteudoProfessor() {
           <TurmasPanel />
         ) : aba === "alunos" ? (
           <AlunosPanel />
+        ) : aba === "provas" ? (
+          <ProvasEquipePanel />
         ) : aba === "conta" ? (
           <MinhaConta volta="/portal/professor?aba=conta" />
         ) : (
