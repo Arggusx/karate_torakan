@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { RedefinirSenha } from "@/components/portal/RedefinirSenha";
 import { SeletorTurma } from "@/components/portal/SeletorTurma";
 import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -563,6 +564,18 @@ export function AlunoDetalheModal({
         ) : null}
 
         {equipe && !ehPropriaConta ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line px-3 py-2.5">
+            <span>
+              <span className="label block">Acesso ao portal</span>
+              <span className="text-2xs text-muted">
+                Esqueceu a senha? Gere uma temporária para entregar.
+              </span>
+            </span>
+            <RedefinirSenha usuarioId={aluno.id} nome={aluno.nome} />
+          </div>
+        ) : null}
+
+        {equipe && !ehPropriaConta ? (
           <ZonaDeRisco
             rotuloAcao="Desmatricular aluno"
             titulo={`Desmatricular ${aluno.nome}?`}
@@ -664,6 +677,18 @@ export function ProfessorDetalheModal({
           <p className="rounded-md border border-status-bad/40 bg-status-bad/10 px-3 py-2 text-xs text-status-bad">
             {erro}
           </p>
+        ) : null}
+
+        {sessao?.perfil === "admin" && !ehPropriaConta && professor.graduacao !== "Administração" ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line px-3 py-2.5">
+            <span>
+              <span className="label block">Acesso ao portal</span>
+              <span className="text-2xs text-muted">
+                Gere uma senha temporária para entregar ao professor.
+              </span>
+            </span>
+            <RedefinirSenha usuarioId={professor.id} nome={professor.nome} />
+          </div>
         ) : null}
 
         {sessao?.perfil === "admin" && !ehPropriaConta ? (

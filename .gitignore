@@ -35,3 +35,6 @@ next-env.d.ts
 # Cache incremental do TypeScript (reescrito a cada build)
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+
+# Credenciais de login (só local, nunca no repositório)
+credenciais.txt

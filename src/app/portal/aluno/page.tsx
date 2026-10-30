@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnaliseCurricular } from "@/components/portal/AnaliseCurricular";
 import { AvatarPerfil } from "@/components/portal/AvatarPerfil";
 import { CheckoutModal } from "@/components/portal/CheckoutModal";
@@ -50,6 +50,13 @@ export default function PortalAlunoPage() {
 function ConteudoAluno() {
   const { turmas, alunos, sessao, mensalidadeCentavos } = useAcademia();
   const [aba, setAba] = useState<Aba>("painel");
+
+  // ?aba=conta abre direto numa aba — é para onde o Google devolve o aluno
+  // depois de vincular. Lido pelo window para não exigir Suspense.
+  useEffect(() => {
+    const pedida = new URLSearchParams(window.location.search).get("aba");
+    if (pedida && ITENS.some((item) => item.value === pedida)) setAba(pedida as Aba);
+  }, []);
   const [checkoutAberto, setCheckoutAberto] = useState(false);
 
   const aluno = alunos.find((item) => item.id === sessao?.id);

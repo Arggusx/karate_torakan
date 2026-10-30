@@ -35,6 +35,8 @@ interface Resultado {
   ok: boolean;
   erro?: string;
   sessao?: Sessao;
+  /** Conta criada pela equipe que ainda não escolheu a própria senha. */
+  primeiroAcesso?: boolean;
 }
 
 interface AcademiaContexto {
@@ -512,7 +514,11 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
           usuario: dados.conta.usuario,
         };
         setSessao(nova);
-        return { ok: true, sessao: nova };
+        return {
+          ok: true,
+          sessao: nova,
+          primeiroAcesso: Boolean(dados.conta.precisa_trocar_senha),
+        };
       } catch {
         return { ok: false, erro: "Falha de conexão com o servidor." };
       }

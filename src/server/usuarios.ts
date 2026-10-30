@@ -1,5 +1,6 @@
 import "server-only";
 import bcrypt from "bcryptjs";
+import { randomBytes, randomInt } from "node:crypto";
 import { sql } from "@/lib/db";
 
 /**
@@ -104,13 +105,41 @@ export interface MinhaConta {
   email: string;
   avatar_url: string | null;
   precisa_trocar_senha: boolean;
+  /** E-mail da conta Google vinculada, ou null. */
+  google_email: string | null;
+  /** false quando a conta só entra pelo Google (ainda sem senha própria). */
+  tem_senha: boolean;
+  /** As colunas do Google existem no banco (migração 008 aplicada). */
+  google_disponivel: boolean;
+}
+
+/**
+ * A migração 008 (colunas do Google) pode ainda não ter rodado. Nesse caso as
+ * consultas novas falham com "column ... does not exist", e o código cai na
+ * versão antiga em vez de derrubar a tela de conta inteira.
+ */
+export function semColunasGoogle(erro: unknown) {
+  return (
+    erro instanceof Error &&
+    /column .*(google_sub|google_email|tem_senha).* does not exist/i.test(erro.message)
+  );
 }
 
 export async function lerConta(id: number): Promise<MinhaConta | null> {
-  const linhas = await sql`
-    SELECT id, nome, usuario, email, avatar_url, precisa_trocar_senha
-      FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
-  return (linhas[0] as MinhaConta | undefined) ?? null;
+  try {
+    const linhas = await sql`
+      SELECT id, nome, usuario, email, avatar_url, precisa_trocar_senha,
+             google_email, tem_senha, true AS google_disponivel
+        FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
+    return (linhas[0] as MinhaConta | undefined) ?? null;
+  } catch (erro) {
+    if (!semColunasGoogle(erro)) throw erro;
+    const linhas = await sql`
+      SELECT id, nome, usuario, email, avatar_url, precisa_trocar_senha,
+             NULL AS google_email, true AS tem_senha, false AS google_disponivel
+        FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
+    return (linhas[0] as MinhaConta | undefined) ?? null;
+  }
 }
 
 /**
@@ -137,7 +166,15 @@ export async function trocarUsuario(
 }
 
 /**
- * Troca a senha do próprio usuário, conferindo a senha atual antes.
+ * Troca a senha do próprio usuário.
+ *
+ * Em regra confere a senha atual antes. Duas exceções, em que a senha atual
+ * não prova nada:
+ *  - primeiro acesso (`precisa_trocar_senha`): a pessoa acabou de entrar com
+ *    a senha temporária que a equipe entregou;
+ *  - conta só com Google (`tem_senha = false`): não existe senha atual.
+ * Nos dois casos quem autoriza é a sessão, que veio de um login legítimo.
+ *
  * Zera `precisa_trocar_senha`: depois de escolher a sua, o aviso some.
  */
 export async function trocarSenha(
@@ -149,12 +186,17 @@ export async function trocarSenha(
     return { ok: false, erro: "A nova senha precisa de ao menos 6 caracteres." };
   }
 
-  const linhas = await sql`
-    SELECT senha_hash FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
-  const atual = linhas[0] as { senha_hash: string } | undefined;
-  if (!atual) return { ok: false, erro: "Conta não encontrada." };
-  if (!conferirSenha(senhaAtual, atual.senha_hash)) {
-    return { ok: false, erro: "A senha atual não confere." };
+  const conta = await lerConta(id);
+  if (!conta) return { ok: false, erro: "Conta não encontrada." };
+
+  const dispensaAtual = conta.precisa_trocar_senha || !conta.tem_senha;
+  if (!dispensaAtual) {
+    const linhas = await sql`
+      SELECT senha_hash FROM users WHERE id = ${id} AND ativo = true LIMIT 1`;
+    const atual = linhas[0] as { senha_hash: string } | undefined;
+    if (!atual || !conferirSenha(senhaAtual, atual.senha_hash)) {
+      return { ok: false, erro: "A senha atual não confere." };
+    }
   }
 
   await sql`
@@ -162,6 +204,123 @@ export async function trocarSenha(
        SET senha_hash = ${gerarHashSenha(novaSenha)},
            precisa_trocar_senha = false
      WHERE id = ${id}`;
+  if (conta.google_disponivel) {
+    await sql`UPDATE users SET tem_senha = true WHERE id = ${id}`;
+  }
+  return { ok: true };
+}
+
+// --------------------------------------------- senha redefinida pela equipe
+
+/*
+  Senha temporária legível, para ser ditada ou escrita num papel: duas
+  palavras do dojo e quatro dígitos ("kiai-4821-tora"). São uns 23 bits de
+  sorteio com crypto: fraca como senha definitiva, suficiente para uma que
+  vale só até o primeiro acesso, quando a troca é obrigatória.
+*/
+const PALAVRAS = [
+  "tora", "kata", "kiai", "zuki", "geri", "dachi", "rei", "oss", "uke", "kime",
+  "dojo", "obi", "kumite", "kihon", "heian", "tekki", "bassai", "kanku", "jion",
+  "empi", "hangetsu", "jitte", "unsu", "sochin", "meikyo", "wankan", "zanshin",
+  "maai", "koshi", "hikite", "shoshin", "mushin", "sensei", "senpai", "kohai",
+  "tatame", "karate", "shuto", "nukite", "haito", "teisho", "uraken", "mawashi",
+  "yoko", "ushiro", "mikazuki", "kakato", "hiza", "tsuki", "uchi", "kokutsu",
+  "zenkutsu", "kiba", "neko", "sanchin", "fudo", "hachiji", "musubi", "heiko",
+  "teiji", "sakura", "bushi", "kamae", "bunkai",
+];
+
+export function gerarSenhaTemporaria(): string {
+  const palavra = () => PALAVRAS[randomInt(PALAVRAS.length)];
+  const digitos = String(randomInt(10000)).padStart(4, "0");
+  return `${palavra()}-${digitos}-${palavra()}`;
+}
+
+/**
+ * A equipe redefine a senha de alguém: gera uma temporária, grava o hash e
+ * marca `precisa_trocar_senha` — no próximo acesso a pessoa escolhe a dela
+ * (ou vincula o Google). A temporária volta uma única vez, para ser entregue.
+ */
+export async function redefinirSenha(alvoId: number): Promise<string> {
+  const temporaria = gerarSenhaTemporaria();
+  await sql`
+    UPDATE users
+       SET senha_hash = ${gerarHashSenha(temporaria)},
+           precisa_trocar_senha = true
+     WHERE id = ${alvoId}`;
+  try {
+    await sql`UPDATE users SET tem_senha = true WHERE id = ${alvoId}`;
+  } catch (erro) {
+    if (!semColunasGoogle(erro)) throw erro;
+  }
+  return temporaria;
+}
+
+/** Papel e situação de uma conta, para conferir quem pode redefinir o quê. */
+export async function lerPapel(
+  id: number,
+): Promise<{ role: Perfil; ativo: boolean } | null> {
+  const linhas = await sql`SELECT role, ativo FROM users WHERE id = ${id} LIMIT 1`;
+  return (linhas[0] as { role: Perfil; ativo: boolean } | undefined) ?? null;
+}
+
+// ------------------------------------------------------------ conta Google
+
+/** Conta vinculada a um Google, se houver e estiver ativa. */
+export async function acharPorGoogle(sub: string): Promise<ContaBasica | null> {
+  const linhas = await sql`
+    SELECT id, nome, usuario, role, ativo, precisa_trocar_senha
+      FROM users WHERE google_sub = ${sub} AND ativo = true LIMIT 1`;
+  return (linhas[0] as ContaBasica | undefined) ?? null;
+}
+
+/**
+ * Vincula a conta Google à conta já logada. Se for o primeiro acesso, a senha
+ * temporária que a equipe entregou é descartada: vira o hash de um valor
+ * aleatório que ninguém conhece, e a conta passa a entrar pelo Google.
+ */
+export async function vincularGoogle(
+  id: number,
+  google: { sub: string; email: string },
+): Promise<{ ok: boolean; erro?: string }> {
+  const dono = await sql`
+    SELECT id FROM users WHERE google_sub = ${google.sub} AND id <> ${id} LIMIT 1`;
+  if (dono.length > 0) {
+    return { ok: false, erro: "Esta conta Google já está vinculada a outro usuário do dojo." };
+  }
+
+  const conta = await lerConta(id);
+  if (!conta) return { ok: false, erro: "Conta não encontrada." };
+
+  if (conta.precisa_trocar_senha) {
+    await sql`
+      UPDATE users
+         SET google_sub = ${google.sub},
+             google_email = ${google.email},
+             senha_hash = ${gerarHashSenha(randomBytes(24).toString("base64url"))},
+             tem_senha = false,
+             precisa_trocar_senha = false
+       WHERE id = ${id}`;
+  } else {
+    await sql`
+      UPDATE users SET google_sub = ${google.sub}, google_email = ${google.email}
+       WHERE id = ${id}`;
+  }
+  return { ok: true };
+}
+
+/** Desvincula — só se a pessoa tiver senha própria, senão ficaria trancada fora. */
+export async function desvincularGoogle(
+  id: number,
+): Promise<{ ok: boolean; erro?: string }> {
+  const conta = await lerConta(id);
+  if (!conta) return { ok: false, erro: "Conta não encontrada." };
+  if (!conta.tem_senha) {
+    return {
+      ok: false,
+      erro: "Crie uma senha antes de desvincular o Google, ou você ficaria sem como entrar.",
+    };
+  }
+  await sql`UPDATE users SET google_sub = NULL, google_email = NULL WHERE id = ${id}`;
   return { ok: true };
 }
 
