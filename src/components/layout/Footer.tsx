@@ -24,8 +24,8 @@ const COLUNAS = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-line bg-surface">
-      <div className="section grid gap-8 py-10 md:grid-cols-[1.6fr_1fr_1fr]">
+    <footer className="mt-16 border-t border-line bg-elevated">
+      <div className="section grid gap-8 py-12 md:grid-cols-[1.6fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2">
             <MarcaTorakan className="h-9 w-9" />
@@ -40,7 +40,7 @@ export function Footer() {
           </div>
           <p className="body-muted mt-3 max-w-sm">
             Nome fantasia da{" "}
-            <span className="text-fg">Academia Tigre de Karatê</span> — dojo
+            <span className="font-semibold text-heading">Academia Tigre de Karatê</span> — dojo
             Shotokan e plataforma de estudos. Tradição de Okinawa, método
             moderno e acompanhamento contínuo do praticante.
           </p>
@@ -48,7 +48,7 @@ export function Footer() {
 
         {COLUNAS.map((coluna) => (
           <div key={coluna.titulo}>
-            <p className="text-2xs font-semibold uppercase tracking-[0.1em] text-fg">
+            <p className="eyebrow">
               {coluna.titulo}
             </p>
             <ul className="mt-3 space-y-2">
@@ -56,7 +56,7 @@ export function Footer() {
                 <li key={link.href + link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted transition-colors duration-150 hover:text-fg"
+                    className="text-sm text-muted transition-colors duration-[250ms] hover:text-accent"
                   >
                     {link.label}
                   </Link>

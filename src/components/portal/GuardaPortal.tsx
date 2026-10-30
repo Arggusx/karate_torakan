@@ -70,7 +70,7 @@ function Aviso({ titulo, texto }: { titulo: string; texto: string }) {
         <p className="body-muted mt-2">{texto}</p>
         <Link
           href="/login"
-          className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-accent px-4 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+          className="mt-4 inline-flex h-9 items-center justify-center rounded-full bg-accent-solid px-5 text-sm font-bold text-on-accent transition-colors hover:bg-accent-solid/90"
         >
           Ir para o login
         </Link>

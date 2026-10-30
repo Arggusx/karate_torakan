@@ -88,9 +88,14 @@ export function FundoAsiatico() {
         />
       </svg>
 
-      {/* 2 — Halos */}
-      <div className="fundo-halo fundo-halo-vermelho" />
-      <div className="fundo-halo fundo-halo-dourado" />
+      {/*
+        2 — Brilhos do Oratio: três círculos borrados (dourado, azul e rosa)
+        que flutuam devagar, cada um num ritmo, e dão ao papel a sensação de
+        luz entrando pela janela.
+      */}
+      <div className="brilho-fundo brilho-fundo-a" />
+      <div className="brilho-fundo brilho-fundo-b" />
+      <div className="brilho-fundo brilho-fundo-c" />
 
       {/*
         2b — Hinomaru. O equivalente diurno da lua vermelha do modo escuro:

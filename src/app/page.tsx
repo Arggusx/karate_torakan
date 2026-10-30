@@ -123,7 +123,7 @@ export default async function LandingPage() {
             {beneficios.map((beneficio) => (
               <article
                 key={beneficio.titulo}
-                className="card card-hover relative overflow-hidden p-4"
+                className="card card-hover card-faixa relative overflow-hidden p-5 [--faixa-cor:rgb(var(--gold))]"
               >
                 <span
                   aria-hidden
@@ -157,7 +157,7 @@ export default async function LandingPage() {
             {pilares.map((pilar) => {
               const Cena = CENA_DO_PILAR[pilar.nome];
               return (
-              <article key={pilar.nome} className="card p-4">
+              <article key={pilar.nome} className="card card-faixa p-5">
                 {Cena ? (
                   <div className="mb-3 flex h-24 items-center justify-center rounded-lg bg-elevated/60">
                     <Cena className="h-20 w-auto" />

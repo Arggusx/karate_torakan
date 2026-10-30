@@ -128,7 +128,7 @@ export function Embusen({
               className={cn(
                 "px-3 py-1 text-2xs font-medium transition-colors",
                 modo === valor
-                  ? "bg-accent text-white"
+                  ? "bg-accent-solid text-on-accent"
                   : "bg-surface text-muted hover:text-fg",
               )}
             >

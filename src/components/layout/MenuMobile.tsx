@@ -39,7 +39,7 @@ export function MenuMobile({
         aria-label={rotulo}
         aria-expanded={aberto}
         onClick={() => setAberto((atual) => !atual)}
-        className="flex h-9 w-9 items-center justify-center rounded-md border border-line bg-surface text-muted transition-colors hover:border-line-strong hover:text-fg"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-elevated text-muted transition-colors hover:text-heading"
       >
         {aberto ? <IconeFechar /> : <IconeMenu />}
       </button>
@@ -53,7 +53,7 @@ export function MenuMobile({
             className="fixed inset-0 z-40 cursor-default"
           />
           <div
-            className="card absolute right-0 top-11 z-50 w-60 p-1.5 shadow-lg"
+            className="card absolute right-0 top-12 z-50 w-60 p-1.5 shadow-lg"
             onClick={() => setAberto(false)}
           >
             {children}

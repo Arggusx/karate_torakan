@@ -17,7 +17,12 @@ export type NomeIcone =
   | "estudos"
   | "inicio"
   | "sair"
-  | "cadastro";
+  | "cadastro"
+  | "historia"
+  | "tecnicas"
+  | "fundamentos"
+  | "planos"
+  | "entrar";
 
 export function IconePortal({
   nome,
@@ -123,6 +128,44 @@ const TRACOS: Record<NomeIcone, React.ReactNode> = {
       <circle cx="9.5" cy="8" r="3.4" />
       <path d="M3 20a6.5 6.5 0 0 1 11.5-4.1" />
       <path d="M18.5 14v6M15.5 17h6" />
+    </>
+  ),
+  // Pergaminho: a linha do tempo.
+  historia: (
+    <>
+      <path d="M7 4h11a2 2 0 0 1 2 2v1H9" />
+      <path d="M7 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7" />
+      <path d="M9 11h7M9 15h5" />
+    </>
+  ),
+  // Alvo: técnica é precisão.
+  tecnicas: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="0.8" fill="currentColor" />
+    </>
+  ),
+  // Nó da faixa com as duas pontas.
+  fundamentos: (
+    <>
+      <path d="M3 9.5h18" />
+      <rect x="9.5" y="7" width="5" height="5" rx="1.2" />
+      <path d="M10.5 12 8 20M13.5 12 16 20" />
+    </>
+  ),
+  // Etiqueta de preço.
+  planos: (
+    <>
+      <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+      <circle cx="7.5" cy="7.5" r="1.3" />
+    </>
+  ),
+  entrar: (
+    <>
+      <path d="M9.5 3.5h-3A2.5 2.5 0 0 0 4 6v12a2.5 2.5 0 0 0 2.5 2.5h3" />
+      <path d="M14 16.5 18.5 12 14 7.5" />
+      <path d="M18.5 12h-11" />
     </>
   ),
 };

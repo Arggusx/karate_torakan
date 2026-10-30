@@ -41,20 +41,20 @@ export function Modal({
       <button
         aria-label="Fechar"
         onClick={onClose}
-        className="absolute inset-0 bg-black/60"
+        className="absolute inset-0 bg-heading/45 backdrop-blur-[2px] dark:bg-black/60"
       />
-      <div className="card relative z-10 max-h-[85vh] w-full max-w-lg animate-fade-in overflow-y-auto">
-        <div className="flex items-center justify-between gap-4 border-b border-line px-4 py-3">
+      <div className="card relative z-10 max-h-[85vh] w-full max-w-lg animate-fade-in overflow-y-auto shadow-lg">
+        <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-3.5">
           {titulo ? <h3 className="heading-md">{titulo}</h3> : <span />}
           <button
             onClick={onClose}
             aria-label="Fechar"
-            className="rounded px-1.5 text-lg leading-none text-muted transition-colors hover:text-fg"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-lg leading-none text-muted transition-colors hover:bg-elevated hover:text-heading"
           >
             ×
           </button>
         </div>
-        <div className="p-4">{children}</div>
+        <div className="p-5">{children}</div>
       </div>
     </div>
   );

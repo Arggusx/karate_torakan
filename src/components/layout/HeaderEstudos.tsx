@@ -4,19 +4,26 @@ import Link from "next/link";
 import { MarcaTorakan } from "@/components/ui/MarcaTorakan";
 import { usePathname } from "next/navigation";
 import {
-  MenuMobile,
-  MenuMobileLink,
-  MenuMobileSeparador,
-} from "@/components/layout/MenuMobile";
+  BarraInferiorSite,
+  type ItemBarra,
+} from "@/components/layout/BarraInferiorSite";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ButtonLink } from "@/components/ui/Button";
-import { cn } from "@/lib/cn";
 
 const LINKS = [
   { href: "/estudos", label: "Home" },
   { href: "/estudos/historia", label: "História" },
   { href: "/estudos/tecnicas", label: "Técnicas" },
   { href: "/estudos/fundamentos", label: "Fundamentos" },
+];
+
+/** No celular, os mesmos destinos vão para a barra inferior. */
+const BARRA: ItemBarra[] = [
+  { href: "/estudos", label: "Estudos", icone: "estudos", exato: true },
+  { href: "/estudos/historia", label: "História", icone: "historia" },
+  { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
+  { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
+  { href: "/login", label: "Entrar", icone: "entrar" },
 ];
 
 export function HeaderEstudos() {
@@ -26,8 +33,9 @@ export function HeaderEstudos() {
     href === "/estudos" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-surface">
-      <div className="section flex h-14 items-center justify-between gap-4">
+    <>
+    <header className="cabecalho-vidro">
+      <div className="section flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <MarcaTorakan className="h-8 w-8" />
@@ -36,7 +44,7 @@ export function HeaderEstudos() {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-0.5 md:flex">
+          <nav className="hidden items-center gap-6 md:flex">
             {LINKS.map((link) => {
               const active = isActive(link.href);
               return (
@@ -44,17 +52,9 @@ export function HeaderEstudos() {
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "relative rounded px-2.5 py-1.5 text-sm font-medium transition-colors duration-150",
-                    active
-                      ? "text-fg"
-                      : "text-muted hover:bg-elevated hover:text-fg",
-                  )}
+                  className="nav-link"
                 >
                   {link.label}
-                  {active ? (
-                    <span className="absolute inset-x-2 -bottom-[13px] h-0.5 bg-accent" />
-                  ) : null}
                 </Link>
               );
             })}
@@ -67,24 +67,10 @@ export function HeaderEstudos() {
             Área do Aluno / Professor
           </ButtonLink>
 
-          <MenuMobile className="md:hidden" rotulo="Abrir navegação dos estudos">
-            {LINKS.map((link) => (
-              <MenuMobileLink
-                key={link.href}
-                href={link.href}
-                ativo={isActive(link.href)}
-              >
-                {link.label}
-              </MenuMobileLink>
-            ))}
-            <MenuMobileSeparador />
-            <MenuMobileLink href="/login">
-              Área do Aluno / Professor
-            </MenuMobileLink>
-            <MenuMobileLink href="/">Página inicial</MenuMobileLink>
-          </MenuMobile>
         </div>
       </div>
     </header>
+    <BarraInferiorSite itens={BARRA} />
+    </>
   );
 }

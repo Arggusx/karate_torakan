@@ -122,7 +122,7 @@ export function HeroLanding({
   return (
     <section
       ref={raiz}
-      className="relative isolate overflow-hidden bg-[#EDE4DE] text-fg dark:bg-[#0B0B0D] dark:text-white"
+      className="relative isolate overflow-hidden border-b border-line bg-[rgb(var(--hero))] text-fg"
     >
       {/*
         Foto de fundo em preto e branco: a cor viria competir com o vermelho do
@@ -142,7 +142,7 @@ export function HeroLanding({
       */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(120%_80%_at_15%_20%,rgba(220,38,38,0.12),transparent_60%),linear-gradient(100deg,#EDE4DE_35%,rgba(237,228,222,0.86)_70%,rgba(237,228,222,0.6)_100%)] dark:bg-[radial-gradient(120%_80%_at_15%_20%,rgba(220,38,38,0.16),transparent_60%),linear-gradient(100deg,#0B0B0D_35%,rgba(11,11,13,0.72)_70%,rgba(11,11,13,0.45)_100%)]"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(120%_80%_at_15%_20%,rgb(var(--accent)/0.12),transparent_60%),linear-gradient(100deg,rgb(var(--hero))_35%,rgb(var(--hero)/0.84)_70%,rgb(var(--hero)/0.55)_100%)]"
       />
 
       {/* 224px + 40% = 314px. Mesma posição de antes: inteira dentro da tela,
@@ -167,14 +167,14 @@ export function HeroLanding({
 
         <h1
           data-hero="titulo"
-          className="mt-6 max-w-2xl font-display text-[clamp(1.8rem,4.5vw,3rem)] font-normal leading-[1.15] tracking-[-0.02em]"
+          className="mt-6 max-w-3xl font-display text-[clamp(2.6rem,6vw,4.6rem)] font-semibold leading-[0.95] text-heading"
         >
           O caminho da mão vazia, ensinado do jeito certo.
         </h1>
 
         <p
           data-hero="texto"
-          className="mt-4 max-w-xl text-sm leading-relaxed text-[#8A6B23] dark:text-gold sm:text-base"
+          className="mt-5 max-w-xl text-sm leading-[1.7] text-muted sm:text-base"
         >
           Academia de Karatê Shotokan com linhagem, método e acompanhamento
           individual — somada a um portal de estudos com {katas} katas

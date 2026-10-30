@@ -28,7 +28,7 @@
 
 .anim-enso-traco {
   fill: none;
-  stroke: #dc2626;
+  stroke: rgb(var(--accent-solid));
   stroke-width: 7;
   stroke-linecap: round;
   stroke-dasharray: 100;
@@ -246,7 +246,7 @@
 /* --- kime: anel de impacto, compartilhado pelas duas cenas --- */
 .anim-kime {
   fill: none;
-  stroke: #dc2626;
+  stroke: rgb(var(--accent-solid));
   stroke-width: 2;
   transform-box: fill-box;
   transform-origin: center;
@@ -405,7 +405,7 @@
 
 .anim-garra-risco {
   fill: none;
-  stroke: #dc2626;
+  stroke: rgb(var(--accent-solid));
   stroke-width: 7;
   stroke-linecap: round;
   stroke-dasharray: 100;
@@ -467,13 +467,13 @@
 /* ---------------------------------------------------------- Hinomaru */
 
 .hinomaru-disco {
-  fill: #dc2626;
+  fill: rgb(var(--accent-solid));
   opacity: 0.85;
 }
 
 .hinomaru-anel {
   fill: none;
-  stroke: rgba(220, 38, 38, 0.45);
+  stroke: rgb(var(--accent-solid) / 0.45);
   stroke-width: 1.5;
   transform-origin: 0 0;
 }
@@ -490,7 +490,7 @@
 
 .hinomaru-onda {
   fill: none;
-  stroke: rgba(220, 38, 38, 0.5);
+  stroke: rgb(var(--accent-solid) / 0.5);
   stroke-width: 2;
   transform-origin: 0 0;
   animation: sol-onda 6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;

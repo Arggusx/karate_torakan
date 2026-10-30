@@ -34,6 +34,7 @@ const PILARES_NAV = [
     href: "/estudos/historia",
     kanji: "歴史",
     cena: Lanterna,
+    cor: "rgb(var(--gold))",
     titulo: "História",
     subtitulo: "Linhagem e Mestres",
     descricao:
@@ -49,6 +50,7 @@ const PILARES_NAV = [
     href: "/estudos/tecnicas",
     kanji: "技術",
     cena: Makiwara,
+    cor: "rgb(var(--accent))",
     titulo: "Técnicas",
     subtitulo: "Kihon e Katas",
     descricao:
@@ -64,6 +66,7 @@ const PILARES_NAV = [
     href: "/estudos/fundamentos",
     kanji: "基本",
     cena: FaixaAoVento,
+    cor: "rgb(var(--heading))",
     titulo: "Fundamentos",
     subtitulo: "Graduação e Filosofia",
     descricao:
@@ -108,10 +111,7 @@ export default function EstudosHomePage() {
         acao={
           <div className="flex gap-2">
             <ButtonLink href="/estudos/tecnicas">Ver katas</ButtonLink>
-            <ButtonLink
-              href="/estudos/historia"
-              className="border border-white/35 bg-transparent text-white hover:border-white hover:bg-white/10"
-            >
+            <ButtonLink href="/estudos/historia" variant="secondary">
               História
             </ButtonLink>
           </div>
@@ -139,7 +139,8 @@ export default function EstudosHomePage() {
           <Link
             key={pilar.href}
             href={pilar.href}
-            className="card card-hover group relative overflow-hidden p-4"
+            className="card card-hover card-faixa group relative overflow-hidden p-5"
+            style={{ "--faixa-cor": pilar.cor } as React.CSSProperties}
           >
             <span
               aria-hidden

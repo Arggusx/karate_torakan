@@ -114,7 +114,7 @@ function BotaoPagina({
       className={cn(
         "min-w-[1.75rem] rounded-md border px-2 py-1 text-2xs font-medium transition-colors",
         ativo
-          ? "border-accent bg-accent text-white"
+          ? "border-accent-solid bg-accent-solid text-on-accent"
           : "border-line bg-surface text-muted hover:border-line-strong hover:text-fg",
         desabilitado && "pointer-events-none opacity-40",
       )}

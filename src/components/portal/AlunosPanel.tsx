@@ -43,21 +43,22 @@ export function AlunosPanel() {
 
   return (
     <div className="space-y-4">
-      {/* Barra de filtros comum às duas visões */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      {/* Filtros comuns às duas visões. Seletor numa linha, filtros na de baixo: lado a lado, os campos eram
+          espremidos quando o trilho lateral está aberto. */}
+      <div className="flex flex-col items-start gap-3">
         <SegmentedControl options={MODOS} value={modo} onChange={setModo} />
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <CampoBusca
             id="busca-alunos"
             valor={busca}
             onChange={setBusca}
             placeholder="Buscar aluno por nome ou usuário"
-            className="sm:w-60"
+            className="sm:w-64 sm:shrink-0"
           />
           <select
             aria-label="Filtrar por turma"
-            className="input sm:w-44"
+            className="input sm:w-48 sm:shrink-0"
             value={turmaFiltro}
             onChange={(event) => setTurmaFiltro(event.target.value)}
           >
@@ -70,7 +71,7 @@ export function AlunosPanel() {
           </select>
           <select
             aria-label="Filtrar por dia da semana"
-            className="input sm:w-40"
+            className="input sm:w-44 sm:shrink-0"
             value={diaFiltro}
             onChange={(event) => setDiaFiltro(event.target.value)}
           >

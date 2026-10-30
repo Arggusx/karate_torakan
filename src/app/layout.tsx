@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
+  Cormorant_Garamond,
+  Inter,
   Nanum_Brush_Script,
-  Noto_Serif_Display,
   Yuji_Syuku,
 } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
@@ -12,14 +13,25 @@ import "./globals.css";
 import "./animacoes.css";
 
 /**
- * Serifada de display, só para títulos de vitrine. Auto-hospedada pelo Next,
- * então não depende de rede em runtime nem carrega peso que não é usado.
+ * Títulos em Cormorant Garamond, o par tipográfico do Oratio: serifada de
+ * livro, com contraste fino — dá aos títulos o ar de página bem diagramada.
+ * Auto-hospedada pelo Next (next/font), então não depende do Google em
+ * runtime, que é o equivalente ao <link> + preconnect do Oratio.
  */
-const fonteDisplay = Noto_Serif_Display({
+const fonteDisplay = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
   variable: "--fonte-display",
+});
+
+/** Texto corrido e interface em Inter, de 400 a 700. */
+const fonteTexto = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--fonte-texto",
 });
 
 /**
@@ -50,6 +62,14 @@ const fonteKanji = Yuji_Syuku({
   variable: "--fonte-kanji",
 });
 
+/** Cor da barra do navegador no celular: o creme do papel, ou o café no escuro. */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FDFBF7" },
+    { media: "(prefers-color-scheme: dark)", color: "#17120F" },
+  ],
+};
+
 export const metadata: Metadata = {
   title: {
     // Torakan (虎館, "casa do tigre") é a marca; o nome de registro da
@@ -72,7 +92,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${fonteDisplay.variable} ${fonteMarca.variable} ${fonteKanji.variable}`}
+      className={`${fonteDisplay.variable} ${fonteTexto.variable} ${fonteMarca.variable} ${fonteKanji.variable}`}
     >
       <body className="min-h-screen bg-canvas text-fg">
         <ThemeProvider>

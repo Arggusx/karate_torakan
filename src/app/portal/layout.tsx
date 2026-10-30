@@ -12,8 +12,8 @@ export default function PortalLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b border-line bg-surface">
-        <div className="section flex h-14 items-center justify-between gap-4">
+      <header className="cabecalho-vidro">
+        <div className="section flex h-16 items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
             <MarcaTorakan className="h-8 w-8" />
             <span className="font-marca text-2xl leading-none text-accent">

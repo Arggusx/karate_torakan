@@ -110,14 +110,14 @@ export default async function PlanosPage() {
           primeiro. Agora a coluna da direita é o cartão de preço, e o texto à
           esquerda só justifica o que está nele.
         */}
-        <section className="relative isolate overflow-hidden border-b border-line bg-[#EDE4DE] text-fg dark:bg-[#0B0B0D] dark:text-white">
+        <section className="relative isolate overflow-hidden border-b border-line bg-[rgb(var(--hero))] text-fg">
           <div
             aria-hidden
             className="absolute inset-0 -z-20 bg-[url('/imagens/dojo.jpg')] bg-cover bg-center opacity-[0.18] grayscale dark:opacity-[0.3]"
           />
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-[radial-gradient(110%_80%_at_12%_15%,rgba(220,38,38,0.12),transparent_60%),linear-gradient(100deg,#EDE4DE_40%,rgba(237,228,222,0.88)_72%,rgba(237,228,222,0.62)_100%)] dark:bg-[radial-gradient(110%_80%_at_12%_15%,rgba(220,38,38,0.18),transparent_60%),linear-gradient(100deg,#0B0B0D_40%,rgba(11,11,13,0.8)_72%,rgba(11,11,13,0.5)_100%)]"
+            className="absolute inset-0 -z-10 bg-[radial-gradient(110%_80%_at_12%_15%,rgb(var(--accent)/0.12),transparent_60%),linear-gradient(100deg,rgb(var(--hero))_40%,rgb(var(--hero)/0.88)_72%,rgb(var(--hero)/0.6)_100%)]"
           />
           <span
             aria-hidden
@@ -154,7 +154,7 @@ export default async function PlanosPage() {
 
             {/* Cartão de preço */}
             <div className="painel relative border-accent/60 ring-1 ring-accent/15">
-              <span className="absolute -top-3 left-6 rounded-full bg-accent px-3 py-1 text-2xs font-semibold uppercase tracking-[0.1em] text-white">
+              <span className="absolute -top-3 left-6 rounded-full bg-accent-solid px-3 py-1 text-2xs font-semibold uppercase tracking-[0.1em] text-on-accent">
                 Plano único
               </span>
 

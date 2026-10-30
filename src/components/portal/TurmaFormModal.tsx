@@ -224,7 +224,7 @@ export function TurmaFormModal({
                   onClick={() => alternarDia(dia)}
                   className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
                     ativo
-                      ? "border-accent bg-accent text-white"
+                      ? "border-accent-solid bg-accent-solid text-on-accent"
                       : "border-line bg-surface text-muted hover:border-line-strong hover:text-fg"
                   }`}
                 >

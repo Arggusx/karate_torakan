@@ -54,12 +54,12 @@ export default function FundamentosPage() {
           virou uma linha corrida em vez de duas listas — a mesma informação
           ocupando um terço da altura, e a sequência de faixas cabe de relance.
         */}
-        <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grade-centrada grade-4 [--grade-gap:0.5rem]">
           {graduacoes.map((faixa) => (
             <article
               key={faixa.id}
-              className="card card-hover overflow-hidden border-l-[3px] px-2.5 py-2"
-              style={{ borderLeftColor: faixa.cor }}
+              className="card card-hover card-faixa overflow-hidden px-3 py-2.5"
+              style={{ "--faixa-cor": faixa.cor } as React.CSSProperties}
             >
               <div className="flex items-center gap-1.5">
                 <span

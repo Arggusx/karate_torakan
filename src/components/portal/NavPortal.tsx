@@ -84,13 +84,13 @@ export function NavPortal<T extends string>({
       <div className="flex">
         <aside
           className={cn(
-            "sticky top-14 hidden h-[calc(100vh-3.5rem)] shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200 lg:flex",
+            "sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 flex-col border-r border-line bg-surface/80 transition-[width] duration-[350ms] ease-oratio lg:flex",
             expandido ? "w-[250px]" : "w-[76px]",
           )}
         >
           <div
             className={cn(
-              "flex h-14 items-center border-b border-line px-3",
+              "flex h-16 items-center border-b border-line px-3",
               expandido ? "justify-between" : "justify-center",
             )}
           >
@@ -104,7 +104,7 @@ export function NavPortal<T extends string>({
               onClick={alternar}
               aria-label={expandido ? "Recolher menu" : "Expandir menu"}
               aria-expanded={expandido}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-elevated hover:text-fg"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-elevated hover:text-heading"
             >
               <svg
                 width="18"
@@ -153,11 +153,11 @@ export function NavPortal<T extends string>({
                       onChange(item.value);
                     }}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                      "flex w-full items-center gap-3 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-colors duration-[250ms]",
                       expandido ? "justify-start" : "justify-center",
                       estaAtivo
                         ? "bg-accent/10 text-accent"
-                        : "text-muted hover:bg-elevated hover:text-fg",
+                        : "text-muted hover:bg-elevated hover:text-heading",
                     )}
                   >
                     <IconePortal nome={item.icone} className="h-5 w-5 shrink-0" />
@@ -230,8 +230,7 @@ export function NavPortal<T extends string>({
           ) : null}
         </aside>
 
-        {/* pb-20 abre espaço para a barra inferior não cobrir o fim da página. */}
-        <div className="min-w-0 flex-1 pb-20 lg:pb-0">{children}</div>
+        <div className="min-w-0 flex-1">{children}</div>
       </div>
 
       <BarraInferior itens={itens} valor={valor} onChange={onChange} />
@@ -265,41 +264,23 @@ function BarraInferior<T extends string>({
   return (
     <nav
       aria-label="Seções do portal"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 backdrop-blur lg:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      data-ate="lg"
+      className="barra-inferior lg:hidden"
     >
-      <ul className="flex items-stretch">
-        {planos.map((item) => {
-          const estaAtivo = item.value === valor;
-          return (
-            <li key={item.value} className="min-w-0 flex-1">
-              <button
-                type="button"
-                onClick={() => onChange(item.value)}
-                aria-current={estaAtivo ? "page" : undefined}
-                className={cn(
-                  "flex w-full flex-col items-center gap-1 px-1 pb-2 pt-2.5 transition-colors",
-                  estaAtivo ? "text-accent" : "text-subtle hover:text-fg",
-                )}
-              >
-                {/* A marca do item ativo é um traço acima do ícone, como em
-                    app de treino: some do caminho do polegar. */}
-                <span
-                  aria-hidden
-                  className={cn(
-                    "h-0.5 w-7 rounded-full transition-colors",
-                    estaAtivo ? "bg-accent" : "bg-transparent",
-                  )}
-                />
-                <IconePortal nome={item.icone} className="h-5 w-5" />
-                <span className="w-full truncate text-center text-[0.625rem] font-medium uppercase tracking-[0.06em]">
-                  {item.label}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      {planos.map((item) => (
+        <button
+          key={item.value}
+          type="button"
+          onClick={() => onChange(item.value)}
+          aria-current={item.value === valor ? "page" : undefined}
+          className="barra-item"
+        >
+          <IconePortal nome={item.icone} className="h-5 w-5" />
+          <span className="w-full truncate text-center tracking-[-0.01em]">
+            {item.label}
+          </span>
+        </button>
+      ))}
     </nav>
   );
 }

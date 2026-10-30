@@ -35,10 +35,9 @@ export function SegmentedControl<T extends string>({
         // max-w-full + overflow-x-auto: com cinco abas (portal do admin) o
         // conjunto não cabe em 375px e transbordava cortado. Agora rola na
         // horizontal em vez de sumir fora da tela.
-        "inline-flex w-fit max-w-full self-start overflow-x-auto rounded-md border p-0.5",
-        destaque
-          ? "border-line-strong bg-surface"
-          : "border-line bg-elevated",
+        //
+        // Pílula do Oratio: trilho em creme quente, opção ativa em vermelho.
+        "inline-flex w-fit max-w-full self-start gap-0.5 overflow-x-auto rounded-full bg-elevated p-1",
         className,
       )}
     >
@@ -53,13 +52,12 @@ export function SegmentedControl<T extends string>({
             className={cn(
               // shrink-0: dentro do container rolável, as abas mantêm a
               // largura do rótulo em vez de comprimirem o texto.
-              "shrink-0 whitespace-nowrap rounded transition-colors duration-150",
+              "shrink-0 whitespace-nowrap rounded-full transition-[background-color,color,box-shadow] duration-[250ms] ease-oratio",
               destaque
-                ? "px-5 py-2 text-sm font-semibold uppercase tracking-[0.06em]"
-                : "px-3 py-1.5 text-sm font-medium",
-              active && destaque && "bg-accent text-white",
-              active && !destaque && "bg-surface text-fg shadow-sm",
-              !active && "text-muted hover:text-fg",
+                ? "px-5 py-2 text-sm font-bold uppercase tracking-[0.06em]"
+                : "px-4 py-1.5 text-sm font-semibold",
+              active && "bg-accent-solid text-on-accent shadow-sm",
+              !active && "text-muted hover:text-heading",
             )}
           >
             {option.label}
@@ -96,10 +94,10 @@ export function FilterChips<T extends string>({
             key={option.value}
             onClick={() => onChange(option.value)}
             className={cn(
-              "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors duration-150",
+              "rounded-full px-3.5 py-1.5 text-xs font-semibold transition-[background-color,color] duration-[250ms] ease-oratio",
               active
-                ? "border-accent bg-accent text-white"
-                : "border-line bg-surface text-muted hover:border-line-strong hover:text-fg",
+                ? "bg-accent-solid text-on-accent"
+                : "bg-elevated text-muted hover:text-heading",
             )}
           >
             {option.label}

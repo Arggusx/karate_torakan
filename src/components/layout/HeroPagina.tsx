@@ -43,10 +43,10 @@ export function HeroPagina({
       e uma faixa de breu em cima.
 
       A foto é a mesma nos dois temas: o que muda é a cor por baixo e o véu por
-      cima. No claro vira um papel quente com a imagem desbotada atrás; no
-      escuro continua o breu de sempre.
+      cima, ambos no token --hero — o creme quente do Oratio no claro, o café
+      no escuro.
     */
-    <section className="relative isolate overflow-hidden bg-[#EDE4DE] text-fg dark:bg-[#0B0B0D] dark:text-white">
+    <section className="relative isolate overflow-hidden border-b border-line bg-[rgb(var(--hero))] text-fg">
       {imagem ? (
         <div
           aria-hidden
@@ -64,7 +64,7 @@ export function HeroPagina({
       */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,#EDE4DE_30%,rgba(237,228,222,0.82)_65%,rgba(237,228,222,0.55)_100%)] dark:bg-[linear-gradient(100deg,#0B0B0D_30%,rgba(11,11,13,0.78)_65%,rgba(11,11,13,0.5)_100%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgb(var(--hero))_30%,rgb(var(--hero)/0.82)_65%,rgb(var(--hero)/0.55)_100%)]"
       />
 
       {/*
@@ -75,7 +75,7 @@ export function HeroPagina({
       {kanji ? (
         <span
           aria-hidden
-          className="pointer-events-none absolute right-6 top-1/2 -z-10 hidden -translate-y-1/2 select-none font-kanji text-[9rem] leading-none text-fg/[0.07] dark:text-white/[0.06] lg:block"
+          className="pointer-events-none absolute right-6 top-1/2 -z-10 hidden -translate-y-1/2 select-none font-kanji text-[9rem] leading-none text-heading/[0.07] lg:block"
         >
           {kanji}
         </span>
@@ -88,19 +88,21 @@ export function HeroPagina({
         )}
       >
         <div>
-          <p className="text-2xs font-semibold uppercase tracking-[0.12em] text-gold">
+          <p className="eyebrow">
             {sobretitulo}
           </p>
           <h1
             className={cn(
-              "mt-2 font-display font-normal leading-[1.15] tracking-[-0.02em]",
-              compacto ? "text-2xl sm:text-3xl" : "text-3xl sm:text-4xl",
+              "mt-2 font-display font-semibold leading-none text-heading",
+              compacto
+                ? "text-[clamp(2rem,4.5vw,2.8rem)]"
+                : "text-[clamp(2.4rem,6vw,3.8rem)]",
             )}
           >
             {titulo}
           </h1>
           {descricao ? (
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg/70 dark:text-white/70">
+            <p className="body-muted mt-3 max-w-2xl">
               {descricao}
             </p>
           ) : null}

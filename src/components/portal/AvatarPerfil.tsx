@@ -79,10 +79,10 @@ export function AvatarPerfil({
             onClick={() => input.current?.click()}
             disabled={ocupado}
             aria-label={src ? "Trocar foto de perfil" : "Enviar foto de perfil"}
-            className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-accent text-white shadow-painel transition-colors hover:bg-accent-hover disabled:opacity-60"
+            className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-accent-solid text-on-accent shadow-painel transition-colors hover:bg-accent-solid/90 disabled:opacity-60"
           >
             {ocupado ? (
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-on-accent/40 border-t-on-accent" />
             ) : (
               <svg
                 width="15"

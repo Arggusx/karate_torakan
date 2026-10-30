@@ -2,41 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tema claro (padrão do documento) */
+/*
+  Tokens no estilo do Oratio: papel creme, texto café, bordas discretas e
+  sombras marrons quase invisíveis. Os valores vêm de
+  ~/.claude/skills/oratio-estilo/references/tokens.css.
+
+  Exceção deliberada: a cor principal continua sendo o vermelho do Torakan
+  (marca, hinomaru, Tigre) no lugar da terracota do Oratio. No claro ela usa o
+  tom fechado #B91C1C, que passa no contraste AA sobre o creme; o #DC2626 de
+  antes ficava em 4,4:1. Para adotar a terracota, basta trocar --accent,
+  --accent-hover e --accent-solid pelos valores de --color-terracotta.
+*/
 :root {
-  --canvas: 248 250 252; /* #F8FAFC */
-  --surface: 255 255 255; /* #FFFFFF */
-  --elevated: 241 245 249; /* #F1F5F9 */
-  --line: 226 232 240; /* #E2E8F0 */
-  --line-strong: 203 213 225; /* #CBD5E1 */
-  --fg: 15 23 42; /* #0F172A */
-  --muted: 100 116 139; /* #64748B */
-  --subtle: 148 163 184; /* #94A3B8 */
+  --canvas: 253 251 247; /* #FDFBF7 creme */
+  --surface: 255 253 249; /* #FFFDF9 */
+  --elevated: 244 237 228; /* #F4EDE4 creme quente */
+  --line: 234 223 212; /* #EADFD4 */
+  --line-strong: 231 220 208; /* #E7DCD0 */
+  --fg: 51 42 37; /* #332A25 */
+  --heading: 45 36 31; /* #2D241F */
+  --muted: 112 94 82; /* #705E52 */
+  --subtle: 130 101 78; /* #82654E */
+  --faixa: 244 237 228; /* #F4EDE4 */
+  --gold: 200 150 62; /* #C8963E */
+  --hero: 244 237 228; /* fundo dos heros, por baixo da foto */
 
-  /* Faixa que separa seções: vermelho bem diluído, não um branco rosado. */
-  --faixa: 248 232 229; /* #F8E8E5 */
+  --accent: 185 28 28; /* #B91C1C — texto e ícones */
+  --accent-hover: 153 27 27; /* #991B1B */
+  --accent-solid: 185 28 28; /* fundo de botão, com texto claro por cima */
+  --on-accent: 255 250 244; /* #FFFAF4 */
 
-  /* Segundo acento: dourado sumi-e. Destaca título, subtítulo e o botão que
-     não é a ação principal, sem competir com o vermelho. */
-  --gold: 176 141 61; /* #B08D3D */
+  --shadow-sm: 0 2px 8px rgba(94, 59, 36, 0.04);
+  --shadow-md: 0 6px 18px rgba(94, 59, 36, 0.06);
+  --shadow-lg: 0 14px 25px rgba(94, 59, 36, 0.06);
+  --shadow-xl: 0 9px 22px rgba(156, 70, 29, 0.17);
+
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --duration-fast: 0.25s;
+  --duration-mid: 0.35s;
+  --duration-slow: 0.42s;
 }
 
-/* Tema escuro */
+/* Modo escuro do Oratio: marrom-café, texto areia e sombras pretas. */
 .dark {
-  --canvas: 15 15 18; /* #0F0F12 */
-  --surface: 24 24 28; /* #18181C */
-  --elevated: 32 32 37; /* #202025 */
-  --line: 39 39 42; /* #27272A */
-  --line-strong: 63 63 70; /* #3F3F46 */
-  --fg: 255 255 255; /* #FFFFFF */
-  --muted: 161 161 170; /* #A1A1AA */
-  --subtle: 113 113 122; /* #71717A */
+  color-scheme: dark;
 
-  /* No escuro a faixa esquenta em vez de clarear: fica um degrau acima do
-     canvas e puxada para o vinho, o que separa sem virar um bloco claro. */
-  --faixa: 34 20 21; /* #221415 */
+  --canvas: 23 18 15; /* #17120F */
+  --surface: 32 25 20; /* #201914 */
+  --elevated: 37 29 24; /* #251D18 */
+  --line: 48 38 31; /* #30261F */
+  --line-strong: 58 46 38; /* #3A2E26 */
+  --fg: 230 218 208; /* #E6DAD0 */
+  --heading: 243 233 222; /* #F3E9DE */
+  --muted: 187 169 154; /* #BBA99A */
+  --subtle: 168 147 127; /* #A8937F */
+  --faixa: 37 29 24; /* #251D18 */
+  --gold: 217 174 92; /* #D9AE5C */
+  --hero: 23 18 15; /* #17120F */
 
-  --gold: 212 175 90; /* #D4AF5A */
+  /* No escuro o texto vermelho clareia (como a terracota do Oratio), mas o
+     fundo dos botões fica no #DC2626, onde o texto claro ainda passa no AA. */
+  --accent: 239 68 68; /* #EF4444 */
+  --accent-hover: 248 113 113; /* #F87171 */
+  --accent-solid: 220 38 38; /* #DC2626 */
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 14px 25px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 9px 22px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
@@ -46,124 +79,200 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Corpo do Oratio: Inter, 1rem, entrelinha 1,6, sobre o papel creme. */
   body {
-    @apply bg-canvas text-fg antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    @apply bg-canvas font-sans text-fg antialiased;
+    min-width: 320px;
+    line-height: 1.6;
+    font-synthesis: none;
+  }
+
+  /* Títulos sempre na serifada, com a cor de título (mais escura que o texto). */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-heading;
+    line-height: 1.05;
+  }
+
+  /*
+    Exceção: título pequeno de interface (rótulo de cartão, nome numa lista)
+    fica na Inter. A Cormorant tem olho baixo e, abaixo de ~18px, perde
+    legibilidade — no Oratio ela só aparece grande.
+  */
+  :is(h1, h2, h3, h4):is(.text-2xs, .text-xs, .text-sm, .text-base) {
+    @apply font-sans;
+    line-height: 1.35;
+  }
+
+  /* Imagens com cantos e um leve recuo de brilho no escuro. */
+  .dark img {
+    filter: brightness(0.9);
   }
 
   ::selection {
-    background: rgba(220, 38, 38, 0.25);
+    background: rgb(var(--accent) / 0.22);
+  }
+
+  /* A página entra subindo 14px, como no Oratio (ver pageIn no Tailwind). */
+  main {
+    @apply relative animate-pagina;
   }
 }
 
 @layer components {
   /*
-    Superfície sólida padrão — sem transparência e sem blur.
+    Cartão do Oratio: superfície clara, raio de 1rem, sombra marrom quase
+    invisível. Mantive a borda de 1px: os cartões do Torakan carregam tabelas
+    e divisórias internas, e sem a borda eles se perderiam no creme.
 
-    O raio maior e a sombra rasa são o que diferencia o cartão do fundo sem
-    precisar escurecer a borda: no tema claro a página inteira é quase branca,
-    e só a linha de 1px não bastava para o cartão parecer um objeto.
+    No hover o cartão sobe — o Oratio comunica "clicável" por elevação, não
+    por mudança de cor da borda.
   */
   .card {
-    @apply rounded-xl border border-line bg-surface shadow-painel;
-  }
-
-  .dark .card {
-    box-shadow: none;
+    @apply rounded-lg border border-line bg-surface shadow-sm;
   }
 
   .card-hover {
-    @apply transition-colors duration-150 hover:border-line-strong;
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
   }
 
   /*
-    Painel: o cartão em versão maior, para blocos que são a própria seção
-    (lateral do portal, caixa de login, hero de preço). Mais raio e mais ar.
+    Faixa colorida de 4px no topo — a marca dos cartões do Oratio. A cor vem
+    de --faixa-cor (a categoria, a faixa do kata); sem ela, o vermelho.
   */
+  .card-faixa {
+    border-top: 4px solid var(--faixa-cor, rgb(var(--accent)));
+  }
+
+  /* Painel: o cartão em versão maior, para blocos que são a própria seção. */
   .painel {
-    @apply rounded-2xl border border-line bg-surface p-5 shadow-painel sm:p-6;
+    @apply rounded-xl border border-line bg-surface p-5 shadow-sm sm:p-6;
   }
 
-  .dark .painel {
-    box-shadow: none;
-  }
-
-  /* Etiqueta arredondada de apoio — categoria, linguagem, dia da semana. */
+  /* Chip em pílula: categoria, dia, filtro. */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-elevated px-2.5 py-1 text-2xs font-medium text-muted;
+    @apply inline-flex items-center gap-1.5 rounded-full bg-elevated px-3 py-1 text-2xs font-semibold text-muted;
   }
 
+  /* Contêiner do Oratio: min(1120px, 100% - 2rem). */
   .section {
-    @apply mx-auto w-full max-w-[1180px] px-4 sm:px-6;
+    @apply mx-auto w-full;
+    max-width: min(1120px, calc(100% - 2rem));
   }
 
   /*
-    Faixa de fundo que separa uma seção das vizinhas.
-    Ocupa a largura toda da tela, então precisa envolver um `.section` por
-    dentro para o conteúdo continuar alinhado com o resto da página.
+    Lista de cartões centralizada, inclusive a última linha incompleta — regra
+    do Oratio. Grade com colunas fixas deixaria a sobra encostada à esquerda;
+    flex com quebra centraliza o que sobrar.
+  */
+  .grade-centrada {
+    --grade-gap: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--grade-gap);
+  }
 
-    A trama diagonal é o que evita que no tema claro pareça um retângulo
-    rosa chapado: dá superfície sem competir com o texto. Nos dois temas a
-    inclinação é a mesma e só a opacidade muda.
+  /* Uma coluna no celular, duas a partir de 640px, e 3 ou 4 no desktop. */
+  .grade-centrada > * {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .grade-centrada > * {
+      flex-basis: calc((100% - var(--grade-gap)) / 2);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .grade-centrada.grade-3 > *,
+    .grade-centrada.grade-4 > * {
+      flex-basis: calc((100% - 2 * var(--grade-gap)) / 3);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .grade-centrada.grade-4 > * {
+      flex-basis: calc((100% - 3 * var(--grade-gap)) / 4);
+    }
+  }
+
+  /*
+    Faixa de fundo que separa uma seção das vizinhas: o creme quente do
+    Oratio, ocupando a largura toda. Envolve um .section por dentro.
   */
   .faixa-destacada {
     background-color: rgb(var(--faixa));
     border-top: 1px solid rgb(var(--line));
     border-bottom: 1px solid rgb(var(--line));
-    background-image: repeating-linear-gradient(
-      135deg,
-      rgba(220, 38, 38, 0.045) 0 1px,
-      transparent 1px 10px
-    );
   }
 
-  .dark .faixa-destacada {
-    background-image: repeating-linear-gradient(
-      135deg,
-      rgba(220, 38, 38, 0.07) 0 1px,
-      transparent 1px 10px
-    );
-  }
-
-  /*
-    O sobretítulo passa a usar o dourado: separa a hierarquia do vermelho, que
-    fica reservado para ação e identidade. Mesmo tratamento na vitrine e nos
-    portais, para os dois lados parecerem o mesmo produto.
-  */
+  /* Sobretítulo do Oratio: 0,72rem, 700, maiúsculas, espaçado, na cor principal. */
   .eyebrow {
-    @apply text-2xs font-semibold uppercase tracking-[0.12em] text-gold;
+    @apply inline-block font-sans font-bold uppercase text-accent;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
   }
 
   /*
-    Títulos de página em serifada de display. A serifada fica só neste nível —
-    tabelas, formulários e rótulos seguem sem serifa, que é o que mantém a
-    leitura densa dos portais funcionando.
+    Títulos em Cormorant. A serifada tem olho pequeno, então os tamanhos
+    seguem os clamp() do Oratio, bem maiores que os da serifada anterior.
   */
   .heading-xl {
-    @apply font-display text-3xl font-normal leading-[1.15] tracking-[-0.02em] text-fg sm:text-4xl;
+    @apply font-display font-semibold text-heading;
+    font-size: clamp(2.2rem, 5vw, 3.3rem);
+    line-height: 1;
   }
 
   .heading-lg {
-    @apply font-display text-xl font-medium tracking-[-0.015em] text-fg;
+    @apply font-display font-semibold text-heading;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    line-height: 1.05;
   }
 
   .heading-md {
-    @apply text-base font-semibold tracking-[-0.01em] text-fg;
+    @apply font-display font-semibold text-heading;
+    font-size: 1.3rem;
+    line-height: 1.1;
   }
 
+  /* Parágrafo de apoio do Oratio (.lead). */
   .body-muted {
-    @apply text-sm leading-relaxed text-muted;
+    @apply text-sm text-muted;
+    line-height: 1.7;
   }
 
-  /* Campos de formulário */
+  /* Campos: superfície, borda fina, raio médio e anel vermelho no foco. */
   .input {
-    @apply h-10 w-full rounded-lg border border-line bg-canvas px-3.5 text-sm text-fg outline-none transition-colors placeholder:text-subtle focus:border-accent focus:ring-2 focus:ring-accent/15;
+    @apply h-10 w-full rounded-md border border-line bg-surface px-3.5 text-sm text-fg outline-none placeholder:text-subtle;
+    transition:
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
+  }
+
+  .input:focus {
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.15);
   }
 
   .label {
-    @apply text-2xs font-medium uppercase tracking-[0.08em] text-muted;
+    @apply text-2xs font-semibold uppercase tracking-[0.08em] text-muted;
   }
 
   /* Kanji decorativo — sutil e legível nos dois temas. */
@@ -327,65 +436,68 @@ html[data-virada="tras"]::view-transition-new(root) {
   animation: ondas-deslizam 60s linear infinite;
 }
 
-/* Halos: duas manchas difusas que respiram fora de fase uma da outra. */
-.fundo-halo {
+/*
+  Brilhos de fundo do Oratio (tokens.css, .site-bg-glow): 34rem, blur de 90px,
+  opacidade 0,16 no claro e 0,22 no escuro, flutuando em vaivém.
+*/
+:root {
+  --brilho-a: 227 181 90; /* #E3B55A dourado */
+  --brilho-b: 110 143 214; /* #6E8FD6 azul */
+  --brilho-c: 199 125 154; /* #C77D9A rosa */
+}
+
+.brilho-fundo {
   position: absolute;
-  border-radius: 9999px;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 50%;
   filter: blur(90px);
-  will-change: transform, opacity;
+  opacity: 0.16;
+  will-change: transform;
 }
 
-.fundo-halo-vermelho {
-  top: -14vh;
-  left: -10vw;
-  width: 58vw;
-  height: 58vw;
-  background: radial-gradient(
-    circle,
-    rgba(220, 38, 38, 0.16),
-    rgba(220, 38, 38, 0) 70%
-  );
-  animation: halo-respira 26s ease-in-out infinite;
+.dark .brilho-fundo {
+  opacity: 0.22;
 }
 
-.fundo-halo-dourado {
-  right: -16vw;
-  bottom: -18vh;
-  width: 52vw;
-  height: 52vw;
-  background: radial-gradient(
-    circle,
-    rgba(176, 141, 61, 0.14),
-    rgba(176, 141, 61, 0) 70%
-  );
-  animation: halo-respira 34s ease-in-out infinite reverse;
+.brilho-fundo-a {
+  left: -10rem;
+  top: -8rem;
+  background: rgb(var(--brilho-a));
+  animation: brilho-a 28s ease-in-out infinite alternate;
 }
 
-.dark .fundo-halo-vermelho {
-  background: radial-gradient(
-    circle,
-    rgba(220, 38, 38, 0.2),
-    rgba(220, 38, 38, 0) 70%
-  );
+.brilho-fundo-b {
+  right: -12rem;
+  top: 30vh;
+  background: rgb(var(--brilho-b));
+  animation: brilho-b 34s ease-in-out infinite alternate;
 }
 
-.dark .fundo-halo-dourado {
-  background: radial-gradient(
-    circle,
-    rgba(212, 175, 90, 0.13),
-    rgba(212, 175, 90, 0) 70%
-  );
+.brilho-fundo-c {
+  left: 30vw;
+  bottom: -14rem;
+  width: 26rem;
+  height: 26rem;
+  background: rgb(var(--brilho-c));
+  animation: brilho-c 40s ease-in-out infinite alternate;
 }
 
-@keyframes halo-respira {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.75;
+@keyframes brilho-a {
+  to {
+    transform: translate(18vw, 14vh) scale(1.15);
   }
-  50% {
-    transform: translate3d(4vw, 3vh, 0) scale(1.14);
-    opacity: 1;
+}
+
+@keyframes brilho-b {
+  to {
+    transform: translate(-22vw, -10vh) scale(0.9);
+  }
+}
+
+@keyframes brilho-c {
+  to {
+    transform: translate(-12vw, -18vh) scale(1.25);
   }
 }
 
@@ -450,7 +562,7 @@ html[data-virada="tras"]::view-transition-new(root) {
 */
 @media (prefers-reduced-motion: reduce) {
   .fundo-ondas,
-  .fundo-halo,
+  .brilho-fundo,
   .sakura {
     animation: none;
   }
@@ -663,7 +775,6 @@ html[data-corte]::view-transition-new(corte-lamina) {
   right: -18vmin;
   width: 78vmin;
   height: 78vmin;
-  --sol: 220, 38, 38;
   --sol-disco: 0.1;
   --sol-raio: 0.045;
   --sol-anel: 0.14;
@@ -681,16 +792,16 @@ html[data-corte]::view-transition-new(corte-lamina) {
 }
 
 .fundo-sol-raio {
-  fill: rgba(var(--sol), var(--sol-raio));
+  fill: rgb(var(--accent-solid) / var(--sol-raio));
 }
 
 .fundo-sol-disco {
-  fill: rgba(var(--sol), var(--sol-disco));
+  fill: rgb(var(--accent-solid) / var(--sol-disco));
 }
 
 .fundo-sol-anel {
   fill: none;
-  stroke: rgba(var(--sol), var(--sol-anel));
+  stroke: rgb(var(--accent-solid) / var(--sol-anel));
   stroke-width: 1.2;
   stroke-dasharray: 2 7;
 }
@@ -698,7 +809,7 @@ html[data-corte]::view-transition-new(corte-lamina) {
 /* Onda de impacto: um anel que se abre a partir do disco e some. */
 .fundo-sol-onda {
   fill: none;
-  stroke: rgba(var(--sol), 0.35);
+  stroke: rgb(var(--accent-solid) / 0.35);
   stroke-width: 1.5;
   transform-origin: 0 0;
   animation: sol-onda 7s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
@@ -778,5 +889,131 @@ html[data-corte]::view-transition-new(corte-lamina) {
   .fundo-sol-onda,
   .vagalume {
     display: none;
+  }
+}
+
+/* Quem pediu menos movimento: a página entra sem subir e os cartões não pulam. */
+@media (prefers-reduced-motion: reduce) {
+  main {
+    animation: none;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Cabeçalho e navegação no estilo do Oratio
+   ============================================================ */
+@layer components {
+  /*
+    Cabeçalho de vidro fosco: o papel a 88% com desfoque atrás. No escuro a
+    mesma regra vale para o café — o token já troca sozinho.
+  */
+  .cabecalho-vidro {
+    @apply sticky top-0 z-40 border-b border-line;
+    background-color: rgb(var(--canvas) / 0.88);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  /* Link do cabeçalho: no hover e no ativo, um sublinhado que cresce da esquerda. */
+  .nav-link {
+    @apply relative py-1 font-medium text-muted;
+    font-size: 0.88rem;
+    transition: color var(--duration-fast);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: rgb(var(--accent));
+    transition: width var(--duration-mid) var(--ease-out);
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current="page"] {
+    color: rgb(var(--accent));
+  }
+
+  .nav-link:hover::after,
+  .nav-link[aria-current="page"]::after {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   Barra inferior do celular (Oratio)
+   ============================================================ */
+@layer components {
+  .barra-inferior {
+    @apply fixed inset-x-0 bottom-0 z-40 grid border-t border-line;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom));
+    background-color: rgb(var(--canvas) / 0.94);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 -6px 20px rgba(45, 36, 31, 0.06);
+  }
+
+  .barra-item {
+    @apply relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-md text-muted;
+    min-height: 3.1rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    transition: color var(--duration-fast);
+  }
+
+  /* A pílula atrás do ícone: some quando inativa, cresce quando ativa. */
+  .barra-item::before {
+    content: "";
+    position: absolute;
+    top: 0.15rem;
+    width: 2.6rem;
+    height: 1.9rem;
+    border-radius: 999px;
+    background: rgb(var(--accent));
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity var(--duration-mid) var(--ease-out),
+      transform var(--duration-mid) var(--ease-out);
+  }
+
+  .barra-item svg {
+    position: relative;
+    margin-top: 0.2rem;
+  }
+
+  .barra-item[aria-current="page"] {
+    color: rgb(var(--accent));
+  }
+
+  .barra-item[aria-current="page"]::before {
+    opacity: 0.13;
+    transform: scale(1);
+  }
+}
+
+/*
+  O conteúdo não fica escondido atrás da barra. A barra do site some a partir
+  de 768px; a do portal, a partir de 1024px (lá o trilho lateral assume).
+*/
+@media (max-width: 767px) {
+  body:has(.barra-inferior[data-ate="md"]) {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 1023px) {
+  body:has(.barra-inferior[data-ate="lg"]) {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
 }

@@ -35,8 +35,8 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-b border-line bg-surface">
-        <div className="section flex h-14 items-center justify-between">
+      <header className="cabecalho-vidro">
+        <div className="section flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <MarcaTorakan className="h-10 w-10" />
             <span className="font-marca text-2xl leading-none text-accent">
