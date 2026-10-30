@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlunosPanel } from "@/components/portal/AlunosPanel";
 import { CadastroAlunoPanel } from "@/components/portal/CadastroAlunoPanel";
 import { GuardaPortal } from "@/components/portal/GuardaPortal";
+import { MinhaConta } from "@/components/portal/MinhaConta";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import { NavPortal, type ItemNav } from "@/components/portal/NavPortal";
 import { RodapePortal } from "@/components/portal/RodapePortal";
@@ -11,12 +12,13 @@ import { TurmasPanel } from "@/components/portal/TurmasPanel";
 import { Badge } from "@/components/ui/Badge";
 import { useAcademia } from "@/lib/academiaStore";
 
-type Aba = "turmas" | "alunos" | "cadastro";
+type Aba = "turmas" | "alunos" | "cadastro" | "conta";
 
 const ITENS: ItemNav<Aba>[] = [
   { value: "turmas", label: "Turmas", icone: "turmas" },
   { value: "alunos", label: "Alunos", icone: "alunos" },
   { value: "cadastro", label: "Cadastrar aluno", curto: "Novo", icone: "cadastro" },
+  { value: "conta", label: "Minha conta", curto: "Conta", icone: "perfil" },
 ];
 
 export default function PortalProfessorPage() {
@@ -30,6 +32,13 @@ export default function PortalProfessorPage() {
 function ConteudoProfessor() {
   const { professores, sessao } = useAcademia();
   const [aba, setAba] = useState<Aba>("turmas");
+
+  // ?aba=conta abre direto numa aba — é para onde o Google devolve depois de
+  // vincular. Lido pelo window para não exigir Suspense.
+  useEffect(() => {
+    const pedida = new URLSearchParams(window.location.search).get("aba");
+    if (pedida && ITENS.some((item) => item.value === pedida)) setAba(pedida as Aba);
+  }, []);
 
   const professor = professores.find((item) => item.id === sessao?.id);
 
@@ -59,6 +68,8 @@ function ConteudoProfessor() {
           <TurmasPanel />
         ) : aba === "alunos" ? (
           <AlunosPanel />
+        ) : aba === "conta" ? (
+          <MinhaConta volta="/portal/professor?aba=conta" />
         ) : (
           <CadastroAlunoPanel />
         )}

@@ -82,7 +82,8 @@ interface AcademiaContexto {
     aluno: Omit<Aluno, "id" | "foto"> & { email?: string },
   ) => Promise<Resultado>;
   criarProfessor: (
-    professor: Omit<Professor, "id" | "foto"> & { senha: string },
+    // A foto é da própria pessoa (Minha conta ou Google), nunca do cadastro.
+    professor: Omit<Professor, "id" | "foto" | "avatarUrl"> & { senha: string },
   ) => Promise<Resultado>;
   entrar: (usuario: string, senha: string) => Promise<Resultado>;
   sair: () => Promise<void>;
@@ -142,6 +143,7 @@ interface RespostaAcademia {
     criado_em: string;
     data_nascimento: string | null;
     idade: number | null;
+    avatar_url: string | null;
   }[];
   mensalidade_centavos?: number;
 }
@@ -223,6 +225,7 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
           email: professor.email,
           desde: professor.criado_em?.slice(0, 4) ?? "",
           foto: iniciais(professor.nome),
+          avatarUrl: professor.avatar_url ?? null,
         })),
       );
 

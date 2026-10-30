@@ -27,13 +27,31 @@ const RETORNO_GOOGLE: Record<string, { texto: string; tipo?: "erro" }> = {
   indisponivel: { texto: "O login com Google ainda não está ativado.", tipo: "erro" },
 };
 
+/** Avisa o cabeçalho que a foto mudou, sem esperar recarregar a página. */
+export const EVENTO_CONTA = "torakan:conta";
+
+function iniciaisDe(nome: string) {
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return "";
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
+  return (partes[0][0] + ultima).toUpperCase();
+}
+
 /**
- * Minha conta — o aluno edita o que é dele: foto, nome de usuário e senha.
+ * Minha conta — cada pessoa (aluno, professor ou admin) edita o que é dela:
+ * foto, nome de usuário, senha e o vínculo com o Google.
  *
  * O id de quem salva nunca vem daqui: a rota /api/conta o tira do cookie
  * assinado. Esta tela só coleta os campos e mostra o resultado.
  */
-export function MinhaConta({ iniciais }: { iniciais: string }) {
+export function MinhaConta({
+  iniciais,
+  volta = "/portal/aluno?aba=conta",
+}: {
+  iniciais?: string;
+  /** Para onde o Google devolve depois de vincular (a aba de conta do portal). */
+  volta?: string;
+}) {
   const toast = useToast();
   const { recarregar } = useAcademia();
 
@@ -90,6 +108,10 @@ export function MinhaConta({ iniciais }: { iniciais: string }) {
   // Sem senha atual para conferir: primeiro acesso ou conta só com Google.
   const pedeSenhaAtual = Boolean(conta && !conta.precisa_trocar_senha && conta.tem_senha);
 
+  function avisarFoto(avatarUrl: string | null) {
+    window.dispatchEvent(new CustomEvent(EVENTO_CONTA, { detail: { avatarUrl } }));
+  }
+
   async function enviarAvatar(dataUrl: string) {
     const resposta = await fetch("/api/conta", {
       method: "PATCH",
@@ -102,6 +124,7 @@ export function MinhaConta({ iniciais }: { iniciais: string }) {
       return;
     }
     setConta(dados.conta);
+    avisarFoto(dados.conta.avatar_url);
     await recarregar();
     toast("Foto de perfil atualizada.");
   }
@@ -118,6 +141,7 @@ export function MinhaConta({ iniciais }: { iniciais: string }) {
       return;
     }
     setConta(dados.conta);
+    avisarFoto(null);
     await recarregar();
     toast("Foto removida.");
   }
@@ -192,7 +216,7 @@ export function MinhaConta({ iniciais }: { iniciais: string }) {
         <section className="card flex flex-col items-center gap-3 p-5 text-center">
           <AvatarPerfil
             src={conta?.avatar_url ?? null}
-            iniciais={iniciais}
+            iniciais={iniciais ?? iniciaisDe(conta?.nome ?? "")}
             tamanho="lg"
             editavel
             onEnviar={enviarAvatar}
@@ -205,8 +229,8 @@ export function MinhaConta({ iniciais }: { iniciais: string }) {
             </p>
           </div>
           <p className="text-2xs leading-relaxed text-muted">
-            A foto aparece aqui no seu portal. Imagens são recortadas em um
-            quadrado automaticamente.
+            A foto aparece no seu portal e nas listas do dojo. Se você entrar
+            com o Google sem ter enviado uma, usamos a da conta Google.
           </p>
         </section>
 
@@ -324,7 +348,7 @@ export function MinhaConta({ iniciais }: { iniciais: string }) {
                   Vincule para entrar sem digitar senha. Use uma conta Google só sua.
                 </p>
                 <BotaoGoogle
-                  href={`/api/auth/google?modo=vincular&volta=${encodeURIComponent("/portal/aluno?aba=conta")}`}
+                  href={`/api/auth/google?modo=vincular&volta=${encodeURIComponent(volta)}`}
                   className="sm:w-auto sm:justify-self-start"
                 >
                   Vincular conta Google

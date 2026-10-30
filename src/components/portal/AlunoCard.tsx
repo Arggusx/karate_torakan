@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { AvatarMini } from "@/components/portal/AvatarMini";
 import type { Aluno } from "@/types";
 
 /**
@@ -31,9 +32,7 @@ export function AlunoCard({
           aria-expanded={aberto}
           className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
         >
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-line bg-elevated text-2xs font-medium text-fg">
-            {aluno.foto}
-          </span>
+          <AvatarMini src={aluno.avatarUrl} iniciais={aluno.foto} />
           <span className="truncate text-sm font-medium text-fg">
             {aluno.nome}
           </span>

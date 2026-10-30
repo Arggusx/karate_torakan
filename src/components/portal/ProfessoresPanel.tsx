@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Paginacao } from "@/components/ui/Paginacao";
 import { useAcademia } from "@/lib/academiaStore";
 import { horarioDaTurma } from "@/services/dataService";
+import { AvatarMini } from "@/components/portal/AvatarMini";
 import type { Professor } from "@/types";
 
 const POR_PAGINA = 8;
@@ -141,9 +142,7 @@ export function ProfessoresPanel() {
                   onClick={() => setEmDetalhe(professor)}
                   className="flex items-center gap-3 text-left"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded border border-line bg-elevated text-xs font-medium text-fg">
-                    {professor.foto}
-                  </span>
+                  <AvatarMini src={professor.avatarUrl} iniciais={professor.foto} tamanho="md" />
                   <div>
                     <h3 className="heading-md underline decoration-line underline-offset-4 hover:decoration-accent">
                       {professor.nome}

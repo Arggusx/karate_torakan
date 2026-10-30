@@ -13,6 +13,7 @@ import { Paginacao } from "@/components/ui/Paginacao";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { useAcademia } from "@/lib/academiaStore";
 import { CRITERIO_TURMAS, horarioDaTurma } from "@/services/dataService";
+import { AvatarMini } from "@/components/portal/AvatarMini";
 import type { Aluno, Turma } from "@/types";
 
 const POR_PAGINA = 8;
@@ -227,9 +228,7 @@ function AlunosDaTurma({ alunos, busca }: { alunos: Aluno[]; busca: string }) {
                     onClick={() => setEmDetalhe(aluno)}
                     className="flex items-center gap-2.5 text-left"
                   >
-                    <span className="flex h-7 w-7 items-center justify-center rounded border border-line bg-elevated text-2xs font-medium text-fg">
-                      {aluno.foto}
-                    </span>
+                    <AvatarMini src={aluno.avatarUrl} iniciais={aluno.foto} />
                     <span>
                       <span className="block font-medium text-fg underline decoration-line underline-offset-4 hover:decoration-accent">
                         {aluno.nome}

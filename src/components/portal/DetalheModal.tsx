@@ -6,6 +6,7 @@ import { SeletorTurma } from "@/components/portal/SeletorTurma";
 import { Badge, BeltBadge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { AvatarMini } from "@/components/portal/AvatarMini";
 import { useToast } from "@/components/ui/Toast";
 import { useAcademia } from "@/lib/academiaStore";
 import { cn } from "@/lib/cn";
@@ -43,11 +44,13 @@ function Campo({
 /** Cabeçalho com iniciais, nome e usuário. */
 function Identificacao({
   foto,
+  avatarUrl,
   nome,
   usuario,
   etiqueta,
 }: {
   foto: string;
+  avatarUrl: string | null;
   nome: string;
   usuario: string;
   etiqueta?: ReactNode;
@@ -55,9 +58,7 @@ function Identificacao({
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded border border-line bg-elevated text-xs font-medium text-fg">
-          {foto}
-        </span>
+        <AvatarMini src={avatarUrl} iniciais={foto} tamanho="lg" />
         <div>
           <p className="text-sm font-medium text-fg">{nome}</p>
           <p className="font-mono text-2xs text-subtle">{usuario}</p>
@@ -351,6 +352,7 @@ export function AlunoDetalheModal({
       <div className="space-y-4">
         <Identificacao
           foto={aluno.foto}
+          avatarUrl={aluno.avatarUrl}
           nome={aluno.nome}
           usuario={aluno.usuario}
           etiqueta={<StatusBadge status={aluno.status} />}
@@ -631,6 +633,7 @@ export function ProfessorDetalheModal({
       <div className="space-y-4">
         <Identificacao
           foto={professor.foto}
+          avatarUrl={professor.avatarUrl}
           nome={professor.nome}
           usuario={professor.usuario}
           etiqueta={<Badge tone="accent">{professor.graduacao}</Badge>}

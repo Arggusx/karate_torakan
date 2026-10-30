@@ -64,6 +64,8 @@ export interface IdentidadeGoogle {
   sub: string;
   email: string;
   nome: string;
+  /** Foto da conta Google (só https em googleusercontent.com), ou null. */
+  foto: string | null;
 }
 
 /**
@@ -104,6 +106,7 @@ export async function identidadeDoCodigo(
     email?: string;
     email_verified?: boolean;
     name?: string;
+    picture?: string;
   };
 
   if (!dados.iss || !EMISSORES.includes(dados.iss)) throw new Error("Emissor inesperado.");
@@ -113,5 +116,22 @@ export async function identidadeDoCodigo(
     throw new Error("Conta Google sem e-mail verificado.");
   }
 
-  return { sub: dados.sub, email: dados.email, nome: dados.name ?? "" };
+  return {
+    sub: dados.sub,
+    email: dados.email,
+    nome: dados.name ?? "",
+    foto: fotoSegura(dados.picture),
+  };
+}
+
+/** Só guarda a foto se vier mesmo do servidor de imagens do Google. */
+function fotoSegura(valor: string | undefined) {
+  if (!valor) return null;
+  try {
+    const url = new URL(valor);
+    const doGoogle = url.hostname === "googleusercontent.com" || url.hostname.endsWith(".googleusercontent.com");
+    return url.protocol === "https:" && doGoogle && valor.length < 2000 ? valor : null;
+  } catch {
+    return null;
+  }
 }

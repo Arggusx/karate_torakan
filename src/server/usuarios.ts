@@ -332,6 +332,18 @@ export async function salvarAvatar(
   await sql`UPDATE users SET avatar_url = ${avatarUrl} WHERE id = ${id}`;
 }
 
+/**
+ * Usa a foto do Google só quando a pessoa ainda não tem foto: uma foto
+ * enviada por ela mesma nunca é trocada pela do Google.
+ */
+export async function fotoDoGoogleSeVazia(
+  id: number,
+  foto: string | null,
+): Promise<void> {
+  if (!foto) return;
+  await sql`UPDATE users SET avatar_url = ${foto} WHERE id = ${id} AND avatar_url IS NULL`;
+}
+
 export async function listarAlunos(): Promise<AlunoDoBanco[]> {
   const linhas = await sql`
     SELECT u.id, u.nome, u.usuario, u.email,
@@ -361,11 +373,12 @@ export interface ProfessorDoBanco {
   criado_em: string;
   data_nascimento: string | null;
   idade: number | null;
+  avatar_url: string | null;
 }
 
 export async function listarProfessores(): Promise<ProfessorDoBanco[]> {
   const linhas = await sql`
-    SELECT id, nome, usuario, email, role, criado_em,
+    SELECT id, nome, usuario, email, role, criado_em, avatar_url,
            data_nascimento::text AS data_nascimento,
            COALESCE(
              EXTRACT(YEAR FROM age(data_nascimento))::int,

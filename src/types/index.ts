@@ -291,7 +291,10 @@ export interface Professor {
   graduacao: string;
   email: string;
   desde: string;
+  /** Iniciais para o avatar quando não há foto. */
   foto: string;
+  /** Foto de perfil (envio próprio ou a do Google), ou null. */
+  avatarUrl: string | null;
 }
 
 /** Um dos quatro critérios que compõem o progresso para o exame. */

@@ -64,6 +64,7 @@ export function AvatarPerfil({
           {src ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
+              referrerPolicy="no-referrer"
               src={src}
               alt="Foto de perfil"
               className="h-full w-full object-cover"

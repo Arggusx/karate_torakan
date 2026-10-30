@@ -6,7 +6,12 @@ import {
   identidadeDoCodigo,
   type EstadoGoogle,
 } from "@/server/google";
-import { acharPorGoogle, semColunasGoogle, vincularGoogle } from "@/server/usuarios";
+import {
+  acharPorGoogle,
+  fotoDoGoogleSeVazia,
+  semColunasGoogle,
+  vincularGoogle,
+} from "@/server/usuarios";
 import { DESTINO_POR_PERFIL } from "@/services/dataService";
 
 export const runtime = "nodejs";
@@ -55,11 +60,13 @@ export async function GET(request: Request) {
       const sessao = await sessaoAtual();
       if (!sessao) return ir("/login?erro=sessao");
       const resultado = await vincularGoogle(sessao.id, { sub: google.sub, email: google.email });
+      if (resultado.ok) await fotoDoGoogleSeVazia(sessao.id, google.foto);
       return ir(com(estado.volta, { google: resultado.ok ? "vinculado" : "ja-vinculado" }));
     }
 
     const conta = await acharPorGoogle(google.sub);
     if (!conta) return ir("/login?erro=google-sem-vinculo");
+    await fotoDoGoogleSeVazia(conta.id, google.foto);
 
     await gravarCookieSessao({
       id: conta.id,

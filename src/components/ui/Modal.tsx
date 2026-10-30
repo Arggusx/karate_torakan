@@ -45,7 +45,9 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  if (!open || typeof document === "undefined") return null;
+  // Sem <body> (troca de página no meio de um recarregamento a quente), não há
+  // onde desenhar.
+  if (!open || typeof document === "undefined" || !document.body) return null;
 
   return createPortal(
     <div
