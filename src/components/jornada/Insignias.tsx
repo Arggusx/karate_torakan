@@ -1,3 +1,4 @@
+import { BordaAnimada } from "@/components/jornada/BordaAnimada";
 import type { Moldura } from "@/services/jornada";
 
 /**
@@ -10,11 +11,22 @@ export function AvatarMoldura({
   moldura,
   iniciais,
   tamanho = 88,
+  animar = true,
 }: {
   moldura: Moldura;
   iniciais: string;
   tamanho?: number;
+  /** Só para as bordas animadas: falso deixa a miniatura parada. */
+  animar?: boolean;
 }) {
+  if (moldura.borda) {
+    return (
+      <BordaAnimada borda={moldura.borda} tamanho={tamanho} animar={animar} rotulo={`Medalhão com a moldura ${moldura.nome}`}>
+        <span className="avatar-moldura-iniciais">{iniciais}</span>
+      </BordaAnimada>
+    );
+  }
+
   // Coordenadas arredondadas: o seno do servidor e o do navegador podem
   // diferir na 15ª casa, e o React acusaria diferença de hidratação.
   const redondo = (n: number) => Math.round(n * 100) / 100;

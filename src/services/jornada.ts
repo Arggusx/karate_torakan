@@ -1,6 +1,7 @@
 import {
   dados,
   getCategoriasTecnicas,
+  getGraduacoes,
   getDicionario,
   getDojoKun,
   getEtiquetaDojo,
@@ -12,9 +13,10 @@ import {
   getTimeline,
 } from "@/services/dataService";
 import type { Tema } from "@/services/perguntas";
+import type { IlhaId } from "@/services/pontuacao";
 
 /**
- * Conteúdo da Jornada: os caminhos, os níveis de quiz e as recompensas.
+ * Conteúdo da Jornada: as ilhas, as molduras e o Monte a técnica.
  *
  * Toda lição sai do acervo do dojo (o mesmo JSON das páginas de estudo). O
  * que é escrito aqui à mão são só os títulos, a ordem e as recompensas.
@@ -30,15 +32,17 @@ export interface Licao {
   itens?: { termo: string; sub?: string; texto: string }[];
 }
 
-export interface Caminho {
-  id: string;
+export interface Ilha {
+  id: IlhaId;
   tema: Tema;
   nome: string;
+  /** Só no carimbo do Livro de selos — o hanko leva kanji de verdade. */
   kanji: string;
-  /** Cor do jogo (--game): ícone, contas, botão. */
+  /** Cor da ilha (--game): contas, botão, faixa do cartão. */
   cor: string;
   resumo: string;
-  licoes: Licao[];
+  /** A mini aula: lida ao chegar na ilha, antes das perguntas. */
+  aula: Licao[];
   selo: { titulo: string; lemaJp: string; lemaPt: string };
   moldura: Moldura;
 }
@@ -48,8 +52,13 @@ export interface Moldura {
   nome: string;
   cor: string;
   realce: string;
-  /** Desenho em volta do avatar — ver Medalhao.tsx. */
-  motivo: "nenhum" | "pincel" | "enso" | "tatame" | "bambu" | "sakura" | "ondas";
+  /** Desenho estático em volta do avatar (molduras das ilhas). */
+  motivo?: "nenhum" | "pincel" | "enso" | "tatame" | "bambu" | "sakura" | "ondas";
+  /** Borda animada em SVG (ver camadasSvg.ts). */
+  borda?: string;
+  /** Como se ganha, em uma frase. */
+  como: string;
+  grupo: "inicio" | "ilha" | "grau" | "conquista" | "ranking";
 }
 
 const pilar = (nome: string) => getPilares().find((p) => p.nome === nome);
@@ -73,15 +82,15 @@ const timeline = getTimeline();
 const mestres = getMestres();
 const principios = getPrincipiosTecnicos();
 
-export const CAMINHOS: Caminho[] = [
+export const ILHAS: Ilha[] = [
   {
     id: "kihon",
     tema: "kihon",
-    nome: "Caminho do Kihon",
+    nome: "Ilha do Kihon",
     kanji: "基本",
     cor: "#C0392B",
     resumo: "As técnicas fundamentais: bases, socos, defesas e chutes.",
-    licoes: [
+    aula: [
       { titulo: "O que é kihon", kanji: "基本", texto: `${pilar("Kihon")?.oque_e ?? ""} ${pilar("Kihon")?.para_que_serve ?? ""}` },
       { titulo: categoria("Bases")?.label ?? "Bases", kanji: categoria("Bases")?.kanji, itens: tecnicasDa("Bases") },
       { titulo: categoria("Socos")?.label ?? "Socos", kanji: categoria("Socos")?.kanji, itens: tecnicasDa("Socos") },
@@ -90,16 +99,16 @@ export const CAMINHOS: Caminho[] = [
       { titulo: categoria("Kamae")?.label ?? "Guardas", kanji: categoria("Kamae")?.kanji, itens: tecnicasDa("Kamae") },
     ],
     selo: { titulo: "Raiz firme", lemaJp: "継続は力なり", lemaPt: "A persistência é força." },
-    moldura: { id: "kihon", nome: "Moldura do Pincel", cor: "#C0392B", realce: "#F3C4BC", motivo: "pincel" },
+    moldura: { id: "kihon", nome: "Moldura do Pincel", cor: "#C0392B", realce: "#F3C4BC", motivo: "pincel", como: "Conclua a Ilha do Kihon.", grupo: "ilha" },
   },
   {
     id: "katas",
     tema: "kata",
-    nome: "Caminho dos Katas",
+    nome: "Ilha dos Katas",
     kanji: "型",
     cor: "#2E6E8E",
     resumo: "As formas: de onde vêm, o que significam e como se contam.",
-    licoes: [
+    aula: [
       { titulo: "O que é kata", kanji: "型", texto: `${pilar("Kata")?.oque_e ?? ""} ${pilar("Kata")?.para_que_serve ?? ""}` },
       { titulo: "De onde vem cada kata", kanji: "源", texto: dados.origemDosKatas.nota },
       { titulo: "Os cinco Heian", kanji: "平安", itens: fichas(["Heian Shodan", "Heian Nidan", "Heian Sandan", "Heian Yondan", "Heian Godan"]) },
@@ -112,16 +121,16 @@ export const CAMINHOS: Caminho[] = [
       },
     ],
     selo: { titulo: "Guardião das formas", lemaJp: "守破離", lemaPt: "Proteger, romper, transcender." },
-    moldura: { id: "katas", nome: "Moldura do Ensō", cor: "#2E6E8E", realce: "#BFDCE8", motivo: "enso" },
+    moldura: { id: "katas", nome: "Moldura do Ensō", cor: "#2E6E8E", realce: "#BFDCE8", motivo: "enso", como: "Conclua a Ilha dos Katas.", grupo: "ilha" },
   },
   {
     id: "dojo",
     tema: "dojo",
-    nome: "Caminho do Dojo",
+    nome: "Ilha do Dojo",
     kanji: "道場",
     cor: "#8C6A3F",
     resumo: "Dojo Kun, etiqueta e os preceitos de Funakoshi.",
-    licoes: [
+    aula: [
       { titulo: "Dojo Kun", kanji: "道場訓", itens: getDojoKun().map((l) => ({ termo: l.pt, sub: l.romaji, texto: l.text })) },
       ...getEtiquetaDojo().map((e) => ({ titulo: `${e.nome} — ${e.traducao}`, kanji: e.kanji, texto: `${e.oque_e} ${e.para_que_serve}` })),
       {
@@ -134,16 +143,16 @@ export const CAMINHOS: Caminho[] = [
       },
     ],
     selo: { titulo: "Dentro do dojo", lemaJp: "礼に始まり礼に終わる", lemaPt: "Começa e termina com o cumprimento." },
-    moldura: { id: "dojo", nome: "Moldura do Tatame", cor: "#8C6A3F", realce: "#E8D3AE", motivo: "tatame" },
+    moldura: { id: "dojo", nome: "Moldura do Tatame", cor: "#8C6A3F", realce: "#E8D3AE", motivo: "tatame", como: "Conclua a Ilha do Dojo.", grupo: "ilha" },
   },
   {
     id: "historia",
     tema: "historia",
-    nome: "Caminho da Linhagem",
+    nome: "Ilha da Linhagem",
     kanji: "歴史",
     cor: "#5E8C63",
     resumo: "De Okinawa ao Brasil, e os mestres que levaram o karatê adiante.",
-    licoes: [
+    aula: [
       { titulo: "Okinawa", kanji: "沖縄", itens: timeline.slice(0, 4).map((t) => ({ termo: t.year, sub: t.kanji, texto: `${t.title}. ${t.text}` })) },
       { titulo: "O Japão", kanji: "日本", itens: timeline.slice(4, 9).map((t) => ({ termo: t.year, sub: t.kanji, texto: `${t.title}. ${t.text}` })) },
       { titulo: "O mundo", kanji: "世界", itens: timeline.slice(9).map((t) => ({ termo: t.year, sub: t.kanji, texto: `${t.title}. ${t.text}` })) },
@@ -151,16 +160,16 @@ export const CAMINHOS: Caminho[] = [
       { titulo: "A geração que espalhou o Shotokan", kanji: "伝", itens: mestres.slice(4).map((m) => ({ termo: m.nome, sub: m.anos, texto: m.text })) },
     ],
     selo: { titulo: "Herdeiro da linhagem", lemaJp: "温故知新", lemaPt: "Rever o antigo para entender o novo." },
-    moldura: { id: "historia", nome: "Moldura do Bambu", cor: "#5E8C63", realce: "#CDE4C2", motivo: "bambu" },
+    moldura: { id: "historia", nome: "Moldura do Bambu", cor: "#5E8C63", realce: "#CDE4C2", motivo: "bambu", como: "Conclua a Ilha da Linhagem.", grupo: "ilha" },
   },
   {
     id: "vocabulario",
     tema: "vocabulario",
-    nome: "Caminho das Palavras",
+    nome: "Ilha das Palavras",
     kanji: "言葉",
     cor: "#7A5A9E",
     resumo: "O japonês que se ouve no tatame.",
-    licoes: [
+    aula: [
       { titulo: "Dicionário do dojo", kanji: "辞書", itens: getDicionario().map((d) => ({ termo: d.romaji, sub: d.jp, texto: d.pt })) },
       {
         titulo: "Como se lê o nome de uma técnica",
@@ -187,78 +196,85 @@ export const CAMINHOS: Caminho[] = [
       },
     ],
     selo: { titulo: "Ouvido do dojo", lemaJp: "一期一会", lemaPt: "Cada encontro acontece uma única vez." },
-    moldura: { id: "vocabulario", nome: "Moldura da Sakura", cor: "#7A5A9E", realce: "#F2CFE0", motivo: "sakura" },
+    moldura: { id: "vocabulario", nome: "Moldura da Sakura", cor: "#7A5A9E", realce: "#F2CFE0", motivo: "sakura", como: "Conclua a Ilha das Palavras.", grupo: "ilha" },
   },
   {
     id: "filosofia",
     tema: "filosofia",
-    nome: "Caminho da Mente",
+    nome: "Ilha da Mente",
     kanji: "心",
     cor: "#C8963E",
     resumo: "Kime, zanshin, maai: os princípios por trás do movimento.",
-    licoes: [
+    aula: [
       { titulo: "Foco, grito e alerta", kanji: "決", itens: principios.slice(0, 3).map((p) => ({ termo: p.n, sub: p.k, texto: `${p.traducao}. ${p.oque_e}` })) },
       { titulo: "Distância, ritmo e quadril", kanji: "間", itens: principios.slice(3, 6).map((p) => ({ termo: p.n, sub: p.k, texto: `${p.traducao}. ${p.oque_e}` })) },
       { titulo: "A mente do praticante", kanji: "心", itens: principios.slice(6).map((p) => ({ termo: p.n, sub: p.k, texto: `${p.traducao}. ${p.oque_e}` })) },
     ],
     selo: { titulo: "Mente de principiante", lemaJp: "七転び八起き", lemaPt: "Cair sete vezes, levantar oito." },
-    moldura: { id: "filosofia", nome: "Moldura das Ondas", cor: "#C8963E", realce: "#F2DFA9", motivo: "ondas" },
+    moldura: { id: "filosofia", nome: "Moldura das Ondas", cor: "#C8963E", realce: "#F2DFA9", motivo: "ondas", como: "Conclua a Ilha da Mente.", grupo: "ilha" },
   },
 ];
 
-/** Moldura de quem ainda não concluiu nenhum caminho. */
+/** A moldura de quem está começando. */
 export const MOLDURA_SIMPLES: Moldura = {
   id: "simples",
   nome: "Moldura simples",
   cor: "#B9A47E",
   realce: "#EFE6D2",
   motivo: "nenhum",
+  como: "A de todo mundo, desde o primeiro dia.",
+  grupo: "inicio",
 };
 
-export const TODAS_MOLDURAS = [MOLDURA_SIMPLES, ...CAMINHOS.map((c) => c.moldura)];
+/**
+ * Molduras animadas (SVG com SMIL, desenhadas em camadasSvg.ts). As dos
+ * graus vêm com os pontos; as de conquista, com um feito; as do ranking,
+ * com a posição numa semana ou num mês já encerrados.
+ */
+export const MOLDURAS_GRAU: Moldura[] = [
+  { id: "b-bambu", nome: "Bambu que cresce", cor: "#4E8A4A", realce: "#D7EBCF", borda: "bambu", como: "Chegue ao grau Aprendiz (200 pontos).", grupo: "grau" },
+  { id: "b-enso", nome: "Ensō de tinta", cor: "#2B2B2B", realce: "#E9E3D8", borda: "enso", como: "Chegue ao grau Discípulo (600 pontos).", grupo: "grau" },
+  { id: "b-sakura", nome: "Chuva de sakura", cor: "#C2486A", realce: "#F7D9E4", borda: "sakura", como: "Chegue ao grau Praticante dedicado (1.500 pontos).", grupo: "grau" },
+  { id: "b-kiai", nome: "Relâmpago do kiai", cor: "#E0A400", realce: "#FFF1BF", borda: "kiai", como: "Chegue ao grau Especialista (3.500 pontos).", grupo: "grau" },
+  { id: "b-tora", nome: "Tigre dourado", cor: "#C8963E", realce: "#F6E3B4", borda: "tora", como: "Chegue ao grau Mestre da Jornada (7.000 pontos).", grupo: "grau" },
+];
+
+export const MOLDURAS_CONQUISTA: Moldura[] = [
+  { id: "b-giro", nome: "Primeiro passo", cor: "#3B82C4", realce: "#D6E8F7", borda: "giro", como: "Ganhe os primeiros pontos na Jornada.", grupo: "conquista" },
+  { id: "b-kime", nome: "Kime perfeito", cor: "#5C7A6B", realce: "#DCE7E1", borda: "kime", como: "Acerte todas de uma rodada com 8 perguntas ou mais.", grupo: "conquista" },
+  { id: "b-semana", nome: "Sete treinos", cor: "#D14B7C", realce: "#F8D5E2", borda: "semana", como: "Jogue em 7 dias diferentes.", grupo: "conquista" },
+  { id: "b-lua", nome: "Lua do dojo", cor: "#4B4FA8", realce: "#DCDDF5", borda: "lua", como: "Jogue em 30 dias diferentes.", grupo: "conquista" },
+];
+
+export const MOLDURAS_RANKING: Moldura[] = [
+  { id: "b-podio", nome: "Pódio da semana", cor: "#B87333", realce: "#F3DCC4", borda: "podio", como: "Fique entre os 3 primeiros de uma semana do ranking.", grupo: "ranking" },
+  { id: "b-campeao", nome: "Campeão do mês", cor: "#B3261E", realce: "#F7D6C9", borda: "campeao", como: "Termine um mês em 1º lugar no ranking.", grupo: "ranking" },
+];
+
+export const TODAS_MOLDURAS: Moldura[] = [
+  MOLDURA_SIMPLES,
+  ...ILHAS.map((i) => i.moldura),
+  ...MOLDURAS_CONQUISTA,
+  ...MOLDURAS_GRAU,
+  ...MOLDURAS_RANKING,
+];
 
 // ------------------------------------------------------------- paradas
 
-/** Os níveis de quiz de cada caminho, como no Oratio. */
-export const NIVEIS = [
-  { id: 1, titulo: "Quiz fácil", tamanho: 4, passa: 3 },
-  { id: 2, titulo: "Quiz médio", tamanho: 4, passa: 3 },
-  { id: 3, titulo: "Quiz difícil", tamanho: 4, passa: 3 },
-  { id: 4, titulo: "Desafio final", tamanho: 6, passa: 5 },
-] as const;
+/** As oito faixas viram os oito níveis de cada ilha. */
+export const FAIXAS = getGraduacoes();
 
-export type Parada =
-  | { tipo: "licao"; indice: number; licao: Licao }
-  | { tipo: "quiz"; nivel: (typeof NIVEIS)[number] };
+export type Parada = { tipo: "aula" } | { tipo: "faixa"; indice: number };
 
-/**
- * A ordem do caminho: as lições divididas em três partes, cada parte fechada
- * por um quiz (fácil, médio, difícil), e o desafio final no fim.
- */
-export function paradasDo(caminho: Caminho): Parada[] {
-  const n = caminho.licoes.length;
-  const cortes = [Math.ceil(n / 3), Math.ceil((2 * n) / 3), n];
-  const paradas: Parada[] = [];
-  caminho.licoes.forEach((licao, i) => {
-    paradas.push({ tipo: "licao", indice: i, licao });
-    cortes.forEach((corte, nivel) => {
-      if (corte === i + 1 && !paradas.some((p) => p.tipo === "quiz" && p.nivel.id === nivel + 1)) {
-        paradas.push({ tipo: "quiz", nivel: NIVEIS[nivel] });
-      }
-    });
-  });
-  paradas.push({ tipo: "quiz", nivel: NIVEIS[3] });
-  return paradas;
+/** A ordem da ilha: a mini aula e, depois, uma parada por faixa. */
+export function paradasDa(_ilha: Ilha): Parada[] {
+  return [{ tipo: "aula" }, ...FAIXAS.map((_, indice) => ({ tipo: "faixa" as const, indice }))];
 }
 
-/** Onde a pessoa está num caminho, a partir do estado guardado. */
-export function progressoDo(
-  caminho: Caminho,
-  salvo: { lidas: number[]; niveis: number[] } | undefined,
-) {
-  const paradas = paradasDo(caminho);
-  const feita = (p: Parada) =>
-    p.tipo === "licao" ? Boolean(salvo?.lidas.includes(p.indice)) : Boolean(salvo?.niveis.includes(p.nivel.id));
+/** Onde a pessoa está numa ilha, a partir do estado guardado. */
+export function progressoDa(ilha: Ilha, salvo: { aula: boolean; faixas: number[] } | undefined) {
+  const paradas = paradasDa(ilha);
+  const feita = (p: Parada) => (p.tipo === "aula" ? Boolean(salvo?.aula) : Boolean(salvo?.faixas.includes(p.indice)));
   const proxima = paradas.findIndex((p) => !feita(p));
   return {
     paradas,
@@ -266,54 +282,72 @@ export function progressoDo(
     proxima,
     feitas: paradas.filter(feita).length,
     total: paradas.length,
-    comecou: Boolean(salvo),
+    comecou: Boolean(salvo?.aula),
     concluido: proxima === -1,
   };
 }
 
 // ------------------------------------------------------------- sequência
 
-/** Tamanho do trecho no jogo da sequência: 6 movimentos por rodada. */
+/** Tamanho do trecho no jogo da ordem do kata: 6 movimentos por rodada. */
 export const TRECHO = 6;
 
 export const trechosDo = (movimentos: number) => Math.ceil(movimentos / TRECHO);
 
-// ------------------------------------------------------------- karuta
+// ------------------------------------------------------------- monte a técnica
 
-export interface Baralho {
+/** "Gedan Barai" → ["Gedan", "Barai"]; "Yoko-Geri Keage" → ["Yoko", "Geri", "Keage"]. */
+export const pecasDe = (nome: string) => nome.split(/[\s-]+/).filter(Boolean);
+
+export interface Familia {
   id: string;
   nome: string;
-  kanji: string;
-  cartas: { termo: string; significado: string }[];
+  /** Rótulo curto da família (o que vai no ícone). */
+  curto: string;
+  tecnicas: { nome: string; pt: string; desc: string }[];
 }
 
-export const BARALHOS: Baralho[] = [
-  ...getCategoriasTecnicas()
-    .filter((c) => c.id !== "Katas")
-    .map((c) => ({
-      id: c.id.toLowerCase(),
-      nome: c.label,
-      kanji: c.kanji,
-      cartas: getTecnicas()
-        .filter((t) => t.cat === c.id)
-        .map((t) => ({ termo: t.nome, significado: t.pt })),
-    })),
-  {
-    id: "principios",
-    nome: "Princípios",
-    kanji: "心",
-    cartas: principios.map((p) => ({ termo: p.n, significado: p.traducao })),
-  },
-  {
-    id: "dicionario",
-    nome: "Palavras do dojo",
-    kanji: "言葉",
-    cartas: [
-      ...getDicionario().map((d) => ({ termo: d.romaji, significado: d.pt.replace(/\s*—.*$/, "") })),
-      ...getEtiquetaDojo().map((e) => ({ termo: e.nome, significado: e.traducao })),
-    ],
-  },
-];
+/**
+ * As famílias do Monte a técnica: só entram técnicas com duas palavras ou
+ * mais — com uma só não há o que montar.
+ */
+export const FAMILIAS: Familia[] = getCategoriasTecnicas()
+  .filter((c) => c.id !== "Katas")
+  .map((c) => ({
+    id: c.id.toLowerCase(),
+    nome: c.label,
+    curto: c.id,
+    tecnicas: getTecnicas()
+      .filter((t) => t.cat === c.id && pecasDe(t.nome).length >= 2)
+      .map((t) => ({ nome: t.nome, pt: t.pt, desc: t.desc })),
+  }))
+  .filter((f) => f.tecnicas.length >= 4);
 
-/** Pares por rodada de karuta. */
-export const PARES = 6;
+/** Técnicas por rodada do Monte a técnica. */
+export const POR_RODADA = 6;
+
+export const rodadasDa = (f: Familia) => Math.ceil(f.tecnicas.length / POR_RODADA);
+
+/**
+ * O que cada palavra quer dizer, para a explicação depois da montagem.
+ * Sai do dicionário quando a palavra está lá; o resto é o vocabulário básico
+ * dos nomes de técnica.
+ */
+const PALAVRAS: Record<string, string> = {
+  zuki: "soco (tsuki)", tsuki: "soco", geri: "chute (keri)", keri: "chute", uke: "defesa", uchi: "golpe / de dentro",
+  dachi: "base (tachi)", tachi: "base", gedan: "nível baixo", chudan: "nível médio", jodan: "nível alto",
+  oi: "avançando", gyaku: "inverso", mae: "frente", yoko: "lateral", ushiro: "trás", mawashi: "circular",
+  age: "subindo", soto: "de fora", shuto: "mão em faca", empi: "cotovelo", hiza: "joelho", kiba: "cavaleiro",
+  zenkutsu: "peso à frente", kokutsu: "peso atrás", kizami: "curto, com a mão da frente", barai: "varrer",
+  keage: "chicoteado", kekomi: "penetrante", ura: "invertido", tate: "vertical", morote: "duas mãos",
+  kakiwake: "separando", manji: "em forma de manji (símbolo budista)", mikazuki: "lua crescente", nukite: "mão em lança",
+  haito: "costas da mão em faca", haishu: "dorso da mão", teisho: "base da palma", nagashi: "desviando",
+  kake: "enganchando", sukui: "colhendo", morote_uke: "defesa reforçada", heisoku: "pés juntos", musubi: "pés em V",
+  hachiji: "pés afastados", neko: "gato", sanchin: "três batalhas", fudo: "inabalável", kosa: "cruzada",
+  tsuru: "garça", sagi: "garça", ashi: "pé / perna", gamae: "guarda (kamae)", kamae: "guarda", hidari: "esquerda", migi: "direita", choku: "direto", kage: "gancho", yama: "montanha", awase: "unidos", uraken: "dorso do punho", tettsui: "punho-martelo", kin: "virilha", fumikomi: "pisando", tobi: "saltando", nidan: "em dois níveis", juji: "em cruz", osae: "pressionando", heiko: "paralelos", shiko: "base do sumô", renoji: "em L", hangetsu: "meia-lua", shizentai: "postura natural", haiwan: "costas do antebraço", keito: "cabeça de galo", tsukami: "agarrando", sokumen: "de lado", jun: "à frente", otoshi: "descendo", koshi: "quadril", ryoken: "dois punhos", ryowan: "dois braços", koko: "boca de tigre", nami: "onda", gaeshi: "voltando", hasami: "tesoura", ren: "em sequência", nakadaka: "nó do dedo médio", ippon: "um", ken: "punho", sankaku: "triângulo",
+};
+
+export const significadoDaPeca = (peca: string) => {
+  const chave = peca.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  return PALAVRAS[chave];
+};

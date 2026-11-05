@@ -42,6 +42,10 @@ export default function PrivacidadePage() {
                   graduação e resultado das provas teóricas.
                 </li>
                 <li>
+                  <strong>Pontos da Jornada</strong>, só de quem joga logado no portal: quantos pontos cada
+                  rodada valeu e quando. Servem para o ranking semanal e mensal.
+                </li>
+                <li>
                   <strong>Foto de perfil</strong>, se você enviar uma.
                 </li>
                 <li>
@@ -91,6 +95,10 @@ export default function PrivacidadePage() {
               <li>Dar acesso ao portal e manter você conectado com segurança.</li>
               <li>Organizar turmas, chamada, mensalidades e exames de faixa.</li>
               <li>Aplicar e corrigir as provas teóricas liberadas pelo professor.</li>
+              <li>
+                Montar o ranking da Jornada. Ele é visto só por quem está logado no portal e mostra o primeiro
+                nome com a inicial do sobrenome (por exemplo, “Ana S.”), a foto de perfil e os pontos.
+              </li>
               <li>Cumprir obrigações legais e fiscais da academia.</li>
             </ul>
           ),
@@ -129,8 +137,8 @@ export default function PrivacidadePage() {
                 scripts da página). Não usamos cookies de publicidade nem de rastreamento.
               </p>
               <p>
-                Algumas coisas ficam só no seu navegador (armazenamento local) e nunca vão para o servidor: o
-                progresso nos jogos da Jornada, as respostas de uma prova ainda não entregue e preferências como
+                Algumas coisas ficam só no seu navegador (armazenamento local) e não vão para o servidor: o
+                progresso nos jogos da Jornada (ilhas, selos, molduras e os pontos de quem joga sem login), as respostas de uma prova ainda não entregue e preferências como
                 tema claro ou escuro.
               </p>
             </>

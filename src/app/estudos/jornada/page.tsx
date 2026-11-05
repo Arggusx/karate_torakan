@@ -5,7 +5,7 @@ import { PainelJornada } from "@/components/jornada/PainelJornada";
 export const metadata: Metadata = {
   title: "Jornada",
   description:
-    "Minigames para estudar karatê: caminhos com leituras e quizzes, randori de perguntas, karuta e a sequência dos katas.",
+    "Minigames para estudar karatê: ilhas com mini aula e perguntas por faixa, treino livre, Monte a técnica, ordem dos katas e ranking do dojo.",
 };
 
 export default function JornadaPage() {
@@ -15,7 +15,7 @@ export default function JornadaPage() {
         compacto
         sobretitulo="Jornada · 道"
         titulo="Estudar jogando, no seu ritmo"
-        descricao="Caminhos de leitura, perguntas, cartas e a ordem dos katas. Nada de placar nem ranking: o que você conclui vira selo no seu Livro de selos."
+        descricao="Seis ilhas para explorar faixa a faixa, treino livre, o nome das técnicas e a ordem dos katas. Cada acerto vale pontos para o ranking do dojo, e o que você conclui vira selo e moldura."
         kanji="道"
       />
       <div className="section py-8">
