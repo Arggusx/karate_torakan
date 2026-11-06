@@ -5,6 +5,7 @@ import {
   Nanum_Brush_Script,
   Yuji_Syuku,
 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { EfeitosGlobais } from "@/components/layout/EfeitosGlobais";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { FundoAsiatico } from "@/components/ui/FundoAsiatico";
@@ -110,6 +111,8 @@ export default function RootLayout({
             <ToastProvider>{children}</ToastProvider>
           </AcademiaProvider>
         </ThemeProvider>
+        {/* Vercel Web Analytics: conta visitas e páginas vistas, sem cookies. */}
+        <Analytics />
       </body>
     </html>
   );
