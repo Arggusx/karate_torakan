@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AvatarMoldura } from "@/components/jornada/Insignias";
-import { iniciaisDe, resumoDa } from "@/components/jornada/jogos";
+import { iniciaisDe, moldurasGanhas, pontosDoGrau, resumoDa } from "@/components/jornada/jogos";
+import { useRanking } from "@/lib/jornadaRede";
 import { jornada, useJornada } from "@/lib/jornadaStore";
-import { getGraduacoes, getKatas } from "@/services/dataService";
-import { CAMINHOS, MOLDURA_SIMPLES, TODAS_MOLDURAS } from "@/services/jornada";
+import { getGraduacoes } from "@/services/dataService";
+import { ILHAS, MOLDURA_SIMPLES } from "@/services/jornada";
+import { grauDe } from "@/services/pontuacao";
 
 const GRADUACOES = getGraduacoes();
 
@@ -16,11 +19,12 @@ function saudacao() {
 }
 
 /**
- * Medalhão da Jornada: saudação, nome e faixa editáveis, a moldura vestida e
- * quatro números do que a pessoa já concluiu. Sem sequência, sem recorde.
+ * Medalhão da Jornada: saudação, nome e faixa editáveis, a moldura vestida,
+ * os pontos e o grau, e as molduras já conquistadas.
  */
 export function Medalhao() {
   const estado = useJornada();
+  const { dados } = useRanking();
   const { perfil } = estado;
   const [editando, setEditando] = useState(false);
   const [nome, setNome] = useState(perfil.nome);
@@ -30,18 +34,16 @@ export function Medalhao() {
   useEffect(() => setOla(saudacao()), []);
   useEffect(() => setNome(perfil.nome), [perfil.nome]);
 
-  const { caminhosFeitos, katasDominados, baralhos } = resumoDa(estado);
-  const conquistadas = [
-    MOLDURA_SIMPLES,
-    ...caminhosFeitos.map((c) => c.moldura),
-  ];
-  const vestida =
-    TODAS_MOLDURAS.find((m) => m.id === perfil.moldura && conquistadas.includes(m)) ?? MOLDURA_SIMPLES;
+  const { ilhasFeitas, katasDominados } = resumoDa(estado);
+  const ganhas = moldurasGanhas(estado, dados?.eu);
+  const vestida = ganhas.find((m) => m.id === perfil.moldura) ?? MOLDURA_SIMPLES;
+  const pontos = pontosDoGrau(estado, dados?.eu);
+  const grau = grauDe(pontos);
 
   return (
     <section className="medalhao painel">
       <div className="medalhao-topo">
-        <AvatarMoldura moldura={vestida} iniciais={iniciaisDe(perfil.nome)} />
+        <AvatarMoldura moldura={vestida} iniciais={iniciaisDe(perfil.nome)} tamanho={92} />
         <div className="min-w-0">
           <p className="text-xs text-muted">{ola}{perfil.nome ? "," : ""}</p>
           {editando ? (
@@ -90,48 +92,70 @@ export function Medalhao() {
         </div>
       </div>
 
+      <Link href="/estudos/jornada/ranking" className="medalhao-grau">
+        <span className="flex items-baseline justify-between gap-2">
+          <span>
+            <small>Grau</small>
+            <strong>{grau.atual.nome}</strong>
+          </span>
+          <span className="text-right">
+            <strong>{pontos.toLocaleString("pt-BR")}</strong>
+            <small> pontos</small>
+          </span>
+        </span>
+        <span className="ranking-barra is-fina">
+          <span style={{ width: `${Math.round(grau.fracao * 100)}%` }} />
+        </span>
+        <small>
+          {dados?.logado && dados.eu?.posicaoSemana
+            ? `${dados.eu.posicaoSemana}º no ranking da semana`
+            : grau.proximo
+              ? `${grau.falta.toLocaleString("pt-BR")} para ${grau.proximo.nome}`
+              : "Último grau da Jornada"}
+        </small>
+      </Link>
+
       <dl className="medalhao-numeros">
         <div>
-          <dt>caminhos</dt>
+          <dt>ilhas</dt>
           <dd>
-            {caminhosFeitos.length}/{CAMINHOS.length}
+            {ilhasFeitas.length}/{ILHAS.length}
           </dd>
         </div>
         <div>
-          <dt>selos</dt>
-          <dd>{caminhosFeitos.length}</dd>
+          <dt>dias de treino</dt>
+          <dd>{estado.dias.length}</dd>
         </div>
         <div>
           <dt>katas na ordem</dt>
-          <dd>
-            {katasDominados.length}/{getKatas().length}
-          </dd>
+          <dd>{katasDominados.length}</dd>
         </div>
         <div>
-          <dt>baralhos</dt>
-          <dd>{baralhos.length}</dd>
+          <dt>molduras</dt>
+          <dd>{ganhas.length}</dd>
         </div>
       </dl>
 
       <div className="grid gap-1.5">
-        <small className="label">Molduras</small>
+        <span className="flex items-baseline justify-between gap-2">
+          <small className="label">Suas molduras</small>
+          <Link href="/estudos/jornada/colecao" className="text-2xs font-semibold text-muted hover:text-accent">
+            Ver todas →
+          </Link>
+        </span>
         <div className="medalhao-molduras">
-          {TODAS_MOLDURAS.map((m) => {
-            const tem = conquistadas.includes(m);
-            return (
-              <button
-                key={m.id}
-                type="button"
-                disabled={!tem}
-                aria-pressed={vestida.id === m.id}
-                title={tem ? m.nome : `${m.nome} — conclua o caminho para ganhar`}
-                onClick={() => jornada.definirPerfil({ moldura: m.id })}
-                className="medalhao-moldura disabled:opacity-30"
-              >
-                <AvatarMoldura moldura={m} iniciais="" tamanho={34} />
-              </button>
-            );
-          })}
+          {ganhas.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              aria-pressed={vestida.id === m.id}
+              title={m.nome}
+              onClick={() => jornada.definirPerfil({ moldura: m.id })}
+              className="medalhao-moldura"
+            >
+              <AvatarMoldura moldura={m} iniciais="" tamanho={34} animar={false} />
+            </button>
+          ))}
         </div>
       </div>
     </section>

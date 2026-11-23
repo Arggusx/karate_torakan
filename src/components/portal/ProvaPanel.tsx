@@ -7,6 +7,7 @@ import { Contas } from "@/components/jornada/Contas";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/cn";
+import { naAcademy } from "@/lib/enderecos";
 import { PROVA, type PerguntaPublica } from "@/services/perguntas";
 
 /**
@@ -173,7 +174,7 @@ export function ProvaPanel() {
             <p className="body-muted mt-1 max-w-md">
               Enquanto isso, dá para treinar o mesmo conteúdo nos jogos da Jornada, sem nota.
             </p>
-            <Link href="/estudos/jornada" className="mt-3 inline-block text-xs font-semibold text-accent underline-offset-2 hover:underline">
+            <Link href={naAcademy("/estudos/jornada")} className="mt-3 inline-block text-xs font-semibold text-accent underline-offset-2 hover:underline">
               Abrir a Jornada →
             </Link>
           </div>

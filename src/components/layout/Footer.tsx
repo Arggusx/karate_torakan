@@ -1,28 +1,39 @@
 import Link from "next/link";
 import { MarcaTorakan } from "@/components/ui/MarcaTorakan";
+import { naAcademy, noPortal, noSite } from "@/lib/enderecos";
 
-const COLUNAS = [
-  {
-    titulo: "Portal de Estudos",
-    links: [
-      { href: "/estudos", label: "Home dos Estudos" },
-      { href: "/estudos/historia", label: "História" },
-      { href: "/estudos/tecnicas", label: "Técnicas e Katas" },
-      { href: "/estudos/fundamentos", label: "Fundamentos" },
-    ],
-  },
-  {
-    titulo: "Academia",
-    links: [
-      { href: "/#beneficios", label: "Benefícios" },
-      { href: "/#dojo", label: "O Dojo" },
-      { href: "/#matricula", label: "Mensalidade" },
-      { href: "/login", label: "Área do aluno" },
-    ],
-  },
+const ESTUDOS = {
+  titulo: "Portal de Estudos",
+  links: [
+    { href: naAcademy("/estudos"), label: "Home dos Estudos" },
+    { href: naAcademy("/estudos/historia"), label: "História" },
+    { href: naAcademy("/estudos/tecnicas"), label: "Técnicas e Katas" },
+    { href: naAcademy("/estudos/fundamentos"), label: "Fundamentos" },
+  ],
+};
+
+const ACADEMIA = [
+  { href: noSite("/#beneficios"), label: "Benefícios" },
+  { href: noSite("/#dojo"), label: "O Dojo" },
+  { href: noSite("/#matricula"), label: "Mensalidade" },
 ];
 
-export function Footer() {
+/**
+ * `comAreaDoAluno` mostra o atalho para o login do portal. Fica desligado no
+ * site (torakandojo.com): o portal é aberto pelo link que o professor manda
+ * depois da matrícula, e a vitrine não aponta para ele.
+ */
+export function Footer({ comAreaDoAluno = false }: { comAreaDoAluno?: boolean }) {
+  const COLUNAS = [
+    ESTUDOS,
+    {
+      titulo: "Academia",
+      links: comAreaDoAluno
+        ? [...ACADEMIA, { href: noPortal("/login"), label: "Área do aluno" }]
+        : ACADEMIA,
+    },
+  ];
+
   return (
     <footer className="mt-16 border-t border-line bg-elevated">
       <div className="section grid gap-8 py-12 md:grid-cols-[1.6fr_1fr_1fr]">

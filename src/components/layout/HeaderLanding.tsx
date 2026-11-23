@@ -5,6 +5,7 @@ import {
   type ItemBarra,
 } from "@/components/layout/BarraInferiorSite";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { naAcademy } from "@/lib/enderecos";
 
 /*
   O header da vitrine ficou com um destino só.
@@ -14,14 +15,16 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
   outro lugar para a ponta direita. Com um item só, o Portal de Estudos deixa
   de disputar atenção com atalhos para algo que já está logo abaixo.
 */
-const LINKS = [{ href: "/estudos", label: "Portal de Estudos" }];
+const LINKS = [{ href: naAcademy("/estudos"), label: "Portal de Estudos" }];
 
-/** No celular, os destinos do site vão para a barra inferior. */
+/**
+ * No celular, os destinos do site vão para a barra inferior. Sem "Entrar": o
+ * site não aponta para o portal, que é aberto pelo link do professor.
+ */
 const BARRA: ItemBarra[] = [
   { href: "/", label: "Início", icone: "inicio", exato: true },
   { href: "/planos", label: "Planos", icone: "planos" },
-  { href: "/estudos", label: "Estudos", icone: "estudos" },
-  { href: "/login", label: "Entrar", icone: "entrar" },
+  { href: naAcademy("/estudos"), label: "Estudos", icone: "estudos" },
 ];
 
 export function HeaderLanding() {

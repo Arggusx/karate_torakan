@@ -10,6 +10,7 @@ import {
 import { IconePortal } from "@/components/portal/IconePortal";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ButtonLink } from "@/components/ui/Button";
+import { noPortal, noSite } from "@/lib/enderecos";
 
 const LINKS = [
   { href: "/estudos", label: "Home" },
@@ -39,7 +40,7 @@ export function HeaderEstudos() {
     <header className="cabecalho-vidro">
       <div className="section flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={noSite("/")} className="flex items-center gap-2">
             <MarcaTorakan className="h-8 w-8" />
             <span className="font-marca text-2xl leading-none text-accent">
               Torakan
@@ -65,13 +66,13 @@ export function HeaderEstudos() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <ButtonLink href="/login" size="sm" className="hidden md:inline-flex">
+          <ButtonLink href={noPortal("/login")} size="sm" className="hidden md:inline-flex">
             Área do Aluno / Professor
           </ButtonLink>
           {/* No celular, "Entrar" cede o lugar da barra inferior à Jornada e
               fica aqui, como ícone. */}
           <Link
-            href="/login"
+            href={noPortal("/login")}
             aria-label="Entrar na área do aluno ou do professor"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-elevated text-muted transition-colors hover:text-accent md:hidden"
           >

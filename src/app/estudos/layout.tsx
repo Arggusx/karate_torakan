@@ -15,7 +15,7 @@ export default function EstudosLayout({
         página, logo abaixo do hero.
       */}
       <main className="flex-1 pb-10">{children}</main>
-      <Footer />
+      <Footer comAreaDoAluno />
     </div>
   );
 }

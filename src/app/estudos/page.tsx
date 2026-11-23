@@ -195,8 +195,8 @@ export default function EstudosHomePage() {
             <p className="eyebrow">Jornada · 旅</p>
             <h2 className="heading-lg mt-1">Estudar jogando, sem nota</h2>
             <p className="body-muted mt-1 max-w-md">
-              Caminhos por tema, desafios de katas e uma coleção de selos. Errar não tira nada — é só
-              tentar de novo.
+              Seis ilhas para explorar faixa a faixa, treino livre e o ranking do dojo. Errar não tira nada:
+              é só tentar de novo.
             </p>
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-accent">
               Abrir a Jornada <span className="transition-transform group-hover:translate-x-1">→</span>

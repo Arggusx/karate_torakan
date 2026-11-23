@@ -7,6 +7,7 @@ import { ComoFunciona } from "@/components/jornada/ComoFunciona";
 import { Contas } from "@/components/jornada/Contas";
 import { jogo } from "@/components/jornada/jogos";
 import { Button } from "@/components/ui/Button";
+import { Obi } from "@/components/ui/Obi";
 import { cn } from "@/lib/cn";
 import { jornada, useJornada } from "@/lib/jornadaStore";
 import { getKatas } from "@/services/dataService";
@@ -18,9 +19,10 @@ const COR = jogo("sequencia")!.cor;
 const KATAS = getKatas();
 
 /**
- * Sequência do kata: os movimentos de um trecho aparecem embaralhados e a
+ * Ordem do kata: os movimentos de um trecho aparecem embaralhados e a
  * pessoa toca na ordem certa. Errar só balança a carta. Ordenar todos os
- * trechos de um kata o coloca no Leque dos katas.
+ * trechos de um kata o coloca no Leque dos katas. Cada trecho novo vale
+ * pontos para o ranking.
  */
 export function JogoSequencia() {
   const params = useSearchParams();
@@ -30,11 +32,12 @@ export function JogoSequencia() {
     <div style={{ "--game": COR } as React.CSSProperties}>
       <ComoFunciona
         id="sequencia"
+        titulo="Como funciona a Ordem do kata"
         passos={[
           "Escolha um kata.",
           `Cada rodada mostra ${TRECHO} movimentos seguidos, fora de ordem.`,
           "Toque neles na ordem em que acontecem no kata.",
-          "Ordene todos os trechos para guardar o kata no Leque.",
+          "Cada trecho posto na ordem pela primeira vez vale 15 pontos. Ordene todos para guardar o kata no Leque.",
         ]}
         nota="Os movimentos seguem a sequência do acervo do dojo — a mesma da página de cada kata."
       />
@@ -52,9 +55,9 @@ function ListaDeKatas() {
         const feitos = estado.sequencias[k.id] ?? [];
         return (
           <Link key={k.id} href={`/estudos/jornada/sequencia?kata=${k.id}`} className="jogo-tile !gap-2 !p-3">
-            <span className="flex items-baseline justify-between gap-2">
-              <strong className="text-sm text-heading">{k.nome}</strong>
-              <span className="font-kanji text-xs text-muted">{k.kanji}</span>
+            <span className="flex items-center justify-between gap-2">
+              <strong className="min-w-0 truncate text-sm text-heading">{k.nome}</strong>
+              <Obi cor={k.corFaixa} className="w-8 shrink-0" />
             </span>
             <span className="flex items-center justify-between gap-2">
               <Contas total={total} feitas={feitos} cor={COR} tamanho="sm" />
@@ -116,7 +119,7 @@ function Trechos({ kata }: { kata: KataCompleto }) {
     <div>
       <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="eyebrow" style={{ color: COR }}>{kata.kanji}</p>
+          <p className="eyebrow" style={{ color: COR }}>Ordem do kata</p>
           <h2 className="heading-lg">{kata.nome}</h2>
           <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
             Movimentos {primeiro} a {ultimo} · trecho {trecho + 1} de {total}

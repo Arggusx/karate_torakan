@@ -11,6 +11,7 @@ import { AvatarMini } from "@/components/portal/AvatarMini";
 import { EVENTO_CONTA } from "@/components/portal/MinhaConta";
 import { Button } from "@/components/ui/Button";
 import { useAcademia } from "@/lib/academiaStore";
+import { naAcademy, noSite } from "@/lib/enderecos";
 import { DESTINO_POR_PERFIL } from "@/services/dataService";
 
 const ROTULO = {
@@ -68,8 +69,8 @@ export function SessaoHeader() {
         </Button>
         <MenuMobile className="sm:hidden" rotulo="Abrir menu do portal">
           <MenuMobileLink href="/login">Entrar</MenuMobileLink>
-          <MenuMobileLink href="/estudos">Portal de estudos</MenuMobileLink>
-          <MenuMobileLink href="/">Página inicial</MenuMobileLink>
+          <MenuMobileLink href={naAcademy("/estudos")}>Portal de estudos</MenuMobileLink>
+          <MenuMobileLink href={noSite("/")}>Página inicial</MenuMobileLink>
         </MenuMobile>
       </>
     );
@@ -113,8 +114,8 @@ export function SessaoHeader() {
         <MenuMobileLink href={DESTINO_POR_PERFIL[sessao.perfil]}>
           Meu portal
         </MenuMobileLink>
-        <MenuMobileLink href="/estudos">Portal de estudos</MenuMobileLink>
-        <MenuMobileLink href="/">Página inicial</MenuMobileLink>
+        <MenuMobileLink href={naAcademy("/estudos")}>Portal de estudos</MenuMobileLink>
+        <MenuMobileLink href={noSite("/")}>Página inicial</MenuMobileLink>
         <MenuMobileSeparador />
         <button
           type="button"

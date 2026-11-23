@@ -12,6 +12,7 @@ import {
   getTecnicas,
   getTimeline,
 } from "@/services/dataService";
+import { ORIGEM_KATAS } from "@/data/origemKatas";
 import type { GraduacaoCompleta, KataCompleto, Tecnica } from "@/types";
 
 /**
@@ -51,10 +52,12 @@ export interface Pergunta {
   porque: string;
   /** De quem a pergunta fala (técnica, kata, preceito): limita repetição. */
   sujeito: string;
+  /** Pergunta de tradução ("o que significa…"): o Treino livre não usa. */
+  traducao?: boolean;
 }
 
 /** A mesma pergunta sem o gabarito: é o que vai ao navegador durante a prova. */
-export type PerguntaPublica = Omit<Pergunta, "correta" | "porque" | "sujeito">;
+export type PerguntaPublica = Omit<Pergunta, "correta" | "porque" | "sujeito" | "traducao">;
 
 export const TEMAS: { id: Tema; label: string; kanji: string }[] = [
   { id: "kihon", label: "Kihon", kanji: "基本" },
@@ -108,15 +111,17 @@ const normal = (texto: string) =>
     .replace(/[^a-z0-9]+/g, "");
 
 /**
- * Monta as quatro alternativas: a certa e três erradas sorteadas do conjunto
- * de candidatas, sem repetir texto (ignorando acento e caixa). Devolve null
- * se não houver erradas suficientes — o gerador então desiste da pergunta.
+ * Monta as alternativas: a certa e até quatro erradas sorteadas do conjunto
+ * de candidatas, sem repetir texto (ignorando acento e caixa). Com menos de
+ * três erradas devolve null — o gerador então desiste da pergunta. Quem usa
+ * corta para 4 ou 5 alternativas depois (ver `comAlternativas`).
  */
 function montar(
   s: Sorteio,
   certa: string,
   candidatas: string[],
-  quantas = 3,
+  quantas = 4,
+  minimo = 3,
 ): { alternativas: string[]; correta: number } | null {
   const vistos = new Set([normal(certa)]);
   const erradas: string[] = [];
@@ -127,7 +132,7 @@ function montar(
     erradas.push(opcao);
     if (erradas.length === quantas) break;
   }
-  if (erradas.length < quantas) return null;
+  if (erradas.length < minimo) return null;
   const alternativas = s.embaralhar([certa, ...erradas]);
   return { alternativas, correta: alternativas.indexOf(certa) };
 }
@@ -172,14 +177,14 @@ function geradoresTecnica(t: Tecnica): Gerador[] {
     (s) => {
       const m = montar(s, t.pt, mesmaFamilia.map((o) => o.pt));
       return m && {
-        id: id("tec-pt"), tema: "kihon", tipo: "pratica", nivel: 1, sujeito: t.nome,
+        id: id("tec-pt"), tema: "kihon", tipo: "pratica", nivel: 1, sujeito: t.nome, traducao: true,
         enunciado: `O que é ${t.nome} (${t.kanji})?`, ...m, porque,
       };
     },
     (s) => {
       const m = montar(s, t.nome, mesmaFamilia.map((o) => o.nome));
       return m && {
-        id: id("tec-nome"), tema: "kihon", tipo: "pratica", nivel: 2, sujeito: t.nome,
+        id: id("tec-nome"), tema: "kihon", tipo: "pratica", nivel: 2, sujeito: t.nome, traducao: true,
         enunciado: `Qual é o nome desta técnica: “${t.pt}”?`, ...m, porque,
       };
     },
@@ -270,7 +275,7 @@ function geradoresKata(k: KataCompleto): Gerador[] {
       .map((o) => o.significadoNome);
     const alt = montar(s, k.significadoNome, outras);
     return alt && {
-      id: id("kata-nome"), tema: "kata", tipo: "teoria", nivel: 1, sujeito: k.id,
+      id: id("kata-nome"), tema: "kata", tipo: "teoria", nivel: 1, sujeito: k.id, traducao: true,
       enunciado: `O que significa o nome ${k.nome}${k.kanji ? ` (${k.kanji})` : ""}?`,
       ...alt,
       porque: `${k.nome} significa “${k.significadoNome}”.${k.significadoLiteral ? ` ${k.significadoLiteral}` : ""}`,
@@ -293,7 +298,7 @@ function geradoresDojo(): Gerador[] {
     const l = dojoKun[i];
     const alt = montar(s, l.pt, dojoKun.filter((_, j) => j !== i).map((o) => o.pt));
     return alt && {
-      id: id("dojokun"), tema: "dojo", tipo: "teoria", nivel: 1, sujeito: `dojokun:${i}`,
+      id: id("dojokun"), tema: "dojo", tipo: "teoria", nivel: 1, sujeito: `dojokun:${i}`, traducao: true,
       enunciado: `No Dojo Kun, o que quer dizer “${l.romaji}”?`,
       ...alt, porque: `${l.romaji} (${l.jp}) — ${l.pt} ${primeiraFrase(l.text)}`,
     };
@@ -318,7 +323,7 @@ function geradoresDojo(): Gerador[] {
     ];
     const alt = montar(s, e.traducao, outras);
     return alt && {
-      id: id("etiqueta"), tema: "dojo", tipo: "teoria", nivel: 1, sujeito: `etiqueta:${e.nome}`,
+      id: id("etiqueta"), tema: "dojo", tipo: "teoria", nivel: 1, sujeito: `etiqueta:${e.nome}`, traducao: true,
       enunciado: `No dojo, o que é “${e.nome}” (${e.kanji})?`,
       ...alt, porque: `${e.nome}: ${e.traducao}. ${primeiraFrase(e.oque_e)}`,
     };
@@ -341,7 +346,72 @@ function geradoresDojo(): Gerador[] {
     };
   };
 
-  return [lema, ordem, cortesia, cortesia, nijuKun];
+  const nijuIntruso: Gerador = (s) => {
+    if (niju.length < 4) return null;
+    const intruso = s.um([
+      "Quem domina o kata não precisa mais do kihon.",
+      "No dojo, o mais forte decide quem treina primeiro.",
+      "Vença sempre, mesmo que seja preciso atacar primeiro.",
+      "O karatê termina quando você recebe a faixa preta.",
+    ]);
+    const alt = montar(s, intruso, niju);
+    return alt && {
+      id: id("niju-nao"), tema: "dojo", tipo: "teoria", nivel: 3, sujeito: "niju-nao",
+      enunciado: "Qual destas frases NÃO está entre os preceitos de Funakoshi (Niju Kun)?",
+      ...alt, porque: `“${intruso}” não é um preceito: vai contra o espírito do Niju Kun, que começa e termina no respeito.`,
+    };
+  };
+
+  const dojoKunIntruso: Gerador = (s) => {
+    const intruso = s.um([
+      "Vencer sempre, a qualquer custo.",
+      "Obedecer ao mais forte do dojo.",
+      "Treinar apenas antes das competições.",
+      "Mostrar a técnica fora do dojo.",
+    ]);
+    const alt = montar(s, intruso, dojoKun.map((l) => l.pt));
+    return alt && {
+      id: id("dojokun-nao"), tema: "dojo", tipo: "teoria", nivel: 3, sujeito: "dojokun-nao",
+      enunciado: "Qual destas frases NÃO faz parte do Dojo Kun?",
+      ...alt, porque: `“${intruso}” não está no Dojo Kun. Os cinco lemas falam de caráter, sinceridade, esforço, respeito e autocontrole.`,
+    };
+  };
+
+  const paraQueServe: Gerador = (s) => {
+    const e = s.um(etiqueta);
+    const certa = primeiraFrase(e.para_que_serve);
+    const outras = [
+      ...etiqueta.filter((o) => o.nome !== e.nome).map((o) => primeiraFrase(o.para_que_serve)),
+      ...principios.map((p) => primeiraFrase(p.para_que_serve)),
+    ];
+    const alt = montar(s, certa, outras);
+    return alt && {
+      id: id("etiqueta-uso"), tema: "dojo", tipo: "teoria", nivel: 3, sujeito: `etiqueta-uso:${e.nome}`,
+      enunciado: `No dojo, para que serve o ${e.nome}?`,
+      ...alt, porque: `${e.nome} (${e.traducao}): ${e.para_que_serve}`,
+    };
+  };
+
+  return [lema, ordem, cortesia, cortesia, nijuKun, nijuIntruso, dojoKunIntruso, paraQueServe, paraQueServe];
+}
+
+/** O programa de exame: que kata cai em cada faixa. */
+function geradoresPrograma(): Gerador[] {
+  const graduacoes = getGraduacoes();
+  const katas = getKatas();
+  return [
+    (s) => {
+      const g = s.um(graduacoes.filter((x) => x.katasExigidos.length));
+      const certa = s.um(g.katasExigidos);
+      const outras = katas.map((k) => k.nome).filter((n) => !g.katasExigidos.includes(n));
+      const alt = montar(s, certa, outras);
+      return alt && {
+        id: id("prog-kata"), tema: "kata", tipo: "teoria", nivel: 2, sujeito: `prog:${g.faixa}`,
+        enunciado: `Qual kata faz parte do exame da faixa ${g.faixa} (${g.grau})?`,
+        ...alt, porque: `No programa do dojo, a faixa ${g.faixa} pede: ${g.katasExigidos.join(", ")}.`,
+      };
+    },
+  ];
 }
 
 /** Princípios técnicos (kime, zanshin, maai…). */
@@ -352,7 +422,7 @@ function geradoresFilosofia(): Gerador[] {
       const p = s.um(principios);
       const alt = montar(s, p.traducao, principios.filter((o) => o.n !== p.n).map((o) => o.traducao));
       return alt && {
-        id: id("princ"), tema: "filosofia", tipo: "teoria", nivel: 1, sujeito: `principio:${p.n}`,
+        id: id("princ"), tema: "filosofia", tipo: "teoria", nivel: 1, sujeito: `principio:${p.n}`, traducao: true,
         enunciado: `O que significa “${p.n}” (${p.k})?`,
         ...alt, porque: `${p.n} — ${p.traducao}. ${primeiraFrase(p.oque_e)}`,
       };
@@ -364,6 +434,17 @@ function geradoresFilosofia(): Gerador[] {
         id: id("princ-rev"), tema: "filosofia", tipo: "teoria", nivel: 2, sujeito: `principio:${p.n}`,
         enunciado: `Qual princípio é este: “${esconder(primeiraFrase(p.para_que_serve), p.n)}”`,
         ...alt, porque: `${p.n} (${p.traducao}). ${primeiraFrase(p.oque_e)}`,
+      };
+    },
+    (s) => {
+      const p = s.um(principios);
+      const certa = esconder(primeiraFrase(p.para_que_serve), p.n);
+      const outras = principios.filter((o) => o.n !== p.n).map((o) => esconder(primeiraFrase(o.para_que_serve), o.n));
+      const alt = montar(s, certa, outras);
+      return alt && {
+        id: id("princ-uso"), tema: "filosofia", tipo: "teoria", nivel: 3, sujeito: `principio:${p.n}`,
+        enunciado: `Para que serve o ${p.n} no treino?`,
+        ...alt, porque: `${p.n} (${p.traducao}): ${primeiraFrase(p.para_que_serve)}`,
       };
     },
   ];
@@ -378,7 +459,7 @@ function geradoresVocabulario(): Gerador[] {
       const d = s.um(dicionario);
       const alt = montar(s, d.pt, dicionario.filter((o) => o.romaji !== d.romaji).map((o) => o.pt));
       return alt && {
-        id: id("dic"), tema: "vocabulario", tipo: "teoria", nivel: 1, sujeito: `dic:${d.romaji}`,
+        id: id("dic"), tema: "vocabulario", tipo: "teoria", nivel: 1, sujeito: `dic:${d.romaji}`, traducao: true,
         enunciado: `O que significa “${d.romaji}” (${d.jp})?`,
         ...alt, porque: `${d.romaji} (${d.jp}): ${d.pt}`,
       };
@@ -387,7 +468,7 @@ function geradoresVocabulario(): Gerador[] {
       const t = s.um(tecnicas);
       const alt = montar(s, t.nome, tecnicas.filter((o) => o.cat === t.cat && o.nome !== t.nome).map((o) => o.nome));
       return alt && {
-        id: id("kanji"), tema: "vocabulario", tipo: "teoria", nivel: 3, sujeito: t.nome,
+        id: id("kanji"), tema: "vocabulario", tipo: "teoria", nivel: 3, sujeito: t.nome, traducao: true,
         enunciado: `Qual técnica se escreve ${t.kanji}?`,
         ...alt, porque: `${t.kanji} se lê ${t.nome}: ${t.pt}.`,
       };
@@ -428,8 +509,31 @@ function geradoresHistoria(): Gerador[] {
         ...alt, porque: `${m.nome} (${m.anos}). ${primeiraFrase(m.text)}`,
       };
     },
+    (s) => {
+      const o = s.um(ORIGEM_KATAS.filter((x) => nomeDoKata(x.id) && x.nomeOriginal !== nomeDoKata(x.id)));
+      if (!o) return null;
+      const outras = ORIGEM_KATAS.filter((x) => x.id !== o.id).map((x) => x.nomeOriginal);
+      const alt = montar(s, o.nomeOriginal, outras);
+      return alt && {
+        id: id("kata-original"), tema: "historia", tipo: "teoria", nivel: 3, sujeito: `origem:${o.id}`,
+        enunciado: `Antes de Funakoshi renomear, como se chamava o ${nomeDoKata(o.id)} em Okinawa?`,
+        ...alt, porque: `O ${nomeDoKata(o.id)} era o ${o.nomeOriginal}. ${primeiraFrase(o.historia)}`,
+      };
+    },
+    (s) => {
+      const o = s.um(ORIGEM_KATAS.filter((x) => nomeDoKata(x.id)));
+      if (!o) return null;
+      const alt = montar(s, o.linhagem, ["Shuri-te", "Tomari-te", "Naha-te", "Japão"]);
+      return alt && {
+        id: id("kata-escola"), tema: "historia", tipo: "teoria", nivel: 2, sujeito: `origem:${o.id}`,
+        enunciado: `De onde vem o ${nomeDoKata(o.id)}?`,
+        ...alt, porque: `${nomeDoKata(o.id)}: ${o.linhagem}. ${o.quem} (${o.epoca}).`,
+      };
+    },
   ];
 }
+
+const nomeDoKata = (id: string) => getKatas().find((k) => k.id === id)?.nome;
 
 // ------------------------------------------------------------- montagem
 
@@ -440,6 +544,8 @@ interface Filtro {
   aceita?: (p: Pergunta) => boolean;
   /** No máximo N perguntas sobre a mesma técnica, kata ou preceito. */
   porSujeito?: number;
+  /** No máximo N perguntas do mesmo modelo ("De onde vem o…", "Quantos movimentos…"). */
+  porModelo?: number;
   /** Perguntas já escolhidas, que contam para a repetição. */
   ja?: Pergunta[];
 }
@@ -450,7 +556,12 @@ function colher(s: Sorteio, geradores: Gerador[], quantas: number, filtro: Filtr
   const ja = filtro.ja ?? [];
   const enunciados = new Set(ja.map((p) => p.enunciado));
   const usos = new Map<string, number>();
-  for (const p of ja) usos.set(p.sujeito, (usos.get(p.sujeito) ?? 0) + 1);
+  const modelos = new Map<string, number>();
+  const modeloDe = (p: Pergunta) => p.id.replace(/-\d+$/, "");
+  for (const p of ja) {
+    usos.set(p.sujeito, (usos.get(p.sujeito) ?? 0) + 1);
+    modelos.set(modeloDe(p), (modelos.get(modeloDe(p)) ?? 0) + 1);
+  }
 
   let tentativas = 0;
   while (saida.length < quantas && tentativas < quantas * 40 && geradores.length) {
@@ -459,9 +570,11 @@ function colher(s: Sorteio, geradores: Gerador[], quantas: number, filtro: Filtr
     if (!p || enunciados.has(p.enunciado)) continue;
     if (filtro.aceita && !filtro.aceita(p)) continue;
     if (filtro.porSujeito && (usos.get(p.sujeito) ?? 0) >= filtro.porSujeito) continue;
+    if (filtro.porModelo && (modelos.get(modeloDe(p)) ?? 0) >= filtro.porModelo && tentativas < quantas * 30) continue;
     if (filtro.nivel && p.nivel !== filtro.nivel && tentativas < quantas * 20) continue;
     enunciados.add(p.enunciado);
     usos.set(p.sujeito, (usos.get(p.sujeito) ?? 0) + 1);
+    modelos.set(modeloDe(p), (modelos.get(modeloDe(p)) ?? 0) + 1);
     saida.push(p);
   }
   return saida;
@@ -472,7 +585,7 @@ function geradoresDoTema(tema: Tema): Gerador[] {
     case "kihon":
       return getTecnicas().flatMap(geradoresTecnica);
     case "kata":
-      return getKatas().flatMap(geradoresKata);
+      return [...getKatas().flatMap(geradoresKata), ...geradoresPrograma(), ...geradoresPrograma()];
     case "dojo":
       return geradoresDojo();
     case "historia":
@@ -484,16 +597,157 @@ function geradoresDoTema(tema: Tema): Gerador[] {
   }
 }
 
-/** Perguntas de um tema (minigames). `nivel` é preferência, não filtro rígido. */
-export function perguntasDoTema(tema: Tema, quantas: number, semente: number, nivel?: Nivel) {
-  return colher(criarSorteio(semente), geradoresDoTema(tema), quantas, { nivel, porSujeito: 2 });
+/**
+ * Corta as alternativas para `n` (4 ou 5), mantendo a certa. Pergunta que
+ * já tem `n` ou menos fica como está.
+ */
+export function comAlternativas(p: Pergunta, n: number, s: Sorteio): Pergunta {
+  if (p.alternativas.length <= n) return p;
+  const certa = p.alternativas[p.correta];
+  const erradas = s.embaralhar(p.alternativas.filter((_, i) => i !== p.correta)).slice(0, n - 1);
+  const alternativas = s.embaralhar([certa, ...erradas]);
+  return { ...p, alternativas, correta: alternativas.indexOf(certa) };
 }
 
-/** Perguntas misturando todos os temas (o Randori e o Desafio final). */
-export function perguntasMisturadas(quantas: number, semente: number, nivel?: Nivel) {
+/** Do fácil para o difícil (o sort é estável). */
+const doFacilAoDificil = (lista: Pergunta[]) => [...lista].sort((a, b) => a.nivel - b.nivel);
+
+/**
+ * Treino livre (Randori): mistura os temas escolhidos, sem perguntas de
+ * tradução, na dificuldade pedida, da mais fácil para a mais difícil.
+ */
+export function perguntasDoTreino({
+  temas,
+  quantas,
+  semente,
+  nivel,
+  alternativas,
+}: {
+  temas: Tema[];
+  quantas: number;
+  semente: number;
+  nivel: Nivel;
+  alternativas: 4 | 5;
+}) {
   const s = criarSorteio(semente);
-  const todos = TEMAS.flatMap((t) => geradoresDoTema(t.id));
-  return s.embaralhar(colher(s, todos, quantas, { nivel, porSujeito: 1 }));
+  const lista = temas.length ? temas : TEMAS.map((t) => t.id);
+  // Cada tema entra com peso parecido, mesmo os que têm muitos geradores
+  // (kata tem centenas; filosofia, três).
+  const geradores = lista.flatMap((tema) => {
+    const g = geradoresDoTema(tema);
+    const peso = Math.max(1, Math.round(40 / g.length));
+    return Array.from({ length: peso }, () => g).flat();
+  });
+  const escolhidas = colher(s, geradores, quantas, {
+    nivel,
+    porSujeito: 1,
+    porModelo: 2,
+    aceita: (p) => !p.traducao,
+  });
+  return doFacilAoDificil(escolhidas.map((p) => comAlternativas(p, alternativas, s)));
+}
+
+// ------------------------------------------------------------- ilhas
+
+/**
+ * Regra de cada nível de faixa numa ilha: quantas perguntas, quantas
+ * alternativas, quantas para passar e de que dificuldade. Quanto mais
+ * escura a faixa, mais perguntas, mais alternativas e mais difíceis.
+ */
+export function regraDaFaixa(indice: number) {
+  const tamanhos = [5, 5, 6, 6, 7, 7, 8, 10];
+  const quantas = tamanhos[indice] ?? 6;
+  const base = Math.min(3, 1 + Math.floor(indice / 3)) as Nivel;
+  return {
+    quantas,
+    alternativas: (indice < 2 ? 4 : 5) as 4 | 5,
+    passa: Math.ceil(quantas * 0.7),
+    /** Primeira metade num nível, segunda metade no seguinte. */
+    niveis: [base, Math.min(3, base + 1) as Nivel] as const,
+  };
+}
+
+const katasPorNome = (nomes: string[]) =>
+  getKatas().filter((k) => nomes.some((n) => normal(n) === normal(k.nome)));
+
+/** O que cai numa faixa, para a "mini aula" antes das perguntas. */
+export function conteudoDaFaixa(indice: number) {
+  const graduacoes = getGraduacoes();
+  const atual = graduacoes[indice];
+  return {
+    graduacao: atual,
+    tecnicas: (atual?.kihonExigido ?? [])
+      .map((n) => acharTecnica(n))
+      .filter((t): t is Tecnica => Boolean(t)),
+    katas: katasPorNome(atual?.katasExigidos ?? []),
+  };
+}
+
+/** De onde saem as perguntas de uma faixa: primeiro o programa dela, depois o que veio antes. */
+function fontesDaFaixa(tema: Tema, indice: number): Gerador[][] {
+  const graduacoes = getGraduacoes();
+  const atual = graduacoes[indice];
+  const anteriores = graduacoes.slice(0, indice);
+
+  if (tema === "kihon") {
+    const tecnicas = (nomes: string[]) =>
+      nomes.map((n) => acharTecnica(n)).filter((t): t is Tecnica => Boolean(t));
+    const daFaixa = tecnicas(atual?.kihonExigido ?? []);
+    const antes = tecnicas(anteriores.flatMap((g) => g.kihonExigido));
+    return [
+      daFaixa.flatMap(geradoresTecnica),
+      antes.flatMap(geradoresTecnica),
+      getTecnicas().flatMap(geradoresTecnica),
+    ];
+  }
+  if (tema === "kata") {
+    let daFaixa = katasPorNome(atual?.katasExigidos ?? []);
+    // A Branca pede o Taikyoku, que não tem ficha: prepara para o Heian Shodan.
+    if (!daFaixa.length) daFaixa = katasPorNome(graduacoes[indice + 1]?.katasExigidos ?? []);
+    const antes = katasPorNome(anteriores.flatMap((g) => g.katasExigidos));
+    return [
+      daFaixa.flatMap(geradoresKata),
+      [...antes.flatMap(geradoresKata), ...geradoresPrograma()],
+      geradoresPrograma(),
+    ];
+  }
+  return [geradoresDoTema(tema)];
+}
+
+/** As perguntas de um nível de faixa numa ilha, da mais fácil para a mais difícil. */
+export function perguntasDaFaixa(tema: Tema, indice: number, semente: number) {
+  const s = criarSorteio(semente);
+  const regra = regraDaFaixa(indice);
+  const fontes = fontesDaFaixa(tema, indice);
+  const metade = Math.ceil(regra.quantas / 2);
+  const alvos: [Nivel, number][] = [
+    [regra.niveis[0], metade],
+    [regra.niveis[1], regra.quantas - metade],
+  ];
+
+  const escolhidas: Pergunta[] = [];
+  for (const [nivel, quantas] of alvos) {
+    let falta = quantas;
+    for (const fonte of fontes) {
+      if (falta <= 0) break;
+      const achadas = colher(s, fonte, falta, {
+        porSujeito: 2,
+        porModelo: Math.max(2, Math.ceil(regra.quantas / 3)),
+        ja: escolhidas,
+        aceita: (p) => p.nivel === nivel,
+      });
+      escolhidas.push(...achadas);
+      falta -= achadas.length;
+    }
+  }
+  // Se o tema não tem perguntas desse nível, completa com qualquer uma.
+  for (const fonte of fontes) {
+    if (escolhidas.length >= regra.quantas) break;
+    escolhidas.push(
+      ...colher(s, fonte, regra.quantas - escolhidas.length, { porSujeito: 2, ja: escolhidas }),
+    );
+  }
+  return doFacilAoDificil(escolhidas.map((p) => comAlternativas(p, regra.alternativas, s)));
 }
 
 // ------------------------------------------------------------- a prova
@@ -600,8 +854,12 @@ export function montarProva(graduacao: GraduacaoCompleta | undefined, semente: n
     );
   }
 
-  // Embaralha e ordena do fácil para o difícil (o sort é estável).
-  return s.embaralhar(escolhidas).sort((a, b) => a.nivel - b.nivel);
+  // A prova do portal fica com 4 alternativas. Embaralha e ordena do fácil
+  // para o difícil (o sort é estável).
+  return s
+    .embaralhar(escolhidas)
+    .map((p) => comAlternativas(p, 4, s))
+    .sort((a, b) => a.nivel - b.nivel);
 }
 
 /**
@@ -624,7 +882,7 @@ export function outraPergunta(
         ja,
         aceita: (p) => p.tipo === molde.tipo && (nivel === undefined || p.nivel === nivel),
       });
-      if (achada) return achada;
+      if (achada) return comAlternativas(achada, 4, s);
     }
   }
   return undefined;

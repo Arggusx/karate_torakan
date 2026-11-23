@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ButtonLink } from "@/components/ui/Button";
+import { naAcademy } from "@/lib/enderecos";
 import { Hinomaru } from "@/components/ui/Hinomaru";
 import { LuaVermelha } from "@/components/ui/LuaVermelha";
 
@@ -187,7 +188,7 @@ export function HeroLanding({
           </span>
           <span data-hero="acao" className="inline-flex">
             <ButtonLink
-              href="/estudos"
+              href={naAcademy("/estudos")}
               variant="secondary"
               className="bg-surface/75 backdrop-blur"
             >
