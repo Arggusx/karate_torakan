@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { IconeJogo } from "@/components/jornada/IconesJornada";
 import { JOGOS } from "@/components/jornada/jogos";
 
 /**
@@ -31,9 +32,7 @@ export function JogosBarra({ ativo }: { ativo: string }) {
             aria-current={j.slug === ativo ? "page" : undefined}
             style={{ "--game": j.cor } as React.CSSProperties}
           >
-            <span className="jogos-barra-kanji" aria-hidden>
-              {j.kanji}
-            </span>
+            <IconeJogo slug={j.slug} className="jogos-barra-icone" />
             {j.nome}
           </Link>
         ))}

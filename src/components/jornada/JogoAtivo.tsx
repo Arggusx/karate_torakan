@@ -1,22 +1,25 @@
 "use client";
 
-import { JogoCaminhos } from "@/components/jornada/JogoCaminhos";
 import { JogoColecao } from "@/components/jornada/JogoColecao";
-import { JogoKaruta } from "@/components/jornada/JogoKaruta";
-import { JogoRandori } from "@/components/jornada/JogoRandori";
+import { JogoIlhas } from "@/components/jornada/JogoIlhas";
+import { JogoMontar } from "@/components/jornada/JogoMontar";
+import { JogoRanking } from "@/components/jornada/JogoRanking";
 import { JogoSequencia } from "@/components/jornada/JogoSequencia";
+import { JogoTreino } from "@/components/jornada/JogoTreino";
 
 /** Troca o jogo pela rota /estudos/jornada/[jogo]. */
 export function JogoAtivo({ slug }: { slug: string }) {
   switch (slug) {
-    case "caminhos":
-      return <JogoCaminhos />;
-    case "randori":
-      return <JogoRandori />;
-    case "karuta":
-      return <JogoKaruta />;
+    case "ilhas":
+      return <JogoIlhas />;
+    case "treino":
+      return <JogoTreino />;
+    case "montar":
+      return <JogoMontar />;
     case "sequencia":
       return <JogoSequencia />;
+    case "ranking":
+      return <JogoRanking />;
     case "colecao":
       return <JogoColecao />;
     default:

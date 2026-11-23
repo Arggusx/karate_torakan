@@ -10,7 +10,7 @@ import { HeroPagina } from "@/components/layout/HeroPagina";
  */
 export const CONTATO_EMAIL: string | null = null;
 
-export const ATUALIZADO_EM = "30 de outubro de 2026";
+export const ATUALIZADO_EM = "5 de novembro de 2026";
 
 export interface SecaoLegal {
   id: string;

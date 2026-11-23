@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Contato, PaginaLegal } from "@/components/legal/PaginaLegal";
+import { noSite } from "@/lib/enderecos";
 
 export const metadata: Metadata = {
   title: "Termos de Uso",
@@ -33,7 +34,10 @@ export default function TermosPage() {
           conteudo: (
             <ul>
               <li>Conteúdo de estudo sobre o Karatê Shotokan, aberto a qualquer pessoa.</li>
-              <li>Jogos de estudo (Jornada), sem pontuação de ranking e sem coleta de dados.</li>
+              <li>
+                Jogos de estudo (Jornada). Quem joga sem login guarda o progresso só no aparelho; quem joga logado
+                no portal soma pontos para o ranking semanal e mensal do dojo.
+              </li>
               <li>
                 Portal para alunos matriculados, professores e administração: turmas, chamada, mensalidades,
                 provas e conta.
@@ -65,7 +69,7 @@ export default function TermosPage() {
               <p>Ao usar o portal, você se compromete a não:</p>
               <ul>
                 <li>entrar na conta de outra pessoa ou tentar ver dados que não são seus;</li>
-                <li>tentar burlar provas, a correção ou a segurança do sistema;</li>
+                <li>tentar burlar provas, a correção, o ranking da Jornada ou a segurança do sistema;</li>
                 <li>enviar fotos ofensivas ou que não sejam suas;</li>
                 <li>usar o site para qualquer fim ilegal.</li>
               </ul>
@@ -89,7 +93,7 @@ export default function TermosPage() {
           titulo: "Mensalidades e pagamentos",
           conteudo: (
             <p>
-              Valores, vencimento e condições estão na página de <Link href="/planos">Planos</Link> e no
+              Valores, vencimento e condições estão na página de <Link href={noSite("/planos")}>Planos</Link> e no
               contrato de matrícula. Os pagamentos online são processados pelo Stripe ou pelo Mercado Pago, sob
               os termos deles. Dúvidas ou estornos: fale <Contato />.
             </p>
