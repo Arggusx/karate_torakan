@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { MarcaTorakan } from "@/components/ui/MarcaTorakan";
 import { Footer } from "@/components/layout/Footer";
 import { SessaoHeader } from "@/components/portal/SessaoHeader";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ButtonLink } from "@/components/ui/Button";
+import { naAcademy, noSite } from "@/lib/enderecos";
+
+/** O portal não entra em buscadores: é aberto pelo link do professor. */
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function PortalLayout({
   children,
@@ -14,7 +21,7 @@ export default function PortalLayout({
     <div className="flex min-h-screen flex-col">
       <header className="cabecalho-vidro">
         <div className="section flex h-16 items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={noSite("/")} className="flex items-center gap-2">
             <MarcaTorakan className="h-8 w-8" />
             <span className="font-marca text-2xl leading-none text-accent">
               Torakan
@@ -24,7 +31,7 @@ export default function PortalLayout({
           <div className="flex items-center gap-2">
             <SessaoHeader />
             <ThemeToggle />
-            <ButtonLink href="/estudos" variant="ghost" size="sm" className="hidden sm:inline-flex">
+            <ButtonLink href={naAcademy("/estudos")} variant="ghost" size="sm" className="hidden sm:inline-flex">
               Portal de estudos
             </ButtonLink>
           </div>

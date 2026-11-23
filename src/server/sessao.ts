@@ -1,6 +1,6 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import type { Perfil } from "@/server/usuarios";
 
 /**
@@ -17,6 +17,22 @@ import type { Perfil } from "@/server/usuarios";
 
 const NOME_COOKIE = "shotokan_sessao";
 const DURACAO_SEGUNDOS = 60 * 60 * 12; // 12 horas
+
+/**
+ * Domínio do cookie. Com COOKIE_DOMAIN="torakandojo.com", a mesma sessão vale em
+ * portal.torakandojo.com e academy.torakandojo.com (o ranking da Jornada precisa
+ * saber quem está logado). Sem a variável, o cookie fica só no endereço atual.
+ *
+ * O domínio só é aplicado quando a requisição vem dele mesmo: nos endereços
+ * *.vercel.app (homologação, previews) o navegador recusaria um cookie de
+ * outro domínio, e o login quebraria.
+ */
+async function dominioDoCookie(): Promise<string | undefined> {
+  const dominio = process.env.COOKIE_DOMAIN?.trim().toLowerCase();
+  if (!dominio) return undefined;
+  const host = ((await headers()).get("host") ?? "").split(":")[0].toLowerCase();
+  return host === dominio || host.endsWith(`.${dominio}`) ? dominio : undefined;
+}
 
 export interface SessaoServidor {
   id: number;
@@ -92,13 +108,14 @@ export async function gravarCookieSessao(
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
+    domain: await dominioDoCookie(),
     maxAge: DURACAO_SEGUNDOS,
   });
 }
 
 export async function limparCookieSessao(): Promise<void> {
   const jarra = await cookies();
-  jarra.delete(NOME_COOKIE);
+  jarra.delete({ name: NOME_COOKIE, path: "/", domain: await dominioDoCookie() });
 }
 
 export async function sessaoAtual(): Promise<SessaoServidor | null> {

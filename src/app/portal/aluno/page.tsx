@@ -16,6 +16,7 @@ import { RodapePortal } from "@/components/portal/RodapePortal";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { useAcademia } from "@/lib/academiaStore";
+import { naAcademy } from "@/lib/enderecos";
 import {
   formatarReais,
   getGraduacoes,
@@ -239,7 +240,7 @@ function PainelAluno({
           </ul>
           <div className="border-t border-line p-3">
             <ButtonLink
-              href="/estudos/fundamentos"
+              href={naAcademy("/estudos/fundamentos")}
               variant="secondary"
               size="sm"
               className="w-full"
@@ -256,12 +257,12 @@ function PainelAluno({
           <ul className="divide-y divide-line">
             {[
               {
-                href: "/estudos/tecnicas/kata/heian-yondan",
+                href: naAcademy("/estudos/tecnicas/kata/heian-yondan"),
                 label: "Kata Heian Yondan",
               },
-              { href: "/estudos/tecnicas", label: "Kihon e tabelas de katas" },
-              { href: "/estudos/historia", label: "Linhagem dos mestres" },
-              { href: "/estudos/fundamentos", label: "Dojo Kun e princípios" },
+              { href: naAcademy("/estudos/tecnicas"), label: "Kihon e tabelas de katas" },
+              { href: naAcademy("/estudos/historia"), label: "Linhagem dos mestres" },
+              { href: naAcademy("/estudos/fundamentos"), label: "Dojo Kun e princípios" },
             ].map((atalho) => (
               <li key={atalho.href}>
                 <Link

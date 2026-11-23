@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { naAcademy } from "@/lib/enderecos";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
 import { ButtonLink } from "@/components/ui/Button";
@@ -338,18 +338,11 @@ export default async function PlanosPage() {
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <ButtonLink href="/#dojo">Ver onde treinamos</ButtonLink>
-              <ButtonLink href="/estudos" variant="secondary">
+              <ButtonLink href={naAcademy("/estudos")} variant="secondary">
                 Conhecer o portal
               </ButtonLink>
             </div>
           </div>
-
-          <p className="mt-6 text-center text-xs text-muted">
-            Já é aluno?{" "}
-            <Link href="/login" className="text-accent hover:underline">
-              Acesse seu portal.
-            </Link>
-          </p>
         </section>
       </main>
 

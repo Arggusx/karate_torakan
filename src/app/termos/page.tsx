@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Contato, PaginaLegal } from "@/components/legal/PaginaLegal";
+import { noSite } from "@/lib/enderecos";
 
 export const metadata: Metadata = {
   title: "Termos de Uso",
@@ -92,7 +93,7 @@ export default function TermosPage() {
           titulo: "Mensalidades e pagamentos",
           conteudo: (
             <p>
-              Valores, vencimento e condições estão na página de <Link href="/planos">Planos</Link> e no
+              Valores, vencimento e condições estão na página de <Link href={noSite("/planos")}>Planos</Link> e no
               contrato de matrícula. Os pagamentos online são processados pelo Stripe ou pelo Mercado Pago, sob
               os termos deles. Dúvidas ou estornos: fale <Contato />.
             </p>

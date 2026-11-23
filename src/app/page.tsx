@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { naAcademy } from "@/lib/enderecos";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
 import { HeroLanding } from "@/components/layout/HeroLanding";
@@ -241,7 +241,7 @@ export default async function LandingPage() {
               </p>
               <div className="mt-5 flex flex-wrap items-end gap-2">
                 <ButtonLink href="#matricula">Ver mensalidade</ButtonLink>
-                <ButtonLink href="/estudos/historia" variant="ghost">
+                <ButtonLink href={naAcademy("/estudos/historia")} variant="ghost">
                   Conhecer a linhagem →
                 </ButtonLink>
                 {/* Jardim do dojo: bambu e lanterna de pedra, assentados na
@@ -364,10 +364,9 @@ export default async function LandingPage() {
           </div>
 
           <p className="mt-4 text-center text-xs text-muted">
-            Acervo do portal atualizado em {dados.exportadoEm.slice(0, 10)}.{" "}
-            <Link href="/login" className="text-accent hover:underline">
-              Já é aluno? Acesse seu portal.
-            </Link>
+            {/* Sem atalho para o login: o portal é aberto pelo link que o
+                professor manda depois da matrícula. */}
+            Acervo do portal atualizado em {dados.exportadoEm.slice(0, 10)}.
           </p>
         </section>
 

@@ -8,6 +8,7 @@ import { iniciaisDe, jogo, pontosDoGrau } from "@/components/jornada/jogos";
 import { AvatarMini } from "@/components/portal/AvatarMini";
 import { FilterChips } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
+import { noPortal } from "@/lib/enderecos";
 import { useRanking, type LinhaRanking } from "@/lib/jornadaRede";
 import { useJornada } from "@/lib/jornadaStore";
 import { MOLDURAS_GRAU, MOLDURAS_RANKING } from "@/services/jornada";
@@ -116,7 +117,7 @@ export function JogoRanking() {
               O ranking é dos alunos, professores e da equipe do dojo. Entre com sua conta do portal e jogue: os pontos passam a contar
               para a semana e o mês. Os que você fez sem login ficam só neste aparelho.
             </p>
-            <Link href="/login" className="mt-3 inline-flex text-sm font-semibold text-accent hover:underline">
+            <Link href={noPortal("/login")} className="mt-3 inline-flex text-sm font-semibold text-accent hover:underline">
               Entrar no portal →
             </Link>
           </div>

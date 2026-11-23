@@ -9,6 +9,7 @@ import { BotaoGoogle } from "@/components/ui/BotaoGoogle";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/Button";
 import { useAcademia } from "@/lib/academiaStore";
+import { naAcademy } from "@/lib/enderecos";
 import { DESTINO_POR_PERFIL } from "@/services/dataService";
 
 const ERROS: Record<string, string> = {
@@ -164,7 +165,7 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-4 text-center text-xs text-muted">
-            <Link href="/estudos" className="hover:text-fg">
+            <Link href={naAcademy("/estudos")} className="hover:text-fg">
               Continuar sem entrar — ir para o portal de estudos
             </Link>
           </p>
