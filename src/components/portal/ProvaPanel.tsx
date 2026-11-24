@@ -368,7 +368,7 @@ function EmProva({
             className={cn(
               "h-8 w-8 rounded-full text-xs font-semibold tabular-nums transition-colors",
               i === atual
-                ? "bg-accent-solid text-on-accent"
+                ? "controle-ativo bg-accent-solid text-on-accent"
                 : respostas[i] !== null
                   ? "bg-accent/10 text-accent"
                   : "bg-elevated text-muted",

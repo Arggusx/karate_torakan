@@ -1,0 +1,183 @@
+/* =============================================================================
+   Portal (portal.torakandojo.com) — redesign "tinta sumi".
+   Importado pelos layouts de /portal, /login e /primeiro-acesso, que envolvem
+   a página em .portal. A raiz é body:has(.portal), e não .portal, para
+   alcançar também o que é renderizado direto no <body> (modais e avisos).
+   Regras em DESIGN.md, seções 3, 4 e 8.
+
+   Ferramenta primeiro: tabelas, formulários e painéis legíveis. Sem animação
+   além de transições de estado (hover, foco, abrir e fechar modal).
+   ============================================================================= */
+
+/* ------------------------------------------------------------------ fontes */
+
+/* As classes do Tailwind leem estas variáveis: nenhum className muda. */
+body:has(.portal) {
+  --fonte-display: var(--fonte-mincho);
+  --fonte-texto: var(--fonte-gotica);
+  --fonte-marca: var(--fonte-mincho);
+  font-family: var(--fonte-gotica), "Zen Kaku Gothic New", system-ui, sans-serif;
+}
+
+/* Nome da marca: Shippori Mincho 800, caixa alta, espaçado, cor de tinta. */
+body:has(.portal) .font-marca {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--heading));
+}
+
+/* Rótulos: JetBrains Mono, caixa alta, espaçado. */
+body:has(.portal) .eyebrow {
+  font-family: var(--fonte-mono), "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: rgb(var(--subtle));
+}
+
+body:has(.portal) .label {
+  font-family: var(--fonte-mono), "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+/* ------------------------------------------------------ contêiner e raios */
+
+body:has(.portal) .section {
+  max-width: min(1280px, calc(100% - 64px));
+}
+
+body:has(.portal) .card,
+body:has(.portal) .painel,
+body:has(.portal) .sanfona {
+  border-radius: 18px;
+}
+
+body:has(.portal) .input,
+body:has(.portal) select,
+body:has(.portal) textarea {
+  border-radius: 12px;
+}
+
+body:has(.portal) .sanfona[open] {
+  border-color: rgb(var(--line-strong));
+}
+
+body:has(.portal) .card-faixa {
+  border-top-color: var(--faixa-cor, rgb(var(--line-strong)));
+}
+
+/* ---------------------------------------------------------------- vermelho */
+
+/*
+  O vermelho é carimbo: botão principal e links em hover. O --accent vira
+  tinta no portal; o vermelho de verdade fica em --hanko (lido no <html>,
+  antes da troca) e volta onde tem significado:
+  - botão de excluir/remover (variant="danger" do Button, .botao-perigo);
+  - o aviso de troca de senha do primeiro acesso (.aviso-hanko).
+  Erros e status usam as cores de status, que não mudam.
+*/
+html {
+  --hanko: var(--accent);
+}
+
+body:has(.portal) {
+  --accent: var(--heading);
+}
+
+body:has(.portal) :is(.botao-perigo, .aviso-hanko),
+body:has(.portal) svg {
+  --accent: var(--hanko);
+}
+
+body:has(.portal) .hover\:text-accent:hover,
+body:has(.portal) .group:hover .group-hover\:text-accent {
+  color: rgb(var(--hanko));
+}
+
+/* Link que era vermelho e virou tinta: o sublinhado mostra que é link. */
+body:has(.portal) a.text-accent {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgb(var(--line-strong));
+}
+
+body:has(.portal) .aviso-hanko a.text-accent {
+  text-decoration-color: currentColor;
+}
+
+/* Botão secundário: texto em tinta. */
+body:has(.portal) .text-accent-hover {
+  color: rgb(var(--heading));
+}
+
+/* Aba, chip, dia ou questão selecionada: tinta, não vermelho. */
+body:has(.portal) .controle-ativo {
+  background-color: rgb(var(--fg));
+  border-color: rgb(var(--fg));
+  color: rgb(var(--canvas));
+  box-shadow: none;
+}
+
+body:has(.portal) .nav-link:hover {
+  color: rgb(var(--hanko));
+}
+
+/* A gota de cor atrás dos títulos (vermelho e dourado em degradê) sai. */
+body:has(.portal) .liquido {
+  display: none;
+}
+
+/* ------------------------------------------------------------- foco visível */
+
+/* Em todos os controles: contorno de 2px na cor de destaque, afastado 2px. */
+body:has(.portal)
+  :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--hanko));
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- movimento */
+
+/* Seigaiha parado e mais apagado: no portal o fundo não compete com dados. */
+body:has(.portal) .fundo-ondas {
+  animation: none;
+}
+
+body:has(.portal) svg:has(.fundo-ondas) {
+  opacity: 0.04;
+}
+
+/*
+  Nada anima sozinho no portal. Ficam só as transições de estado (hover, foco)
+  e as duas animações que são estado: o spinner de carregamento e a entrada
+  dos modais e avisos (animate-fade-in).
+*/
+body:has(.portal) *:not(.animate-spin):not(.animate-fade-in),
+body:has(.portal) *::before,
+body:has(.portal) *::after {
+  animation: none !important;
+}
+
+/* A garra do login aparece já riscada, sem o laço de animação. */
+body:has(.portal) .anim-garra-risco {
+  stroke-dashoffset: 0;
+}
+
+/* A luz que segue o cursor nos cartões sai: o portal é ferramenta. */
+body:has(.portal) .luz {
+  background-image: none;
+}
+
+/* -------------------------------------------------------------------- fotos */
+
+body:has(.portal) img:not([src*="marca-torakan"]),
+body:has(.portal) .grayscale {
+  filter: grayscale(1) contrast(1.1);
+}
+
+.dark body:has(.portal) img:not([src*="marca-torakan"]) {
+  filter: grayscale(1) contrast(1.1) brightness(0.9);
+}

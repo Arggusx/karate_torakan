@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+// Redesign "tinta sumi" do portal (ver o arquivo).
+import "../portal.css";
 
 /** Primeiro acesso faz parte do portal: fora dos buscadores. */
 export const metadata: Metadata = {
@@ -11,5 +13,5 @@ export default function PrimeiroAcessoLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <div className="portal">{children}</div>;
 }
