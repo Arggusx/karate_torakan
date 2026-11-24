@@ -126,7 +126,10 @@ export interface OrigemDosKatas {
 export interface Graduacao {
   faixa: string;
   jp: string;
+  /** Lema curto da faixa (também aparece no perfil do aluno, no portal). */
   txt: string;
+  /** O significado da cor, em parágrafos. Nem toda faixa tem. */
+  significado?: string[];
 }
 
 export interface Pilar {

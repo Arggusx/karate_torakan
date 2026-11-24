@@ -82,6 +82,16 @@ export default function FundamentosPage() {
                 </div>
                 <Obi cor={faixa.cor} dan={faixa.grau.toLowerCase().includes("dan")} className="w-20 shrink-0" />
               </div>
+              <p className="mt-2 text-sm italic text-muted">{faixa.txt}</p>
+              {faixa.significado?.length ? (
+                <Sanfona titulo="O significado da cor" className="mt-3">
+                  <div className="grid gap-2 text-sm text-muted">
+                    {faixa.significado.map((p) => (
+                      <p key={p}>{p}</p>
+                    ))}
+                  </div>
+                </Sanfona>
+              ) : null}
               <dl className="mt-3 grid gap-2 border-t border-line pt-3 text-xs">
                 <div className="flex gap-2">
                   <dt className="w-12 shrink-0 text-subtle">Tempo</dt>
