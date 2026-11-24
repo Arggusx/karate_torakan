@@ -8,33 +8,23 @@ import { useEffect } from "react";
  * - Luz: nos cartões (.card, .painel, .sanfona, [data-luz]) uma luz suave
  *   segue o cursor — as variáveis --mx/--my vão para o elemento e o CSS
  *   desenha o brilho (.luz em componentes.css).
- * - Inclinação 3D: [data-inclinar] gira alguns graus na direção do mouse
- *   (--rx/--ry), como uma foto segurada na mão.
+ * - (A inclinação 3D de [data-inclinar] saiu no redesign: academy e portal
+ *   só têm transições de estado. Ver DESIGN.md, seção 5.)
  * - Revelação: [data-revelar-mouse] recebe --mx/--my para a máscara que
  *   mostra a imagem de baixo em volta do cursor.
  *
- * Desligado em tela de toque (sem hover) e com prefers-reduced-motion. Não
- * renderiza nada.
+ * Desligado em tela de toque (sem hover). Não renderiza nada.
  */
 const ALVO_LUZ = ".card, .painel, .sanfona, [data-luz]";
 
 export function EfeitosGlobais() {
   useEffect(() => {
     const finoComHover = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (!finoComHover.matches) return;
 
     let luzAtual: HTMLElement | null = null;
-    let inclinadoAtual: HTMLElement | null = null;
     let quadro = 0;
     let ultimo: PointerEvent | null = null;
-
-    function soltarInclinado() {
-      if (!inclinadoAtual) return;
-      inclinadoAtual.style.setProperty("--rx", "0deg");
-      inclinadoAtual.style.setProperty("--ry", "0deg");
-      inclinadoAtual = null;
-    }
 
     function aplicar() {
       quadro = 0;
@@ -62,20 +52,6 @@ export function EfeitosGlobais() {
         revelar.style.setProperty("--mx", `${e.clientX - r.left}px`);
         revelar.style.setProperty("--my", `${e.clientY - r.top}px`);
       }
-
-      // Inclinação 3D.
-      if (menosMovimento.matches) return;
-      const inclinar = alvo?.closest<HTMLElement>("[data-inclinar]") ?? null;
-      if (inclinar !== inclinadoAtual) soltarInclinado();
-      if (inclinar) {
-        inclinadoAtual = inclinar;
-        const r = inclinar.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
-        const forca = Number(inclinar.dataset.inclinar) || 8;
-        inclinar.style.setProperty("--rx", `${(-y * forca).toFixed(2)}deg`);
-        inclinar.style.setProperty("--ry", `${(x * forca).toFixed(2)}deg`);
-      }
     }
 
     function mover(e: PointerEvent) {
@@ -86,7 +62,6 @@ export function EfeitosGlobais() {
     function sair() {
       luzAtual?.classList.remove("luz");
       luzAtual = null;
-      soltarInclinado();
     }
 
     document.addEventListener("pointermove", mover, { passive: true });

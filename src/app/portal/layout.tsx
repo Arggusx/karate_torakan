@@ -6,6 +6,8 @@ import { SessaoHeader } from "@/components/portal/SessaoHeader";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ButtonLink } from "@/components/ui/Button";
 import { naAcademy, noSite } from "@/lib/enderecos";
+// Redesign "tinta sumi" do portal: tudo fica sob .portal (ver o arquivo).
+import "../portal.css";
 
 /** O portal não entra em buscadores: é aberto pelo link do professor. */
 export const metadata: Metadata = {
@@ -18,7 +20,7 @@ export default function PortalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="portal flex min-h-screen flex-col">
       <header className="cabecalho-vidro">
         <div className="section flex h-16 items-center justify-between gap-4">
           <Link href={noSite("/")} className="flex items-center gap-2">

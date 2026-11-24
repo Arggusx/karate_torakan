@@ -197,7 +197,7 @@ export function MinhaConta({
   return (
     <div className="space-y-4">
       {conta?.precisa_trocar_senha ? (
-        <div className="rounded-xl border border-accent/40 bg-accent/5 px-4 py-3">
+        <div className="aviso-hanko rounded-xl border border-accent/40 bg-accent/5 px-4 py-3">
           <p className="text-xs font-medium text-accent">
             Primeiro acesso: troque a senha que a academia entregou por uma
             sua, ou vincule sua conta Google.

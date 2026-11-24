@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+// Redesign "tinta sumi" do portal (ver o arquivo).
+import "../portal.css";
 
 /** Login faz parte do portal: fora dos buscadores, como o resto dele. */
 export const metadata: Metadata = {
@@ -7,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <div className="portal">{children}</div>;
 }

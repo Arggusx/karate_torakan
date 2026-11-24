@@ -65,6 +65,10 @@ const config: Config = {
         marca: ["var(--fonte-marca)", "cursive"],
         // Pincel japonês, padrão de todo kanji.
         kanji: ["var(--fonte-kanji)", "serif"],
+        // Redesign "tinta sumi" (DESIGN.md, seção 4). Por enquanto só na landing.
+        mincho: ["var(--fonte-mincho)", "Shippori Mincho", "serif"],
+        gotica: ["var(--fonte-gotica)", "Zen Kaku Gothic New", "system-ui", "sans-serif"],
+        rotulo: ["var(--fonte-mono)", "JetBrains Mono", "ui-monospace", "monospace"],
       },
       keyframes: {
         "fade-in": {

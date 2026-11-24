@@ -56,7 +56,7 @@ export function SegmentedControl<T extends string>({
               destaque
                 ? "px-5 py-2 text-sm font-bold uppercase tracking-[0.06em]"
                 : "px-4 py-1.5 text-sm font-semibold",
-              active && "bg-accent-solid text-on-accent shadow-sm",
+              active && "controle-ativo bg-accent-solid text-on-accent shadow-sm",
               !active && "text-muted hover:text-heading",
             )}
           >
@@ -96,7 +96,7 @@ export function FilterChips<T extends string>({
             className={cn(
               "rounded-full px-3.5 py-1.5 text-xs font-semibold transition-[background-color,color] duration-[250ms] ease-oratio",
               active
-                ? "bg-accent-solid text-on-accent"
+                ? "controle-ativo bg-accent-solid text-on-accent"
                 : "bg-elevated text-muted hover:text-heading",
             )}
           >

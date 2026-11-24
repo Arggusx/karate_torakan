@@ -1,5 +1,7 @@
 import { Footer } from "@/components/layout/Footer";
 import { HeaderEstudos } from "@/components/layout/HeaderEstudos";
+// Redesign "tinta sumi" do academy: tudo fica sob .academy (ver o arquivo).
+import "../academy.css";
 
 export default function EstudosLayout({
   children,
@@ -7,7 +9,7 @@ export default function EstudosLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="academy flex min-h-screen flex-col">
       <HeaderEstudos />
       {/*
         Sem padding no topo: a faixa escura de abertura de cada página encosta

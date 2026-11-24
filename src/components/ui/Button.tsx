@@ -17,7 +17,7 @@ const VARIANTS: Record<Variant, string> = {
     "bg-elevated text-accent-hover hover:-translate-y-0.5 hover:bg-line-strong hover:shadow-md dark:text-accent",
   ghost: "text-muted hover:bg-elevated hover:text-heading",
   danger:
-    "bg-accent/10 text-accent hover:-translate-y-0.5 hover:bg-accent/15 hover:shadow-md",
+    "botao-perigo bg-accent/10 text-accent hover:-translate-y-0.5 hover:bg-accent/15 hover:shadow-md",
 };
 
 const SIZES: Record<Size, string> = {
