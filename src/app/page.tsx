@@ -1,378 +1,339 @@
 import Image from "next/image";
-import { naAcademy } from "@/lib/enderecos";
-import { Footer } from "@/components/layout/Footer";
+import Link from "next/link";
+import { EfeitosLanding } from "@/components/layout/EfeitosLanding";
+import { FooterLanding } from "@/components/layout/FooterLanding";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
 import { HeroLanding } from "@/components/layout/HeroLanding";
-import {
-  Bambu,
-  Enso,
-  BokkenChoque,
-  FaixaAoVento,
-  Makiwara,
-  Lanterna,
-} from "@/components/animacoes/AnimacoesKarate";
-import { VitrineKatas } from "@/components/tecnicas/AberturaTecnicas";
-import { CartazNumeros } from "@/components/ui/CartazNumeros";
-import { Badge } from "@/components/ui/Badge";
-import { ButtonLink } from "@/components/ui/Button";
-import { SectionHeading } from "@/components/ui/Card";
-import { listarTurmas } from "@/server/usuarios";
-import { VALOR_MENSALIDADE_CENTAVOS } from "@/server/pagamentos";
-import {
-  dados,
-  getBeneficios,
-  getDepoimentos,
-  getKatas,
-  getPilares,
-  formatarReais,
-  getTecnicas,
-} from "@/services/dataService";
+import { MapaAoClicar } from "@/components/layout/MapaAoClicar";
+import "./landing.css";
 
-/** Uma cena animada por pilar do método: o golpe, a forma e o combate. */
-const CENA_DO_PILAR: Record<string, React.ComponentType<{ className?: string }>> = {
-  Kihon: Makiwara,
-  Kata: Enso,
-  Kumite: BokkenChoque,
-};
+/*
+  Landing de torakandojo.com no redesign "tinta sumi". Estrutura e textos
+  aprovados em DESIGN.md, seção 6, e no protótipo da home.
 
-const INCLUSO = [
-  "Três aulas por semana, terça, quinta e sexta",
-  "Acesso integral ao portal de estudos",
-  "Acompanhamento individual do sensei",
-  "Exames de graduação sem custo extra",
+  Sem menção ao portal de estudos nem ao portal do aluno: o conteúdo de estudo
+  é de quem já é matriculado. A única saída é "Área do aluno", no rodapé.
+*/
+
+const ENDERECO = "Rua 15 de Novembro, 1104, Olho d'Água das Flores - AL, 57442-000";
+
+const MAPS_LINK =
+  "https://www.google.com/maps/place/R.+Quinze+de+Novembro,+1104,+Olho+d'%C3%81gua+das+Flores+-+AL,+57442-000/@-9.5275156,-37.2944468,19z";
+
+const MAPS_EMBED = `https://maps.google.com/maps?q=${encodeURIComponent(ENDERECO)}&z=17&output=embed`;
+
+const TURMAS = [
+  {
+    nome: "Infantil",
+    idade: "7 a 12 anos",
+    dias: "Terça, quinta e sexta",
+    horario: "18h30 às 19h30",
+  },
+  {
+    nome: "Avançado",
+    idade: "13 anos ou mais",
+    dias: "Terça, quinta e sexta",
+    horario: "19h30 às 21h",
+  },
 ];
 
-/**
- * A página é gerada estaticamente e revalidada a cada 5 minutos. Sem isso, os
- * horários das turmas ficariam congelados no momento do build — e um build
- * feito sem banco (ex.: preview sem env) publicaria a lista vazia para sempre.
- */
-export const revalidate = 300;
+const INCLUSO = [
+  "Turmas de no máximo 20 alunos",
+  "Equipe de faixas pretas",
+  "Primeira aula grátis",
+];
 
-export default async function LandingPage() {
-  // Turmas e horários vêm do banco — é o mesmo dado que o portal usa.
-  // Se o banco não responder, a página ainda sobe sem a grade de horários.
-  const turmas = await listarTurmas().catch(() => []);
-  const beneficios = getBeneficios();
-  const pilares = getPilares();
-  const depoimentos = getDepoimentos();
-  const katas = getKatas();
-  const tecnicas = getTecnicas();
+/** Rei → Aquecimento → Kihon → Kata → Kumite → Rei. */
+const AULA = [
+  { marca: "礼", kanji: true, titulo: "Rei", texto: "A saudação abre o treino." },
+  { marca: "02", kanji: false, titulo: "Aquecimento", texto: "Corpo pronto antes da técnica." },
+  {
+    marca: "基本",
+    kanji: true,
+    titulo: "Kihon",
+    texto: "Base, socos, defesas e chutes, repetidos até virarem reflexo.",
+  },
+  {
+    marca: "型",
+    kanji: true,
+    titulo: "Kata",
+    texto: "Formas que guardam a técnica e a história do estilo.",
+  },
+  {
+    marca: "組手",
+    kanji: true,
+    titulo: "Kumite",
+    texto: "Combate com parceiro, com controle e respeito.",
+  },
+  { marca: "礼", kanji: true, titulo: "Rei", texto: "A saudação fecha o treino." },
+];
 
+const NUMEROS_DOJO = [
+  { valor: "180 m²", rotulo: "de tatame" },
+  { valor: "20", rotulo: "alunos no máximo por turma" },
+  { valor: "黒帯", rotulo: "equipe de faixas pretas" },
+];
+
+/*
+  Valor aprovado para a vitrine. Fica escrito aqui, e não lido de
+  VALOR_MENSALIDADE_CENTAVOS, para a landing não mudar junto com um valor de
+  teste no .env.
+*/
+const MENSALIDADE = "R$ 70";
+
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="landing flex min-h-screen flex-col text-fg">
       <HeaderLanding />
+      <EfeitosLanding />
 
       <main className="flex-1">
-        <HeroLanding katas={katas.length} tecnicas={tecnicas.length} />
+        <HeroLanding />
 
-        {/* Turmas e horários */}
-        <section className="border-b border-line bg-surface">
-          <div className="section grid gap-8 py-14 lg:grid-cols-[1.25fr_1fr] lg:py-16">
-            <div className="max-w-xl">
-              <Badge tone="accent">
-                Academia Tigre de Karatê · desde 1998
-              </Badge>
-              <h2 className="mt-4 font-display text-3xl font-normal leading-tight tracking-[-0.02em] text-fg">
-                Duas turmas, um mesmo método
-              </h2>
-              <p className="body-muted mt-3 text-sm">
-                A divisão é por faixa etária, não por nível: a técnica é a
-                mesma, o ritmo é que muda. A primeira aula é experimental e
-                gratuita.
+        {/* 01 — Turmas e mensalidade */}
+        <section id="turmas" className="landing-container landing-secao scroll-mt-16">
+          <p className="landing-rotulo mb-5">01 — Turmas e mensalidade</p>
+          <h2 className="landing-titulo mb-14 text-[clamp(36px,4.5vw,64px)] leading-[1.05]">
+            Uma turma pra cada idade.
+          </h2>
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {TURMAS.map((turma) => (
+              <article
+                key={turma.nome}
+                data-subir
+                className="landing-card border border-line bg-canvas/60 p-9"
+              >
+                <p className="landing-rotulo tracking-[0.16em]">Turma</p>
+                <h3 className="landing-titulo mb-1 mt-3 text-[40px] leading-tight">
+                  {turma.nome}
+                </h3>
+                <p className="mb-7 text-muted">{turma.idade}</p>
+                <p className="border-t border-line pt-5 leading-[1.7]">
+                  {turma.dias}
+                  <br />
+                  {turma.horario}
+                </p>
+              </article>
+            ))}
+
+            {/* Mensalidade: o card invertido, com o carimbo 虎. */}
+            <article
+              data-subir
+              className="landing-card relative bg-fg p-9 text-canvas md:col-span-2 lg:col-span-1"
+            >
+              <span
+                aria-hidden
+                className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-[10px] bg-accent-solid font-mincho text-[28px] font-extrabold text-on-accent"
+              >
+                虎
+              </span>
+              <p className="landing-rotulo tracking-[0.16em] !text-canvas/75">
+                Mensalidade
               </p>
-            </div>
-
-            {/* Horários */}
-            <div className="card self-start">
-              <div className="border-b border-line px-4 py-2.5">
-                <h2 className="heading-md">Turmas e horários</h2>
-              </div>
-              <ul className="divide-y divide-line">
-                {turmas.map((turma) => (
-                  <li key={turma.id} className="px-4 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-fg">
-                        {turma.nome}
-                      </span>
-                      <span className="text-xs tabular-nums text-muted">
-                        {turma.horario.slice(0, 5)} às{" "}
-                        {(turma.hora_fim ?? "").slice(0, 5)}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 text-2xs text-subtle">
-                      {turma.faixa_etaria} · {turma.dias_semana}
-                    </p>
-                  </li>
+              <p className="mb-1 mt-3 whitespace-nowrap font-mincho text-[clamp(48px,4.4vw,64px)] font-extrabold leading-none">
+                {MENSALIDADE}
+                <span className="text-[22px]">/mês</span>
+              </p>
+              <ul className="mb-7 mt-6 list-disc pl-[18px] leading-[1.8]">
+                {INCLUSO.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
-              <div className="border-t border-line px-4 py-3">
-                <p className="text-2xs text-subtle">
-                  Primeira aula experimental gratuita.
-                </p>
-              </div>
-            </div>
+              <Link href="/planos" className="landing-botao bg-canvas text-fg hover:bg-elevated">
+                Ver planos e matrícula
+              </Link>
+            </article>
           </div>
         </section>
 
-        {/* Cartaz que revela a foto em volta do mouse, com os números do dojo. */}
-        <div className="section pt-12">
-          <CartazNumeros
-            kanji="道"
-            foto="/imagens/faixa.jpg"
-            sobretitulo="Dō · o caminho"
-            frase="Entre, cumprimente o tatame e deixe o resto lá fora."
-            numeros={[
-              { valor: katas.length, rotulo: "katas com ficha no portal", Arte: FaixaAoVento },
-              { valor: tecnicas.length, rotulo: "técnicas de kihon catalogadas", Arte: Makiwara },
-              { valor: 20, rotulo: "alunos no máximo por aula", Arte: BokkenChoque },
-            ]}
-          />
-        </div>
+        {/* 02 — Como é a aula */}
+        <section id="aula" className="landing-container landing-secao scroll-mt-16 !pt-0">
+          <p className="landing-rotulo mb-5">02 — Como é a aula</p>
+          <div className="grid items-start gap-14 lg:grid-cols-2">
+            <div>
+              <h2 className="landing-titulo mb-5 text-[clamp(36px,4.5vw,64px)] leading-[1.05]">
+                Do primeiro rei ao último.
+              </h2>
+              <p className="mb-10 max-w-[460px] leading-relaxed text-muted">
+                Toda aula passa pelos três pilares do Shotokan, com correção de
+                perto do começo ao fim.
+              </p>
+              <div className="landing-card relative aspect-[5/4] overflow-hidden">
+                <Image
+                  src="/imagens/faixa.jpg"
+                  alt="Karateca ajustando a faixa preta"
+                  fill
+                  sizes="(min-width: 1024px) 608px, 100vw"
+                  data-tinta
+                  className="landing-foto landing-tinta object-cover"
+                />
+              </div>
+            </div>
 
-        {/* Benefícios */}
-        <section id="beneficios" className="section scroll-mt-16 py-12">
-          <SectionHeading
-            eyebrow="Benefícios"
-            titulo="O que o treino constrói"
-            descricao="Seis efeitos do karatê que aparecem fora do tatame."
-          />
-
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {beneficios.map((beneficio) => (
-              <article
-                key={beneficio.titulo}
-                className="card card-hover card-faixa relative overflow-hidden p-5 [--faixa-cor:rgb(var(--gold))]"
-              >
-                <span
-                  aria-hidden
-                  className="kanji-mark absolute right-3 top-2 text-4xl"
+            <ol className="flex flex-col">
+              {AULA.map((etapa, i) => (
+                <li
+                  key={`${etapa.titulo}-${i}`}
+                  data-subir
+                  className="grid grid-cols-[72px_1fr] gap-5 border-t border-line py-6 last:border-b"
                 >
-                  {beneficio.kanji}
+                  {etapa.kanji ? (
+                    <span aria-hidden className="font-mincho text-[40px] leading-none">
+                      {etapa.marca}
+                    </span>
+                  ) : (
+                    <span aria-hidden className="landing-rotulo pt-1.5 text-sm">
+                      {etapa.marca}
+                    </span>
+                  )}
+                  <div>
+                    <h3 className="mb-1.5 text-xl font-bold">{etapa.titulo}</h3>
+                    <p className="leading-normal text-muted">{etapa.texto}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* 03 — O primeiro kata: embusen e contador ligados à rolagem. */}
+        <section data-kata className="landing-kata relative border-t border-line">
+          <div className="landing-kata-palco landing-container grid items-center gap-12 py-24 lg:grid-cols-2 lg:py-14">
+            <div>
+              <p className="landing-rotulo mb-5">03 — O primeiro kata</p>
+              <h2 className="landing-titulo text-[clamp(44px,6vw,88px)] leading-none">
+                Heian Shodan
+              </h2>
+              <p className="mt-5 max-w-[440px] leading-relaxed text-muted">
+                É por ele que todo aluno começa. O embusen é o caminho que o
+                corpo desenha no chão.
+              </p>
+              <p className="mt-10 font-mincho text-[clamp(80px,12vw,168px)] font-extrabold leading-[0.9]">
+                <span aria-hidden>
+                  <span data-kata-contador data-total="21" className="tabular-nums">
+                    21
+                  </span>
+                  <span className="text-line-strong">/21</span>
                 </span>
-                <h3 className="heading-md">{beneficio.titulo}</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                  {beneficio.text}
+                <span className="sr-only">21 movimentos</span>
+              </p>
+              <p aria-hidden className="landing-rotulo mt-2">
+                Movimentos
+              </p>
+            </div>
+            <svg
+              viewBox="0 0 400 400"
+              role="img"
+              aria-label="Embusen do Heian Shodan em forma de I"
+              className="w-full max-w-[480px] justify-self-center"
+            >
+              <path
+                d="M60 340H340M200 340V60M60 60H340"
+                fill="none"
+                className="stroke-line"
+                strokeWidth="14"
+                strokeLinecap="round"
+              />
+              <path
+                data-kata-desenho
+                pathLength={1}
+                d="M200 340H60M60 340H340M200 340V60M200 60H60M60 60H340M200 60V340"
+                fill="none"
+                className="stroke-fg"
+                strokeWidth="14"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray="1"
+                strokeDashoffset="0"
+              />
+              {/* Marcador do embusen: o ponto de partida, em vermelho. */}
+              <circle cx="200" cy="340" r="14" className="fill-accent-solid" />
+            </svg>
+          </div>
+        </section>
+
+        {/* O dojo */}
+        <section id="dojo" className="scroll-mt-16 pb-24 lg:pb-40">
+          <div className="relative h-[420px] lg:h-[600px]">
+            <Image
+              src="/imagens/dojo.jpg"
+              alt="Karateca executando chute no dojo"
+              fill
+              sizes="100vw"
+              data-tinta
+              className="landing-foto landing-tinta object-cover"
+            />
+          </div>
+          <div className="landing-container relative -mt-[120px] grid gap-3 sm:grid-cols-3">
+            {NUMEROS_DOJO.map((numero) => (
+              <div key={numero.rotulo} data-subir className="landing-card bg-elevated p-8 dark:bg-surface">
+                <p className="font-mincho text-[56px] font-extrabold leading-tight">
+                  {numero.valor}
                 </p>
-              </article>
+                <p className="mt-1.5 text-muted">{numero.rotulo}</p>
+              </div>
             ))}
           </div>
         </section>
 
-        {/* Pilares */}
-        {/* Faixa separando os benefícios (acima) da apresentação do dojo. */}
+        {/* 04 — Onde fica */}
         <section
-          id="pilares"
-          className="faixa-destacada scroll-mt-16 py-12"
+          id="onde-fica"
+          className="landing-container landing-secao scroll-mt-16 grid items-stretch gap-10 !pt-0 lg:grid-cols-2"
         >
-          <div className="section">
-          <SectionHeading
-            eyebrow="Método"
-            titulo="Kihon, Kata e Kumite"
-            descricao="As três frentes de trabalho que estruturam cada aula."
+          <div>
+            <p className="landing-rotulo mb-5">04 — Onde fica</p>
+            <h2 className="landing-titulo mb-6 text-[clamp(32px,4vw,52px)] leading-[1.05]">
+              Venha conhecer o dojo.
+            </h2>
+            <address className="not-italic leading-[1.8] text-muted">
+              Rua 15 de Novembro, 1104 · Centro
+              <br />
+              Olho d’Água das Flores · AL · 57442-000
+              <br />
+              Terça, quinta e sexta
+              <br />
+              Infantil 18h30–19h30 · Avançado 19h30–21h
+            </address>
+            <a href={MAPS_LINK} className="landing-botao landing-botao-secundario mt-7">
+              Abrir no Google Maps
+            </a>
+          </div>
+          {/* O Google só é chamado depois do clique (LGPD). */}
+          <MapaAoClicar
+            src={MAPS_EMBED}
+            titulo="Mapa: Rua 15 de Novembro, 1104, Olho d’Água das Flores – AL"
+            className="landing-card min-h-[320px] w-full border border-line"
           />
-
-          <div className="mt-4 grid gap-2 lg:grid-cols-3">
-            {pilares.map((pilar) => {
-              const Cena = CENA_DO_PILAR[pilar.nome];
-              return (
-              <article key={pilar.nome} className="card card-faixa p-5" data-inclinar="5">
-                {Cena ? (
-                  <div className="mb-3 flex h-24 items-center justify-center rounded-lg bg-elevated/60">
-                    <Cena className="h-20 w-auto" />
-                  </div>
-                ) : null}
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="heading-md">{pilar.nome}</h3>
-                  <span className="font-kanji text-sm text-subtle">{pilar.kanji}</span>
-                </div>
-                <p className="mt-0.5 text-xs font-medium text-accent">
-                  {pilar.pt}
-                </p>
-                <p className="mt-2 text-xs leading-relaxed text-fg/85">
-                  {pilar.tagline}
-                </p>
-                <p className="mt-2 text-xs leading-relaxed text-muted">
-                  {pilar.para_que_serve}
-                </p>
-              </article>
-              );
-            })}
-          </div>
-          </div>
         </section>
 
-        {/* Foto do dojo que se abre ao rolar, com o cartão sobreposto. */}
-        <div className="section py-12">
-          <div className="hist-banner">
-            <div className="hist-banner-foto expande">
-              <Image src="/imagens/dojo.jpg" alt="Aluno executando um chute no dojo" fill sizes="(min-width: 1120px) 1120px, 100vw" />
-            </div>
-            <div className="hist-banner-cartao" data-inclinar="4">
-              <p className="eyebrow">Shoshin · mente de principiante</p>
-              <p className="mt-2 font-display text-2xl leading-snug text-heading">
-                Ninguém chega pronto. A primeira aula é para conhecer o tatame, o sensei e o próprio corpo — sem
-                pressa e sem custo.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Dojo */}
+        {/* CTA final. Por enquanto leva ao Google Maps; o canal de contato entra depois. */}
         <section
-          id="dojo"
-          className="scroll-mt-16 border-y border-line bg-surface py-12"
+          id="contato"
+          className="landing-secao relative overflow-hidden border-t border-line px-8 text-center"
         >
-          <div className="section grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-            <div>
-              <p className="eyebrow">O Dojo</p>
-              <h2 className="heading-lg mt-1.5">
-                Um espaço construído para o treino sério
-              </h2>
-              <p className="body-muted mt-3">
-                180 m² de tatame oficial, vestiários completos, sala de
-                preparação física e uma parede dedicada à linhagem dos mestres.
-                Turmas separadas por faixa etária e nível, com no máximo 20
-                alunos por aula para garantir correção individual.
-              </p>
-              <p className="body-muted mt-3">
-                A equipe técnica é formada por faixas pretas graduadas em
-                linhagem direta da JKA, com atualização anual obrigatória.
-              </p>
-              <div className="mt-5 flex flex-wrap items-end gap-2">
-                <ButtonLink href="#matricula">Ver mensalidade</ButtonLink>
-                <ButtonLink href={naAcademy("/estudos/historia")} variant="ghost">
-                  Conhecer a linhagem →
-                </ButtonLink>
-                {/* Jardim do dojo: bambu e lanterna de pedra, assentados na
-                    mesma linha dos botões, onde sobra espaço. */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none ml-auto hidden items-end gap-1 sm:flex"
-                >
-                  <Bambu className="h-20 w-auto opacity-80" />
-                  <Lanterna className="h-16 w-auto" />
-                </div>
-              </div>
-            </div>
-
-            <div className="card" data-inclinar="3">
-              <div className="border-b border-line px-4 py-2.5">
-                <h3 className="heading-md">Quem já treina aqui</h3>
-              </div>
-              <ul className="divide-y divide-line">
-                {depoimentos.map((depoimento) => (
-                  <li key={depoimento.nome} className="px-4 py-3">
-                    <p className="text-sm font-medium text-fg">
-                      {depoimento.nome}
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-muted">
-                      <span className="font-medium text-subtle">Antes:</span>{" "}
-                      {depoimento.antes}
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-fg/85">
-                      <span className="font-medium text-accent">Depois:</span>{" "}
-                      {depoimento.depois}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-mincho text-[360px] font-extrabold leading-none text-elevated dark:text-surface lg:text-[560px]"
+          >
+            虎
+          </div>
+          <div className="relative mx-auto max-w-[820px]">
+            <h2 data-subir className="landing-titulo text-[clamp(44px,7vw,104px)] leading-none">
+              A primeira aula é por nossa conta.
+            </h2>
+            <p className="mx-auto mb-10 mt-6 max-w-[520px] leading-relaxed text-muted">
+              Venha conhecer o dojo, treinar uma aula completa e conversar com o
+              sensei antes de decidir.
+            </p>
+            <a href={MAPS_LINK} className="landing-botao landing-botao-principal !px-8 !py-5">
+              Ver como chegar
+            </a>
           </div>
         </section>
-
-        {/* Vitrine dos primeiros katas: os mesmos cartões de Técnicas. */}
-        <div className="section pt-12">
-          <VitrineKatas
-            titulo="Os primeiros katas que você aprende"
-            katas={katas.filter((k) => k.nivel === "basico")}
-          />
-        </div>
-
-        {/* Mensalidade */}
-        <section id="matricula" className="section scroll-mt-16 py-12">
-          <SectionHeading
-            eyebrow="Matrícula"
-            titulo="Um valor único, para qualquer idade"
-            descricao="Sem planos, sem pacotes e sem taxa de matrícula. A mesma mensalidade vale para as duas turmas."
-          />
-
-          <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_1.2fr]">
-            <div className="vidro-palco">
-            <article className="card vidro p-5" data-inclinar="5">
-              <p className="label">Mensalidade</p>
-              <p className="mt-2 flex items-baseline gap-1">
-                <span className="text-sm text-muted">R$</span>
-                <span className="text-5xl font-semibold tabular-nums tracking-[-0.03em] text-fg">
-                  {formatarReais(VALOR_MENSALIDADE_CENTAVOS)}
-                </span>
-                <span className="text-sm text-muted">/mês</span>
-              </p>
-              <p className="mt-2 text-xs text-muted">
-                Mesmo valor para infantil e avançado, de qualquer faixa.
-              </p>
-
-              <ul className="mt-4 space-y-1.5 border-t border-line pt-4">
-                {INCLUSO.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-2 text-xs text-fg/85"
-                  >
-                    <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <ButtonLink href="/planos" size="sm" className="mt-5 w-full">
-                Quero me matricular
-              </ButtonLink>
-            </article>
-            </div>
-
-            <div className="card">
-              <div className="border-b border-line px-4 py-2.5">
-                <h3 className="heading-md">As duas turmas</h3>
-                <p className="mt-0.5 text-xs text-muted">
-                  A divisão formal é por nível e faixa; na prática, a idade é o
-                  critério do dia a dia.
-                </p>
-              </div>
-              <ul className="divide-y divide-line">
-                {turmas.map((turma) => (
-                  <li key={turma.id} className="px-4 py-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-fg">
-                        Turma {turma.nome}
-                      </span>
-                      <Badge>{turma.faixa_etaria}</Badge>
-                    </div>
-                    <p className="mt-1 text-xs text-muted">
-                      {turma.dias_semana} · {turma.horario.slice(0, 5)} às{" "}
-                      {(turma.hora_fim ?? "").slice(0, 5)}
-                    </p>
-                    <p className="mt-0.5 text-2xs text-subtle">
-                      Faixas típicas: {turma.faixas_tipicas}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-              <p className="border-t border-line px-4 py-3 text-2xs text-subtle">
-                Primeira semana de aulas gratuita para novos alunos.
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-xs text-muted">
-            {/* Sem atalho para o login: o portal é aberto pelo link que o
-                professor manda depois da matrícula. */}
-            Acervo do portal atualizado em {dados.exportadoEm.slice(0, 10)}.
-          </p>
-        </section>
-
       </main>
 
-      <Footer />
+      <FooterLanding />
     </div>
   );
 }

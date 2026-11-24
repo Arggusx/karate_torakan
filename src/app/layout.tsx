@@ -2,8 +2,11 @@ import type { Metadata, Viewport } from "next";
 import {
   Cormorant_Garamond,
   Inter,
+  JetBrains_Mono,
   Nanum_Brush_Script,
+  Shippori_Mincho,
   Yuji_Syuku,
+  Zen_Kaku_Gothic_New,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { EfeitosGlobais } from "@/components/layout/EfeitosGlobais";
@@ -69,6 +72,36 @@ const fonteKanji = Yuji_Syuku({
   variable: "--fonte-kanji",
 });
 
+/*
+  Fontes do redesign "tinta sumi" (DESIGN.md, seção 4). Por enquanto só a
+  landing as usa, pelas classes font-mincho, font-gotica e font-rotulo; o
+  academy e o portal trocam de fonte nas fases deles.
+*/
+
+/** Títulos, nome da marca e kanji decorativo. */
+const fonteMincho = Shippori_Mincho({
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+  display: "swap",
+  variable: "--fonte-mincho",
+});
+
+/** Texto corrido e interface. */
+const fonteGotica = Zen_Kaku_Gothic_New({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--fonte-gotica",
+});
+
+/** Rótulos e numeração: 12px, caixa alta, espaçado. */
+const fonteMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--fonte-mono",
+});
+
 /** Cor da barra do navegador no celular: o creme do papel, ou o café no escuro. */
 export const viewport: Viewport = {
   themeColor: [
@@ -99,7 +132,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${fonteDisplay.variable} ${fonteTexto.variable} ${fonteMarca.variable} ${fonteKanji.variable}`}
+      className={`${fonteDisplay.variable} ${fonteTexto.variable} ${fonteMarca.variable} ${fonteKanji.variable} ${fonteMincho.variable} ${fonteGotica.variable} ${fonteMono.variable}`}
     >
       <body className="min-h-screen bg-canvas text-fg">
         <ThemeProvider>

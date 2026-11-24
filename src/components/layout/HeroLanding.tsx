@@ -1,200 +1,57 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ButtonLink } from "@/components/ui/Button";
-import { naAcademy } from "@/lib/enderecos";
-import { Hinomaru } from "@/components/ui/Hinomaru";
-import { LuaVermelha } from "@/components/ui/LuaVermelha";
+import Image from "next/image";
+import { GarraTigre } from "@/components/animacoes/AnimacoesKarate";
 
 /**
- * Abertura da landing: foto sangrando, kanji 空手 em escala de cartaz e a
- * lua vermelha ao fundo.
+ * Abertura da landing no redesign "tinta sumi" (DESIGN.md, seções 5 e 6).
  *
- * A entrada é animada com GSAP, mas nunca segura o conteúdo: se a animação não
- * puder rodar, o texto aparece do mesmo jeito.
+ * Foto em preto e branco revelada por manchas de tinta, o kanji 空手道 na
+ * vertical e a Garra do Tigre riscando logo depois. As duas animações são só
+ * CSS (.landing-hero-tinta e .landing-garra em landing.css): rodam uma vez ao
+ * carregar e, com prefers-reduced-motion, tudo já aparece no estado final.
+ *
+ * O título e os botões nunca animam: são o que a página tem de essencial.
  */
-export function HeroLanding({
-  katas,
-  tecnicas,
-}: {
-  katas: number;
-  tecnicas: number;
-}) {
-  const raiz = useRef<HTMLElement>(null);
-  const linhaRef = useRef<gsap.core.Timeline | null>(null);
-
-  useEffect(() => {
-    const elemento = raiz.current;
-    if (!elemento) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let contexto: gsap.Context | null = null;
-
-    /**
-     * A animação só é montada com a aba visível.
-     *
-     * Em aba de fundo o requestAnimationFrame não roda: a timeline aplicaria
-     * opacidade 0 no estado inicial e congelaria ali, deixando o título e os
-     * botões invisíveis. Não montando nada, o HTML fica como veio — legível.
-     * Quando a aba ganha foco, a animação é armada e roda do começo.
-     */
-    const armar = () => {
-      if (contexto || document.visibilityState !== "visible") return;
-      contexto = criarAnimacao(elemento);
-    };
-
-    armar();
-    document.addEventListener("visibilitychange", armar);
-
-    /**
-     * Rede de segurança: se em 2,5s a timeline não terminou, salta para o fim.
-     *
-     * A animação depende de requestAnimationFrame, que o navegador congela em
-     * aba de fundo, em renderização fora de tela e sob carga pesada. O timer
-     * não depende de rAF, então garante que o hero sempre chega ao estado
-     * legível — a entrada é enfeite, o texto não é.
-     */
-    const rede = window.setTimeout(() => {
-      const linha = linhaRef.current;
-      if (linha && linha.progress() < 1) linha.progress(1);
-    }, 2500);
-
-    return () => {
-      window.clearTimeout(rede);
-      document.removeEventListener("visibilitychange", armar);
-      contexto?.revert();
-    };
-  }, []);
-
-  function criarAnimacao(elemento: HTMLElement) {
-    return gsap.context(() => {
-      /**
-       * Só transformação no que carrega texto — nunca opacidade.
-       *
-       * Animar opacidade a partir de 0 significa que qualquer interrupção
-       * (aba de fundo, rAF congelado, erro no meio da timeline) deixa o
-       * conteúdo invisível de forma permanente. Animando apenas o
-       * deslocamento, o pior caso é o texto parar 24px fora do lugar — feio,
-       * mas legível.
-       *
-       * fromTo em vez de from: `from` grava o estado atual como destino, e uma
-       * segunda execução do efeito aprenderia o estado deslocado como final.
-       */
-      const linha = gsap.timeline({ defaults: { ease: "power3.out" } });
-      linhaRef.current = linha;
-      const deslocar = (y: number) => ({ y });
-      const assentar = { y: 0 };
-
-      linha
-        .fromTo("[data-hero='kanji']", deslocar(40), {
-          ...assentar,
-          duration: 1.1,
-        })
-        .fromTo(
-          "[data-hero='titulo']",
-          deslocar(24),
-          { ...assentar, duration: 0.8 },
-          "-=0.6",
-        )
-        .fromTo(
-          "[data-hero='texto']",
-          deslocar(16),
-          { ...assentar, duration: 0.7 },
-          "-=0.5",
-        )
-        .fromTo(
-          "[data-hero='acao']",
-          deslocar(12),
-          { ...assentar, duration: 0.6, stagger: 0.08 },
-          "-=0.45",
-        )
-        // A lua também não anima opacidade: se a timeline congelasse, ela
-        // sumiria. Só escala — travada em 0,92 ninguém percebe.
-        .fromTo(
-          "[data-hero='lua']",
-          { scale: 0.92 },
-          { scale: 1, duration: 1.4 },
-          0.2,
-        );
-    }, elemento);
-  }
-
+export function HeroLanding() {
   return (
     <section
-      ref={raiz}
-      className="relative isolate overflow-hidden border-b border-line bg-[rgb(var(--hero))] text-fg"
+      id="topo"
+      className="relative isolate flex min-h-[720px] items-end overflow-hidden bg-[rgb(var(--hero))] lg:min-h-[820px]"
     >
-      {/*
-        Foto de fundo em preto e branco: a cor viria competir com o vermelho do
-        kanji e do botão. Crédito e licença em public/imagens/CREDITOS.md.
-      */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-20 bg-[url('/imagens/hero-karate.jpg')] bg-cover bg-[position:70%_center] opacity-[0.3] grayscale dark:opacity-[0.45]"
+      {/* Crédito e licença da foto em public/imagens/CREDITOS.md. */}
+      <Image
+        src="/imagens/hero-karate.jpg"
+        alt="Dois karatecas treinando ao ar livre"
+        fill
+        priority
+        sizes="100vw"
+        className="landing-hero-foto landing-tinta landing-hero-tinta -z-20 object-cover"
       />
+      <div aria-hidden className="landing-hero-degrade absolute inset-0 -z-10" />
 
-      {/*
-        Gradiente que garante contraste do texto com ou sem foto.
-
-        A geometria é a mesma nos dois temas — mesma inclinação, mesmas paradas
-        — e só a cor base troca: papel quente no claro, carvão no escuro. Assim
-        a foto fica na mesma posição e só o que está por baixo dela muda.
-      */}
-      <div
+      <p
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(120%_80%_at_15%_20%,rgb(var(--accent)/0.12),transparent_60%),linear-gradient(100deg,rgb(var(--hero))_35%,rgb(var(--hero)/0.84)_70%,rgb(var(--hero)/0.55)_100%)]"
-      />
-
-      {/* 224px + 40% = 314px. Mesma posição de antes: inteira dentro da tela,
-          alinhada com a margem direita do conteúdo. */}
-      <div
-        data-hero="lua"
-        aria-hidden
-        className="pointer-events-none absolute right-8 top-1/2 -z-10 hidden -translate-y-1/2 lg:block xl:right-16"
+        className="pointer-events-none absolute right-6 top-24 hidden font-mincho text-[64px] font-extrabold tracking-[0.2em] text-fg/10 [writing-mode:vertical-rl] sm:block lg:right-10 lg:top-[120px] dark:text-fg/[0.14]"
       >
-        {/* Escuro: lua em neon. Claro: hinomaru, o mesmo círculo como tinta. */}
-        <LuaVermelha className="hidden h-[314px] w-[314px] opacity-40 dark:block" />
-        <Hinomaru className="h-[314px] w-[314px] dark:hidden" />
-      </div>
+        空手道
+      </p>
 
-      <div className="section relative py-24 sm:py-32 lg:py-40">
-        <p
-          data-hero="kanji"
-          className="font-kanji text-[clamp(4.5rem,16vw,11rem)] leading-[0.85] tracking-[-0.04em] text-accent"
-        >
-          空手
+      <GarraTigre className="landing-garra pointer-events-none absolute bottom-[120px] right-12 hidden h-[150px] w-[150px] lg:block" />
+
+      <div className="landing-container relative w-full pb-20 lg:pb-24">
+        <p className="landing-rotulo mb-6 text-muted">
+          Karatê Shotokan · Academia Tigre
         </p>
-
-        <h1
-          data-hero="titulo"
-          className="mt-6 max-w-3xl font-display text-[clamp(2.6rem,6vw,4.6rem)] font-semibold leading-[0.95] text-heading"
-        >
-          O caminho da mão vazia, ensinado do jeito certo.
+        <h1 className="landing-titulo max-w-[1100px] text-[clamp(48px,8vw,124px)] leading-[0.98]">
+          O caminho da mão vazia,{" "}
+          <span className="text-muted">ensinado do jeito certo.</span>
         </h1>
-
-        <p
-          data-hero="texto"
-          className="mt-5 max-w-xl text-sm leading-[1.7] text-muted sm:text-base"
-        >
-          Academia de Karatê Shotokan com linhagem, método e acompanhamento
-          individual — somada a um portal de estudos com {katas} katas
-          detalhados e {tecnicas} técnicas catalogadas.
-        </p>
-
-        <div className="mt-9 flex flex-wrap gap-3">
-          <span data-hero="acao" className="inline-flex">
-            <ButtonLink href="#matricula">Comece a treinar</ButtonLink>
-          </span>
-          <span data-hero="acao" className="inline-flex">
-            <ButtonLink
-              href={naAcademy("/estudos")}
-              variant="secondary"
-              className="bg-surface/75 backdrop-blur"
-            >
-              Explorar o portal de estudos
-            </ButtonLink>
-          </span>
+        <div className="mt-10 flex flex-wrap gap-3.5">
+          <a href="#onde-fica" className="landing-botao landing-botao-principal">
+            Fazer a primeira aula grátis
+          </a>
+          <a href="#turmas" className="landing-botao landing-botao-secundario">
+            Ver turmas e horários
+          </a>
         </div>
       </div>
     </section>
