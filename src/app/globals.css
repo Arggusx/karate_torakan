@@ -412,13 +412,14 @@ html[data-virada="tras"]::view-transition-new(root) {
 }
 
 /* ============================================================
-   Fundo decorativo — ondas seigaiha, halos e sakura
+   Fundo decorativo — ondas seigaiha
    Ver src/components/ui/FundoAsiatico.tsx para a estrutura.
    ============================================================ */
 
 /*
   As ondas deslizam uma célula inteira do padrão (72px) e voltam ao ponto de
   partida, então o laço é invisível: o quadro final é idêntico ao inicial.
+  18s por ciclo (DESIGN.md, seção 5).
 */
 @keyframes ondas-deslizam {
   from {
@@ -430,142 +431,13 @@ html[data-virada="tras"]::view-transition-new(root) {
 }
 
 .fundo-ondas {
-  animation: ondas-deslizam 60s linear infinite;
+  animation: ondas-deslizam 18s linear infinite;
 }
 
-/*
-  Brilhos de fundo do Oratio (tokens.css, .site-bg-glow): 34rem, blur de 90px,
-  opacidade 0,16 no claro e 0,22 no escuro, flutuando em vaivém.
-*/
-:root {
-  --brilho-a: 227 181 90; /* #E3B55A dourado */
-  --brilho-b: 110 143 214; /* #6E8FD6 azul */
-  --brilho-c: 199 125 154; /* #C77D9A rosa */
-}
-
-.brilho-fundo {
-  position: absolute;
-  width: 34rem;
-  height: 34rem;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.16;
-  will-change: transform;
-}
-
-.dark .brilho-fundo {
-  opacity: 0.22;
-}
-
-.brilho-fundo-a {
-  left: -10rem;
-  top: -8rem;
-  background: rgb(var(--brilho-a));
-  animation: brilho-a 28s ease-in-out infinite alternate;
-}
-
-.brilho-fundo-b {
-  right: -12rem;
-  top: 30vh;
-  background: rgb(var(--brilho-b));
-  animation: brilho-b 34s ease-in-out infinite alternate;
-}
-
-.brilho-fundo-c {
-  left: 30vw;
-  bottom: -14rem;
-  width: 26rem;
-  height: 26rem;
-  background: rgb(var(--brilho-c));
-  animation: brilho-c 40s ease-in-out infinite alternate;
-}
-
-@keyframes brilho-a {
-  to {
-    transform: translate(18vw, 14vh) scale(1.15);
-  }
-}
-
-@keyframes brilho-b {
-  to {
-    transform: translate(-22vw, -10vh) scale(0.9);
-  }
-}
-
-@keyframes brilho-c {
-  to {
-    transform: translate(-12vw, -18vh) scale(1.25);
-  }
-}
-
-/*
-  Sakura.
-
-  A pétala cai de cima da tela até abaixo dela, girando e derivando para o
-  lado — nunca em linha reta, que é o que denuncia pétala falsa. Cada uma
-  recebe duração, atraso, giro e deriva próprios por variável CSS, então as
-  onze nunca repetem a mesma trajetória ao mesmo tempo.
-*/
-.sakura {
-  position: absolute;
-  top: -8vh;
-  display: block;
-  width: var(--tamanho, 12px);
-  height: var(--tamanho, 12px);
-  color: #e8a0b4;
-  opacity: 0;
-  animation: sakura-cai var(--queda, 28s) linear var(--atraso, 0s) infinite;
-  will-change: transform, opacity;
-}
-
-.sakura svg {
-  width: 100%;
-  height: 100%;
-}
-
-.sakura-corpo {
-  fill: currentColor;
-}
-
-.dark .sakura {
-  color: #b9607a;
-}
-
-@keyframes sakura-cai {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-    opacity: 0;
-  }
-  8% {
-    opacity: var(--opacidade, 0.4);
-  }
-  /* A deriva inverte no meio do caminho: a pétala vai e volta no ar. */
-  50% {
-    transform: translate3d(var(--deriva, 60px), 55vh, 0)
-      rotate(calc(var(--giro, 360deg) * 0.5));
-  }
-  88% {
-    opacity: var(--opacidade, 0.4);
-  }
-  100% {
-    transform: translate3d(0, 112vh, 0) rotate(var(--giro, 360deg));
-    opacity: 0;
-  }
-}
-
-/*
-  Quem pediu menos movimento no sistema fica com o fundo parado. As ondas e os
-  halos continuam desenhados — é só o movimento que sai.
-*/
+/* Quem pediu menos movimento no sistema fica com as ondas paradas. */
 @media (prefers-reduced-motion: reduce) {
-  .fundo-ondas,
-  .brilho-fundo,
-  .sakura {
+  .fundo-ondas {
     animation: none;
-  }
-
-  .sakura {
-    display: none;
   }
 }
 
@@ -753,138 +625,6 @@ html[data-corte]::view-transition-new(corte-lamina) {
   }
 
   .tema-particulas {
-    display: none;
-  }
-}
-
-/* ============================================================
-   Hinomaru e vaga-lumes — segunda leva do fundo
-   ============================================================ */
-
-/*
-  O sol fica no alto à direita, meio fora da tela: aparece como um arco
-  grande, não como um alvo no meio da página. As cores ficam em variáveis
-  para o modo escuro só trocar a intensidade.
-*/
-.fundo-sol {
-  position: absolute;
-  top: -22vmin;
-  right: -18vmin;
-  width: 78vmin;
-  height: 78vmin;
-  --sol-disco: 0.1;
-  --sol-raio: 0.045;
-  --sol-anel: 0.14;
-}
-
-.dark .fundo-sol {
-  --sol-disco: 0.05;
-  --sol-raio: 0.025;
-  --sol-anel: 0.08;
-}
-
-.fundo-sol-raios {
-  transform-origin: 0 0;
-  animation: sol-gira 140s linear infinite;
-}
-
-.fundo-sol-raio {
-  fill: rgb(var(--accent-solid) / var(--sol-raio));
-}
-
-.fundo-sol-disco {
-  fill: rgb(var(--accent-solid) / var(--sol-disco));
-}
-
-.fundo-sol-anel {
-  fill: none;
-  stroke: rgb(var(--accent-solid) / var(--sol-anel));
-  stroke-width: 1.2;
-  stroke-dasharray: 2 7;
-}
-
-/* Onda de impacto: um anel que se abre a partir do disco e some. */
-.fundo-sol-onda {
-  fill: none;
-  stroke: rgb(var(--accent-solid) / 0.35);
-  stroke-width: 1.5;
-  transform-origin: 0 0;
-  animation: sol-onda 7s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
-}
-
-.fundo-sol-onda-2 {
-  animation-delay: 3.5s;
-}
-
-@keyframes sol-gira {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes sol-onda {
-  0% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(3.1);
-    opacity: 0;
-  }
-}
-
-/* Vaga-lumes: pontos dourados subindo e piscando, com deriva lateral. */
-.vagalume {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 9999px;
-  background: #d4af5a;
-  box-shadow: 0 0 8px 2px rgba(212, 175, 90, 0.55);
-  opacity: 0;
-  animation:
-    vagalume-sobe var(--dur, 16s) ease-in-out var(--atraso, 0s) infinite,
-    vagalume-pisca 2.6s ease-in-out var(--atraso, 0s) infinite;
-}
-
-/* No claro o dourado precisa de mais corpo para não sumir no papel. */
-:root:not(.dark) .vagalume {
-  background: #b08d3d;
-  box-shadow: 0 0 6px 1px rgba(176, 141, 61, 0.45);
-}
-
-@keyframes vagalume-sobe {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(var(--dx, 20px), -30vh, 0);
-  }
-  100% {
-    transform: translate3d(0, -62vh, 0);
-  }
-}
-
-@keyframes vagalume-pisca {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  30%,
-  70% {
-    opacity: 0.85;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fundo-sol-raios,
-  .fundo-sol-onda,
-  .vagalume {
-    animation: none;
-  }
-
-  .fundo-sol-onda,
-  .vagalume {
     display: none;
   }
 }
