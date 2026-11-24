@@ -220,7 +220,28 @@ export default function TecnicasPage() {
           </div>
         )
       ) : visao === "kihon" ? (
-        <KihonGrid tecnicas={tecnicasFiltradas} mostrarTudo={porAncora || busca.trim() !== ""} />
+        <>
+          <section className="painel p-5">
+            <p className="eyebrow">Kihon · 基本</p>
+            <h2 className="heading-md mt-1">Os movimentos fundamentais</h2>
+            <div className="body-muted mt-2 grid gap-2">
+              <p>
+                Socos, chutes, defesas e posturas, repetidos centenas, milhares de vezes, até o corpo
+                entender o que a mente já sabe.
+              </p>
+              <p>
+                Não tem atalho nem segredo escondido, só repetição consciente, treino após treino,
+                ajustando o detalhe que ontem passou despercebido.
+              </p>
+              <p>
+                É nesse processo simples e repetitivo que nasce o espírito de karateca: a disciplina de
+                voltar todo dia para o mesmo movimento básico, evoluindo um milímetro de cada vez.
+              </p>
+              <p>Sem kihon sólido, não existe kata nem kumite de verdade.</p>
+            </div>
+          </section>
+          <KihonGrid tecnicas={tecnicasFiltradas} mostrarTudo={porAncora || busca.trim() !== ""} />
+        </>
       ) : (
         <div className="space-y-8">
           <VitrineKatas katas={katasFiltrados} />

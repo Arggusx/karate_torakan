@@ -846,42 +846,71 @@
     {
       "faixa": "Branca",
       "jp": "白帯",
-      "txt": "Iniciante. A mente vazia, pronta para receber."
+      "txt": "Início puro: a tela em branco, que já carrega o potencial de todas as cores que vêm depois."
     },
     {
       "faixa": "Amarela",
       "jp": "黄帯",
-      "txt": "Primeiros movimentos firmes — o sol que nasce."
+      "txt": "O sol nascendo: o primeiro brilho do conhecimento."
     },
     {
       "faixa": "Vermelha",
       "jp": "赤帯",
-      "txt": "Energia e ímpeto da juventude técnica."
+      "txt": "Fogo e força de vontade."
     },
     {
       "faixa": "Laranja",
       "jp": "橙帯",
-      "txt": "Transição. O calor do fogo interno."
+      "txt": "Mistura que traz confiança e entusiasmo.",
+      "significado": [
+        "Ela representa a busca pelo sucesso no treino diário, com agilidade e adaptabilidade.",
+        "Encorajamento, estímulo, robustez e cordialidade: essa é a energia dessa fase.",
+        "Entre o fogo e a terra, já é a faixa com os pés mais firmes no chão."
+      ]
     },
     {
       "faixa": "Verde",
       "jp": "緑帯",
-      "txt": "Crescimento — como o broto que vira árvore."
+      "txt": "O oásis que vem depois do deserto: harmonia e crescimento.",
+      "significado": [
+        "Depois de tantas cores quentes, a faixa verde chega como um alívio. É a mais harmoniosa de todas, ligada à esperança e à fé.",
+        "Representa a natureza, a perseverança e o crescimento, mas também pede cuidado com o orgulho excessivo.",
+        "É a etapa da juventude no karatê: já cresceu bastante, mas ainda precisa amadurecer."
+      ]
     },
     {
       "faixa": "Roxa",
       "jp": "紫帯",
-      "txt": "Profundidade. Estudo de katas intermediários."
+      "txt": "Espiritualidade e transformação interior.",
+      "significado": [
+        "A faixa roxa é considerada a cor mais sagrada do karatê.",
+        "Ela nasce da mistura do azul com o vermelho e carrega o mesmo peso usado pelos sacerdotes católicos: respeito próprio, dignidade e autoestima.",
+        "É uma cor ligada à alquimia, às transformações e à energia cósmica. Dizem que ela purifica e cura nos níveis físico, emocional e mental.",
+        "Nessa fase o praticante precisa abrir novos caminhos e aprofundar a intuição, antes de chegar na faixa marrom."
+      ]
     },
     {
       "faixa": "Marrom",
       "jp": "茶帯",
-      "txt": "Maturidade técnica. Pronto para o Shodan."
+      "txt": "Solidificação, disciplina e proximidade com o mestre: o primeiro discípulo de verdade.",
+      "significado": [
+        "A faixa marrom é a cor da solidificação no karatê.",
+        "Ela representa constância, disciplina e a uniformidade que só anos de treino trazem. Marca a conexão do praticante com o patrono do estilo, passado de mestre para aluno.",
+        "É feita da mistura de vermelho com preto e carrega um pouco dos dois: a autocrítica e a dependência que ainda existe dos mestres para chegar até ali.",
+        "É a cor de quem está completando o amadurecimento técnico e mental: maciço, compacto, com a segurança e a constância de quem já sabe ir direto à raiz das coisas."
+      ]
     },
     {
       "faixa": "Preta",
       "jp": "黒帯",
-      "txt": "Não é o fim — é o verdadeiro começo. Shodan = 1º dan."
+      "txt": "Junção de todas as outras cores e início de uma nova jornada, mais aprofundada.",
+      "significado": [
+        "Branco, amarelo, vermelho, laranja, verde, roxo, marrom: anos de jornada até aqui.",
+        "O preto representa humildade, autocontrole, maturidade, serenidade, disciplina e dignidade.",
+        "É a cor do poder: onde o que está fora não entra, e o que está dentro não sai.",
+        "Guerreiros do Budô usam essa cor para seguir seu próprio caminho, longe das regras convencionais.",
+        "Ela absorve energias negativas e devolve transformadas em positivas."
+      ]
     }
   ],
   "pilares": [
@@ -1926,6 +1955,10 @@
     {
       "titulo": "O Karate nas Olimpíadas",
       "text": "O karatê estreou nos Jogos de Tóquio 2020 (2021), mas foi removido de Paris 2024. A modalidade busca voltar em Los Angeles 2028, mostrando que a luta pelo reconhecimento olímpico continua."
+    },
+    {
+      "titulo": "Quanto tempo leva para chegar na faixa preta?",
+      "text": "Pela tabela tradicional, são quase 5 anos de treino. Da branca para a amarela: 3 meses e 30 aulas, com o kata Heian Shodan. Depois o ritmo acelera: 4, 5 e 6 meses até a verde. Da verde para a roxa já são 9 meses, e da roxa para a marrom, 12. Na faixa marrom o aluno fica de 1 a 2 anos, estudando Bassai-Dai e Jion, antes de tentar o exame. E isso é só o primeiro Dan: depois da preta, a escala de graus continua subindo."
     }
   ],
   "preceitosFunakoshi": [

@@ -761,9 +761,50 @@ a.origem-pilula:hover {
   }
 }
 
+/*
+  No celular a linha vira coluna: o kata de base, a seta "prepara" apontando
+  para baixo e os avançados embaixo. As pílulas ficam do tamanho do nome.
+*/
 @media (max-width: 520px) {
+  .origem-linhas li {
+    justify-items: start;
+  }
+
   .origem-seta {
-    display: none;
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 1.6rem;
+    padding-left: 1.75rem;
+  }
+
+  .origem-seta::before {
+    left: 1rem;
+    right: auto;
+    top: 0;
+    bottom: 5px;
+    width: 2px;
+    height: auto;
+    transform: none;
+    background: repeating-linear-gradient(180deg, rgb(var(--accent) / 0.5) 0 6px, transparent 6px 11px);
+    background-size: 2px 11px;
+    animation: none;
+  }
+
+  .origem-seta::after {
+    left: calc(1rem - 4px);
+    right: auto;
+    top: auto;
+    bottom: -4px;
+    border-width: 5px;
+    border-left-color: transparent;
+    border-top-color: rgb(var(--accent) / 0.6);
+    transform: none;
+  }
+
+  .origem-seta span {
+    background: none;
+    padding: 0;
   }
 }
 
