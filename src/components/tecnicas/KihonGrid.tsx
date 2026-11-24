@@ -1,7 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { TecnicaDetalhe, TecnicaModal } from "@/components/tecnicas/TecnicaModal";
+import { ICONE_FAMILIA } from "@/components/tecnicas/IconesFamilia";
+import {
+  TecnicaDetalhe,
+  TecnicaModal,
+} from "@/components/tecnicas/TecnicaModal";
 import { VerMais } from "@/components/ui/VerMais";
 import { cn } from "@/lib/cn";
 import { getCategoriasTecnicas } from "@/services/dataService";
@@ -50,41 +54,48 @@ export function KihonGrid({
   return (
     <>
       <div className="space-y-8">
-        {grupos.map(({ categoria, itens }) => (
-          <section key={categoria.id}>
-            <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
-              <h3 className="heading-lg flex items-center gap-3">
-                <span aria-hidden className="familia-selo">
-                  <span>{categoria.kanji.charAt(0)}</span>
+        {grupos.map(({ categoria, itens }) => {
+          const Icone = ICONE_FAMILIA[categoria.id];
+          return (
+            <section key={categoria.id}>
+              <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
+                <h3 className="heading-lg flex items-center gap-3">
+                  <span aria-hidden className="familia-selo">
+                    {Icone ? (
+                      <Icone className="h-8 w-8" />
+                    ) : (
+                      <span>{categoria.kanji.charAt(0)}</span>
+                    )}
+                  </span>
+                  {categoria.label}
+                </h3>
+                <span className="text-2xs tabular-nums text-subtle">
+                  {itens.length} técnicas
                 </span>
-                {categoria.label}
-              </h3>
-              <span className="text-2xs tabular-nums text-subtle">
-                {itens.length} técnicas
-              </span>
-            </div>
+              </div>
 
-            <VerMais
-              key={`${categoria.id}:${mostrarTudo}`}
-              inicial={mostrarTudo ? itens.length : 6}
-              className="grade-centrada grade-3"
-            >
-              {itens.map((tecnica) => (
-                <CardTecnica
-                  key={tecnica.nome}
-                  tecnica={tecnica}
-                  aberta={expandida === tecnica.nome}
-                  onAbrirModal={() => setSelecionada(tecnica)}
-                  onAlternar={() =>
-                    setExpandida(
-                      expandida === tecnica.nome ? null : tecnica.nome,
-                    )
-                  }
-                />
-              ))}
-            </VerMais>
-          </section>
-        ))}
+              <VerMais
+                key={`${categoria.id}:${mostrarTudo}`}
+                inicial={mostrarTudo ? itens.length : 6}
+                className="grade-centrada grade-3"
+              >
+                {itens.map((tecnica) => (
+                  <CardTecnica
+                    key={tecnica.nome}
+                    tecnica={tecnica}
+                    aberta={expandida === tecnica.nome}
+                    onAbrirModal={() => setSelecionada(tecnica)}
+                    onAlternar={() =>
+                      setExpandida(
+                        expandida === tecnica.nome ? null : tecnica.nome,
+                      )
+                    }
+                  />
+                ))}
+              </VerMais>
+            </section>
+          );
+        })}
       </div>
 
       <TecnicaModal
@@ -170,7 +181,9 @@ function Cabecalho({ tecnica }: { tecnica: Tecnica }) {
     <>
       <span className="flex items-baseline justify-between gap-2">
         <span className="text-sm font-semibold text-fg">{tecnica.nome}</span>
-        <span className="shrink-0 font-kanji text-sm text-subtle">{tecnica.kanji}</span>
+        <span className="shrink-0 font-kanji text-sm text-subtle">
+          {tecnica.kanji}
+        </span>
       </span>
       <span className="mt-0.5 block text-xs font-medium text-accent">
         {tecnica.pt}
