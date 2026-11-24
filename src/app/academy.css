@@ -1,0 +1,170 @@
+/* =============================================================================
+   Academy (academy.torakandojo.com) — redesign "tinta sumi".
+   Importado só por src/app/estudos/layout.tsx; tudo fica sob .academy, então
+   o portal não muda até a fase dele. Regras em DESIGN.md, seções 3, 4, 5 e 7.
+
+   Prioridade: encontrar e ler. Nada aqui anima com a rolagem.
+   ============================================================================= */
+
+/* ------------------------------------------------------------------ fontes */
+
+/*
+  As classes do Tailwind (font-display, font-sans, font-marca) e o jornada.css
+  leem estas variáveis. Trocá-las aqui troca a fonte de todo o academy sem
+  mexer em className nenhum.
+*/
+.academy {
+  --fonte-display: var(--fonte-mincho);
+  --fonte-texto: var(--fonte-gotica);
+  --fonte-marca: var(--fonte-mincho);
+  font-family: var(--fonte-gotica), "Zen Kaku Gothic New", system-ui, sans-serif;
+}
+
+/* Nome da marca: Shippori Mincho 800, caixa alta, espaçado, cor de tinta. */
+.academy .font-marca {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--heading));
+}
+
+/* Rótulos e numeração: JetBrains Mono, 12px, caixa alta, .2em. */
+.academy .eyebrow {
+  font-family: var(--fonte-mono), "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: rgb(var(--subtle));
+}
+
+.academy .label {
+  font-family: var(--fonte-mono), "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+/* Texto corrido: linha de leitura confortável. */
+.academy .body-muted {
+  max-width: 68ch;
+  line-height: 1.7;
+}
+
+/* ------------------------------------------------------ contêiner e raios */
+
+/* Conteúdo com até 1280px e 32px de margem lateral. */
+.academy .section {
+  max-width: min(1280px, calc(100% - 64px));
+}
+
+.academy .card,
+.academy .painel,
+.academy .sanfona {
+  border-radius: 18px;
+}
+
+.academy .input,
+.academy select {
+  border-radius: 12px;
+}
+
+.academy .sanfona[open] {
+  border-color: rgb(var(--line-strong));
+}
+
+/* Faixa de topo dos cartões: a cor da categoria; sem ela, linha, não vermelho. */
+.academy .card-faixa {
+  border-top-color: var(--faixa-cor, rgb(var(--line-strong)));
+}
+
+/* Categoria que vem dos dados em vermelho (o pilar Técnicas): vira cinza de tinta. */
+.academy .card-faixa[style*="var(--accent)"] {
+  border-top-color: rgb(var(--muted));
+}
+
+/* ---------------------------------------------------------------- vermelho */
+
+/*
+  O vermelho é carimbo (hanko): botão principal, marcador do embusen e links
+  em hover. Em vez de caçar cada classe que pinta de vermelho, o --accent
+  vira tinta dentro do academy; o vermelho de verdade fica guardado em
+  --hanko (lido no <body>, antes da troca) e volta só onde é permitido.
+
+  O botão principal usa --accent-solid, que não muda.
+*/
+body {
+  --hanko: var(--accent);
+}
+
+.academy {
+  --accent: var(--heading);
+}
+
+/* Marcador do embusen e demais desenhos em SVG. */
+.academy svg {
+  --accent: var(--hanko);
+}
+
+/*
+  Jornada: o vermelho marca resposta errada (o verde, a certa). É mecânica do
+  jogo, então fica.
+*/
+.academy :is(
+    .quiz-alternativa,
+    .quiz-revisao-item,
+    .quiz-dificuldade,
+    .sequencia-item,
+    .montar-encaixe,
+    .medalhao-moldura,
+    .moldura-ficha,
+    .ranking-barra
+  ) {
+  --accent: var(--hanko);
+}
+
+/* Links em hover: vermelho. */
+.academy .hover\:text-accent:hover,
+.academy .group:hover .group-hover\:text-accent,
+.academy .nav-link:hover {
+  color: rgb(var(--hanko));
+}
+
+.academy .nav-link:hover::after {
+  background: rgb(var(--hanko));
+}
+
+/* Botão secundário: texto em tinta (era vermelho fechado no claro). */
+.academy .text-accent-hover {
+  color: rgb(var(--heading));
+}
+
+/* Aba, chip ou página ativa: tinta, não vermelho. */
+.academy .controle-ativo {
+  background-color: rgb(var(--fg));
+  border-color: rgb(var(--fg));
+  color: rgb(var(--canvas));
+  box-shadow: none;
+}
+
+/* Ensō e o clarão do golpe nas ilustrações: traço de tinta, não vermelho. */
+.academy .anim-enso-traco,
+.academy .anim-kime {
+  stroke: rgb(var(--fg));
+}
+
+/* A gota de cor atrás dos títulos (vermelho e dourado em degradê) sai. */
+.academy .liquido {
+  display: none;
+}
+
+/* -------------------------------------------------------------------- fotos */
+
+/* Todas as fotos em preto e branco. A marca do Torakan fica como é. */
+.academy img:not([src*="marca-torakan"]),
+.academy .grayscale {
+  filter: grayscale(1) contrast(1.1);
+}
+
+.dark .academy img:not([src*="marca-torakan"]) {
+  filter: grayscale(1) contrast(1.1) brightness(0.9);
+}
