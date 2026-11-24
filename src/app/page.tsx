@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { noSite } from "@/lib/enderecos";
 import { EfeitosLanding } from "@/components/layout/EfeitosLanding";
 import { FooterLanding } from "@/components/layout/FooterLanding";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
@@ -81,9 +83,60 @@ const NUMEROS_DOJO = [
 */
 const MENSALIDADE = "R$ 70";
 
+export const metadata: Metadata = {
+  // `absolute` para não ganhar o " · Torakan" do template: a home leva a
+  // cidade no título, que é o que a busca local procura.
+  title: {
+    absolute: "Torakan — Academia de Karatê Shotokan em Olho d'Água das Flores",
+  },
+  description:
+    "Academia Tigre de Karatê: aulas de Karatê Shotokan para crianças a partir de 7 anos e adultos, terça, quinta e sexta. Primeira aula grátis. Rua 15 de Novembro, 1104, Centro.",
+  alternates: { canonical: "/" },
+};
+
+/*
+  Dados estruturados (schema.org) para o Google mostrar a academia no mapa e
+  na busca local: nome, endereço, coordenadas e horários. Os horários são os
+  das duas turmas juntas, das 18h30 às 21h.
+*/
+const DADOS_ESTRUTURADOS = {
+  "@context": "https://schema.org",
+  "@type": "SportsActivityLocation",
+  name: "Academia Tigre de Karatê",
+  alternateName: "Torakan",
+  description: "Dojo de Karatê Shotokan com turmas infantil e avançada.",
+  url: noSite("/") || undefined,
+  image: noSite("/imagens/dojo.jpg") || undefined,
+  sport: "Karate",
+  priceRange: MENSALIDADE,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Rua 15 de Novembro, 1104",
+    addressLocality: "Olho d'Água das Flores",
+    addressRegion: "AL",
+    postalCode: "57442-000",
+    addressCountry: "BR",
+  },
+  geo: { "@type": "GeoCoordinates", latitude: -9.5275156, longitude: -37.2944468 },
+  hasMap: MAPS_LINK,
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Tuesday", "Thursday", "Friday"],
+      opens: "18:30",
+      closes: "21:00",
+    },
+  ],
+};
+
 export default function LandingPage() {
   return (
     <div className="landing flex min-h-screen flex-col text-fg">
+      <script
+        type="application/ld+json"
+        // JSON montado aqui no servidor, sem nada vindo do usuário.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(DADOS_ESTRUTURADOS) }}
+      />
       <HeaderLanding />
       <EfeitosLanding />
 

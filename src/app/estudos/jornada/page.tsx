@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Jornada",
   description:
     "Minigames para estudar karatê: ilhas com mini aula e perguntas por faixa, treino livre, Monte a técnica, ordem dos katas e ranking do dojo.",
+  alternates: { canonical: "/estudos/jornada" },
 };
 
 export default function JornadaPage() {

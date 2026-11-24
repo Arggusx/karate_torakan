@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Planos e matrícula",
   description:
     "Mensalidade, taxa de inscrição, formas de pagamento e como agendar a semana de aulas gratuita na Academia Tigre de Karatê.",
+  alternates: { canonical: "/planos" },
 };
 
 /** A página lê turmas do banco; 5 minutos de cache é o bastante. */

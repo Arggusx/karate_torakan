@@ -10,7 +10,6 @@
 .anim-bokken,
 .anim-enso,
 .anim-garra,
-.anim-bambu,
 .anim-lanterna,
 .anim-faixa {
   overflow: visible;
@@ -432,70 +431,6 @@
   }
 }
 
-/* -------------------------------------------------------------- Bambu */
-
-.anim-bambu-haste {
-  stroke: #4d7c4a;
-  stroke-width: 6;
-  stroke-linecap: round;
-}
-
-.anim-bambu-no {
-  stroke: #355c33;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-}
-
-.anim-bambu-folha {
-  fill: #6a9a5c;
-}
-
-.anim-bambu-colmo {
-  animation: bambu 4.5s ease-in-out infinite;
-}
-
-@keyframes bambu {
-  0%,
-  100% {
-    transform: rotate(-2.5deg);
-  }
-  50% {
-    transform: rotate(2.5deg);
-  }
-}
-
-/* ---------------------------------------------------------- Hinomaru */
-
-.hinomaru-disco {
-  fill: rgb(var(--accent-solid));
-  opacity: 0.85;
-}
-
-.hinomaru-anel {
-  fill: none;
-  stroke: rgb(var(--accent-solid) / 0.45);
-  stroke-width: 1.5;
-  transform-origin: 0 0;
-}
-
-.hinomaru-anel-fora {
-  stroke-dasharray: 3 9;
-  animation: sol-gira 60s linear infinite;
-}
-
-.hinomaru-anel-dentro {
-  stroke-dasharray: 14 6;
-  animation: sol-gira 45s linear infinite reverse;
-}
-
-.hinomaru-onda {
-  fill: none;
-  stroke: rgb(var(--accent-solid) / 0.5);
-  stroke-width: 2;
-  transform-origin: 0 0;
-  animation: sol-onda 6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
-}
-
 /* ----------------------------------------------- menos movimento: tudo parado */
 
 @media (prefers-reduced-motion: reduce) {
@@ -512,10 +447,7 @@
   .anim-bokken-faisca,
   .anim-chama,
   .anim-lanterna-brilho,
-  .anim-faixa-ponta,
-  .anim-bambu-colmo,
-  .hinomaru-anel,
-  .hinomaru-onda {
+  .anim-faixa-ponta {
     animation: none;
   }
 

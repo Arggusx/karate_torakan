@@ -6,6 +6,7 @@ import { noSite } from "@/lib/enderecos";
 export const metadata: Metadata = {
   title: "Termos de Uso",
   description: "As regras para usar o site, o portal de estudos e o portal da Academia Tigre de Karatê.",
+  alternates: { canonical: "/termos" },
 };
 
 export default function TermosPage() {

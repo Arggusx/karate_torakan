@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Política de Privacidade",
   description:
     "Quais dados o Torakan coleta, para que usa, com quem compartilha e como exercer seus direitos pela LGPD.",
+  alternates: { canonical: "/privacidade" },
 };
 
 export default function PrivacidadePage() {
