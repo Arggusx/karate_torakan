@@ -14,6 +14,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { FundoAsiatico } from "@/components/ui/FundoAsiatico";
 import { ToastProvider } from "@/components/ui/Toast";
 import { AcademiaProvider } from "@/lib/academiaStore";
+import { baseDa } from "@/lib/enderecos";
 import "./globals.css";
 import "./animacoes.css";
 import "./jornada.css";
@@ -119,6 +120,23 @@ export const metadata: Metadata = {
   },
   description:
     "Academia Tigre de Karatê: dojo Shotokan e plataforma de estudos com história, técnicas, katas e fundamentos.",
+  // Base dos links absolutos (canonical, imagens de compartilhamento). O
+  // academy troca pela dele em estudos/layout.tsx.
+  metadataBase: baseDa("site"),
+  // Sem `title` aqui de propósito: cada página herda as imagens, e quem
+  // compartilha vê o título da própria página, não um genérico.
+  openGraph: {
+    siteName: "Torakan",
+    locale: "pt_BR",
+    type: "website",
+    images: [
+      {
+        url: "/imagens/dojo.jpg",
+        alt: "Aluno executando um chute no dojo da Academia Tigre de Karatê",
+      },
+    ],
+  },
+  twitter: { card: "summary_large_image" },
   // Os ícones vêm de src/app/icon.png e src/app/apple-icon.png, que o Next
   // detecta e serve sozinho — por isso não há entrada `icons` aqui.
 };

@@ -1,7 +1,23 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderEstudos } from "@/components/layout/HeaderEstudos";
+import { baseDa } from "@/lib/enderecos";
 // Redesign "tinta sumi" do academy: tudo fica sob .academy (ver o arquivo).
 import "../academy.css";
+
+/**
+ * O academy tem endereço próprio: canonical e imagens das páginas de estudo
+ * resolvem em academy.torakandojo.com, não no site.
+ */
+export const metadata: Metadata = {
+  metadataBase: baseDa("academy"),
+  openGraph: {
+    siteName: "Torakan Academy",
+    locale: "pt_BR",
+    type: "website",
+    images: [{ url: "/imagens/estudos.jpg", alt: "Acervo de estudos do Karatê Shotokan" }],
+  },
+};
 
 export default function EstudosLayout({
   children,

@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Fundamentos",
   description:
     "Sistema de faixas Kyu/Dan, Dojo Kun, Niju Kun, etiqueta, princípios técnicos, origem dos katas e o dicionário do dojo.",
+  alternates: { canonical: "/estudos/fundamentos" },
 };
 
 /*

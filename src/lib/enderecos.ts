@@ -35,6 +35,15 @@ export const noSite = (caminho: string) => urlNa("site", caminho);
 export const naAcademy = (caminho: string) => urlNa("academy", caminho);
 export const noPortal = (caminho: string) => urlNa("portal", caminho);
 
+/**
+ * Endereço base de uma parte para o `metadataBase` do Next (canonical e
+ * imagens de compartilhamento). Sem configuração, o Next usa o endereço do
+ * deploy.
+ */
+export function baseDa(secao: Secao): URL | undefined {
+  return BASE[secao] ? new URL(BASE[secao]) : undefined;
+}
+
 /** Separação ligada só quando os três endereços estão configurados. */
 export function separacaoAtiva(): boolean {
   return Boolean(BASE.site && BASE.academy && BASE.portal);
