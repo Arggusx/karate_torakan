@@ -11,8 +11,8 @@ import { usePathname } from "next/navigation";
  * próprio endereço (/estudos/... e /en/estudos/...), para o Google indexar
  * as duas versões.
  *
- * Por enquanto só os katas têm versão em inglês. Numa página em português
- * sem equivalente, o botão leva ao índice dos katas em inglês.
+ * Por enquanto só Técnicas e os katas têm versão em inglês. Numa página em português
+ * sem equivalente, o botão leva a Técnicas em inglês.
  */
 
 const COM_VERSAO_EN = /^\/estudos\/tecnicas(\/kata\/[^/]+)?\/?$/;

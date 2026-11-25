@@ -3,6 +3,9 @@
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/cn";
+import type { Idioma } from "@/i18n/idioma";
+import { CATEGORIA_CURTA_EN, PRINCIPIOS_EN } from "@/i18n/tecnicas-en";
+import { TEXTOS_TECNICAS } from "@/i18n/textos-tecnicas";
 import type { Tecnica } from "@/types";
 
 /**
@@ -49,9 +52,11 @@ const slug = (nome: string) =>
 export function TecnicaModal({
   tecnica,
   onClose,
+  idioma = "pt",
 }: {
   tecnica: Tecnica | null;
   onClose: () => void;
+  idioma?: Idioma;
 }) {
   return (
     <Modal
@@ -59,7 +64,7 @@ export function TecnicaModal({
       onClose={onClose}
       titulo={tecnica ? `${tecnica.nome} — ${tecnica.pt}` : undefined}
     >
-      {tecnica ? <TecnicaDetalhe tecnica={tecnica} /> : null}
+      {tecnica ? <TecnicaDetalhe tecnica={tecnica} idioma={idioma} /> : null}
     </Modal>
   );
 }
@@ -67,30 +72,35 @@ export function TecnicaModal({
 export function TecnicaDetalhe({
   tecnica,
   compacto = false,
+  idioma = "pt",
 }: {
   tecnica: Tecnica;
   compacto?: boolean;
+  idioma?: Idioma;
 }) {
-  const principios = PRINCIPIOS_POR_TIPO[tecnica.tipo] ?? [];
+  const t = TEXTOS_TECNICAS[idioma];
+  const principios = (idioma === "en" ? PRINCIPIOS_EN : PRINCIPIOS_POR_TIPO)[tecnica.tipo] ?? [];
   const identificador = slug(tecnica.nome);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge tone="accent">{tecnica.cat}</Badge>
+        <Badge tone="accent">
+          {idioma === "en" ? CATEGORIA_CURTA_EN[tecnica.cat] ?? tecnica.cat : tecnica.cat}
+        </Badge>
         <Badge>{tecnica.tipo}</Badge>
         <span className="text-xs text-subtle">{tecnica.kanji}</span>
       </div>
 
       {compacto ? (
         <div>
-          <p className="label">Tradução</p>
+          <p className="label">{t.traducao}</p>
           <p className="mt-1 text-xs text-accent">{tecnica.pt}</p>
         </div>
       ) : null}
 
       <div>
-        <p className="label">Descrição</p>
+        <p className="label">{t.descricaoTecnica}</p>
         <p className="mt-1 text-sm leading-relaxed text-fg/85">
           {tecnica.desc}
         </p>
@@ -98,7 +108,7 @@ export function TecnicaDetalhe({
 
       {principios.length > 0 ? (
         <div>
-          <p className="label">Pontos de execução — família {tecnica.tipo}</p>
+          <p className="label">{t.pontosExecucao(tecnica.tipo)}</p>
           <ul className="mt-1.5 space-y-1.5">
             {principios.map((principio) => (
               <li
@@ -116,13 +126,13 @@ export function TecnicaDetalhe({
       {/* Espaços reservados para a mídia da técnica */}
       <div className={cn("grid gap-3", compacto ? "grid-cols-2" : "sm:grid-cols-2")}>
         <SlotMidia
-          titulo="Imagem"
-          legenda="Foto de execução"
+          titulo={t.imagem}
+          legenda={t.fotoExecucao}
           caminho={`/images/tecnicas/${identificador}.jpg`}
         />
         <SlotMidia
-          titulo="GIF"
-          legenda="Movimento em sequência"
+          titulo={t.gif}
+          legenda={t.movimentoSequencia}
           caminho={`/images/tecnicas/${identificador}.gif`}
         />
       </div>

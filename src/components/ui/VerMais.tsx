@@ -17,6 +17,7 @@ export function VerMais({
   como: Como = "div",
   className,
   rotulo = "Ver mais",
+  rotuloMenos = "Ver menos",
 }: {
   children: ReactNode;
   inicial?: number;
@@ -25,6 +26,7 @@ export function VerMais({
   como?: "div" | "ul" | "ol";
   className?: string;
   rotulo?: string;
+  rotuloMenos?: string;
 }) {
   const itens = Children.toArray(children);
   const [visiveis, setVisiveis] = useState(inicial);
@@ -43,7 +45,7 @@ export function VerMais({
             </button>
           ) : (
             <button type="button" onClick={() => setVisiveis(inicial)} className={cn("ver-mais-menos")}>
-              Ver menos
+              {rotuloMenos}
             </button>
           )}
         </div>

@@ -1,7 +1,8 @@
 import type { Idioma } from "@/i18n/idioma";
-import { KATAS_EN } from "@/i18n/katas-en";
-import { getKatas } from "@/services/dataService";
-import type { KataCompleto, MovimentoKata } from "@/types";
+import { KATAS_EN, TECNICAS_EN } from "@/i18n/katas-en";
+import { DESCRICOES_EN } from "@/i18n/tecnicas-en";
+import { getKatas, getTecnicas } from "@/services/dataService";
+import type { KataCompleto, MovimentoKata, Tecnica } from "@/types";
 
 /**
  * Katas no idioma pedido.
@@ -74,6 +75,35 @@ export function katasNoIdioma(idioma: Idioma): KataCompleto[] {
 
 export function kataNoIdioma(id: string, idioma: Idioma): KataCompleto | undefined {
   return katasNoIdioma(idioma).find((kata) => kata.id === id);
+}
+
+/** Catálogo de kihon no idioma pedido (significado curto e descrição). */
+export function tecnicasNoIdioma(idioma: Idioma): Tecnica[] {
+  const tecnicas = getTecnicas();
+  if (idioma === "pt") return tecnicas;
+  return tecnicas.map((tecnica) => ({
+    ...tecnica,
+    pt: TECNICAS_EN[tecnica.nome] ?? tecnica.pt,
+    desc: DESCRICOES_EN[tecnica.nome] ?? tecnica.desc,
+  }));
+}
+
+/**
+ * Katas só com o que a lista mostra (tabela e vitrine). A ficha completa
+ * fica na página de cada kata; mandar 950 movimentos para uma lista só
+ * deixaria a página pesada à toa.
+ */
+export function katasResumidosNoIdioma(idioma: Idioma): KataCompleto[] {
+  return katasNoIdioma(idioma).map((kata) => ({
+    ...kata,
+    movimentos: [],
+    movimentosDetalhados: [],
+    bunkai: [],
+    comentario: undefined,
+    observacaoContagem: undefined,
+    contagemAlternativa: undefined,
+    resumo: undefined,
+  }));
 }
 
 export function vizinhosNoIdioma(id: string, idioma: Idioma) {

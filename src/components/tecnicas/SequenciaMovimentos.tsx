@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Idioma } from "@/i18n/idioma";
+import { rotaTecnicas, type Idioma } from "@/i18n/idioma";
 import { TEXTOS } from "@/i18n/textos";
 import { acharTecnica } from "@/services/dataService";
 import type { MovimentoKata } from "@/types";
@@ -98,8 +98,7 @@ export function SequenciaMovimentos({
               </thead>
               <tbody>
                 {movimentos.map((movimento) => {
-                  // Em inglês ainda não há catálogo de técnicas para linkar.
-                  const ficha = idioma === "pt" ? acharTecnica(movimento.tecnica) : undefined;
+                  const ficha = acharTecnica(movimento.tecnica);
                   return (
                     <tr
                       key={`${movimento.numero}${movimento.fases ?? ""}`}
@@ -114,7 +113,7 @@ export function SequenciaMovimentos({
                       <td className="px-3 py-2 text-xs font-medium text-fg">
                         {ficha ? (
                           <Link
-                            href={`/estudos/tecnicas#${encodeURIComponent(ficha.nome)}`}
+                            href={`${rotaTecnicas(idioma)}#${encodeURIComponent(ficha.nome)}`}
                             className="underline decoration-line-strong underline-offset-2 transition-colors hover:text-accent hover:decoration-accent"
                           >
                             {movimento.tecnica}

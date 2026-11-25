@@ -74,7 +74,7 @@ const EN: Textos = {
   embusenCompleto: "Complete embusen of kata",
   oQueTreina: "What this kata trains",
   tecnicasDestaque: "Key techniques",
-  toqueParaFicha: "Japanese name and meaning",
+  toqueParaFicha: "tap to see the details",
   bunkai: "Bunkai — applications",
   sequencia: "Sequence of moves",
   nMovimentos: (n: number) => `${n} moves`,

@@ -9,12 +9,14 @@ export function CampoBusca({
   onChange,
   placeholder = "Buscar por nome ou usuário",
   className,
+  rotuloLimpar = "Limpar busca",
 }: {
   id: string;
   valor: string;
   onChange: (valor: string) => void;
   placeholder?: string;
   className?: string;
+  rotuloLimpar?: string;
 }) {
   return (
     <div className={cn("relative", className)}>
@@ -48,7 +50,7 @@ export function CampoBusca({
         <button
           type="button"
           onClick={() => onChange("")}
-          aria-label="Limpar busca"
+          aria-label={rotuloLimpar}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1 text-xs text-subtle transition-colors hover:text-fg"
         >
           ×

@@ -210,8 +210,7 @@ export function KataDetailView({
         {/*
           As técnicas destaque deixam de ser etiqueta solta: cada uma mostra o
           que significa e leva para a ficha no catálogo de kihon. É a ponte
-          que faltava entre a página do kata e a de Técnicas. Em inglês ainda
-          não há catálogo, então a técnica mostra só o significado.
+          que faltava entre a página do kata e a de Técnicas.
         */}
         <section className="card">
           <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
@@ -240,9 +239,9 @@ export function KataDetailView({
               );
               return (
                 <li key={destaque}>
-                  {fichaTecnica && idioma === "pt" ? (
+                  {fichaTecnica ? (
                     <Link
-                      href={`/estudos/tecnicas#${encodeURIComponent(fichaTecnica.nome)}`}
+                      href={`${rotaTecnicas(idioma)}#${encodeURIComponent(fichaTecnica.nome)}`}
                       className="flex items-baseline justify-between gap-3 px-4 py-2.5 transition-colors hover:bg-elevated"
                     >
                       {conteudo}
