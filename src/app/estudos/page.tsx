@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   title: "Portal de Estudos",
   description:
     "Os três pilares do estudo do Karatê Shotokan: história, técnicas e fundamentos.",
+  alternates: { canonical: "/estudos" },
 };
 
 /*

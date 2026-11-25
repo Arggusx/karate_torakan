@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "História",
   description:
     "Linha do tempo do Karatê Shotokan e a árvore genealógica dos mestres.",
+  alternates: { canonical: "/estudos/historia" },
 };
 
 export default function HistoriaPage() {

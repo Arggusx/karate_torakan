@@ -18,8 +18,11 @@ export async function generateMetadata({
   if (!kata) return { title: "Kata não encontrado" };
 
   return {
-    title: `${kata.nome} — ${kata.significadoNome}`,
+    // `absolute`: o layout de técnicas define um título próprio, e com isso o
+    // template " · Torakan" da raiz deixa de chegar aqui sozinho.
+    title: { absolute: `${kata.nome} — ${kata.significadoNome} · Torakan` },
     description: kata.resumo?.text ?? kata.tecnicasDestaque,
+    alternates: { canonical: `/estudos/tecnicas/kata/${kata.id}` },
   };
 }
 
