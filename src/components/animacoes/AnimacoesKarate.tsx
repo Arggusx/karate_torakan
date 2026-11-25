@@ -17,21 +17,6 @@ interface Props {
   className?: string;
 }
 
-/* ------------------------------------------------------------- Ensō */
-
-/** Círculo zen pincelado que se desenha, respira e recomeça. */
-export function Enso({ className }: Props) {
-  return (
-    <svg viewBox="0 0 100 100" aria-hidden className={cn("anim-enso", className)}>
-      <path
-        pathLength={100}
-        d="M62 14C38 9 15 26 14 52c-1 25 21 38 40 36 22-2 34-21 32-40-1-12-9-22-19-27"
-        className="anim-enso-traco"
-      />
-    </svg>
-  );
-}
-
 /* ----------------------------------------------------------- Makiwara */
 
 /**

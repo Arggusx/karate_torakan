@@ -10,8 +10,7 @@
 /* ------------------------------------------------------------------ fontes */
 
 /*
-  As classes do Tailwind (font-display, font-sans, font-marca) e o jornada.css
-  leem estas variáveis. Trocá-las aqui troca a fonte de todo o academy sem
+  As classes do Tailwind (font-display, font-sans, font-marca) leem estas variáveis. Trocá-las aqui troca a fonte de todo o academy sem
   mexer em className nenhum.
 */
 body:has(.academy) {
@@ -106,23 +105,6 @@ body:has(.academy) svg {
   --accent: var(--hanko);
 }
 
-/*
-  Jornada: o vermelho marca resposta errada (o verde, a certa). É mecânica do
-  jogo, então fica.
-*/
-body:has(.academy) :is(
-    .quiz-alternativa,
-    .quiz-revisao-item,
-    .quiz-dificuldade,
-    .sequencia-item,
-    .montar-encaixe,
-    .medalhao-moldura,
-    .moldura-ficha,
-    .ranking-barra
-  ) {
-  --accent: var(--hanko);
-}
-
 /* Links em hover: vermelho. */
 body:has(.academy) .hover\:text-accent:hover,
 body:has(.academy) .group:hover .group-hover\:text-accent,
@@ -154,8 +136,7 @@ body:has(.academy) .controle-ativo {
   box-shadow: none;
 }
 
-/* Ensō e o clarão do golpe nas ilustrações: traço de tinta, não vermelho. */
-body:has(.academy) .anim-enso-traco,
+/* O clarão do golpe nas ilustrações: traço de tinta, não vermelho. */
 body:has(.academy) .anim-kime {
   stroke: rgb(var(--fg));
 }

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ComoFunciona } from "@/components/jornada/ComoFunciona";
-import { Contas } from "@/components/jornada/Contas";
+import { ComoFunciona } from "@/components/provas/ComoFunciona";
+import { Contas } from "@/components/provas/Contas";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/cn";
@@ -172,10 +172,10 @@ export function ProvaPanel() {
             <p className="eyebrow">Nenhuma prova liberada</p>
             <h2 className="heading-md mt-1">Quando o sensei liberar, ela aparece aqui</h2>
             <p className="body-muted mt-1 max-w-md">
-              Enquanto isso, dá para treinar o mesmo conteúdo nos jogos da Jornada, sem nota.
+              Enquanto isso, dá para revisar os katas e as técnicas no portal de estudos.
             </p>
-            <Link href={naAcademy("/estudos/jornada")} className="mt-3 inline-block text-xs font-semibold text-accent underline-offset-2 hover:underline">
-              Abrir a Jornada →
+            <Link href={naAcademy("/estudos/tecnicas")} className="mt-3 inline-block text-xs font-semibold text-accent underline-offset-2 hover:underline">
+              Revisar técnicas e katas →
             </Link>
           </div>
         </section>

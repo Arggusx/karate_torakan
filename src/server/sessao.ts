@@ -20,8 +20,8 @@ const DURACAO_SEGUNDOS = 60 * 60 * 12; // 12 horas
 
 /**
  * Domínio do cookie. Com COOKIE_DOMAIN="torakandojo.com", a mesma sessão vale em
- * portal.torakandojo.com e academy.torakandojo.com (o ranking da Jornada precisa
- * saber quem está logado). Sem a variável, o cookie fica só no endereço atual.
+ * portal.torakandojo.com e academy.torakandojo.com (quem entra no portal
+ * continua logado no academy). Sem a variável, o cookie fica só no endereço atual.
  *
  * O domínio só é aplicado quando a requisição vem dele mesmo: nos endereços
  * *.vercel.app (homologação, previews) o navegador recusaria um cookie de

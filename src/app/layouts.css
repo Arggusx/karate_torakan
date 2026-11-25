@@ -452,63 +452,6 @@
   padding-left: 0.85rem;
 }
 
-/* ---------------------------------------- Estudos: chamada da Jornada */
-
-.cta-jornada {
-  position: relative;
-  display: grid;
-  overflow: hidden;
-  min-height: 15rem;
-  border-radius: 1.1rem;
-  border: 1px solid rgb(var(--line));
-  box-shadow: var(--shadow-md);
-  transition:
-    transform 0.35s var(--ease-out),
-    box-shadow 0.35s var(--ease-out);
-}
-
-.cta-jornada:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-}
-
-.cta-jornada-foto {
-  object-fit: cover;
-  object-position: right center;
-}
-
-/* O texto fica sobre um degradê do creme, que deixa a foto à direita. */
-.cta-jornada-texto {
-  position: relative;
-  align-self: center;
-  padding: 1.75rem;
-  background: linear-gradient(90deg, rgb(var(--surface)) 0%, rgb(var(--surface) / 0.94) 55%, rgb(var(--surface) / 0.4));
-}
-
-@media (min-width: 768px) {
-  .cta-jornada-texto {
-    max-width: 62%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2rem 2.5rem;
-    background: linear-gradient(90deg, rgb(var(--surface)) 60%, rgb(var(--surface) / 0));
-  }
-}
-
-.cta-jornada-enso {
-  position: absolute;
-  right: 1.5rem;
-  bottom: 1.25rem;
-  width: 5.5rem;
-  opacity: 0.9;
-}
-
-:root.dark .cta-jornada-foto {
-  filter: brightness(0.75);
-}
-
 /* ------------------------------------------ Estudos: pilares em mosaico */
 
 .pilares-mosaico {
