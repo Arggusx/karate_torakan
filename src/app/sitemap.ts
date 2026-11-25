@@ -23,7 +23,6 @@ const CAMINHOS_ACADEMY = [
   { caminho: "/estudos/tecnicas", prioridade: 0.9 },
   { caminho: "/estudos/historia", prioridade: 0.8 },
   { caminho: "/estudos/fundamentos", prioridade: 0.8 },
-  { caminho: "/estudos/jornada", prioridade: 0.6 },
 ];
 
 function entradas(base: string, secoes: Secao[]): MetadataRoute.Sitemap {

@@ -36,10 +36,6 @@ export default function TermosPage() {
             <ul>
               <li>Conteúdo de estudo sobre o Karatê Shotokan, aberto a qualquer pessoa.</li>
               <li>
-                Jogos de estudo (Jornada). Quem joga sem login guarda o progresso só no aparelho; quem joga logado
-                no portal soma pontos para o ranking semanal e mensal do dojo.
-              </li>
-              <li>
                 Portal para alunos matriculados, professores e administração: turmas, chamada, mensalidades,
                 provas e conta.
               </li>
@@ -70,7 +66,7 @@ export default function TermosPage() {
               <p>Ao usar o portal, você se compromete a não:</p>
               <ul>
                 <li>entrar na conta de outra pessoa ou tentar ver dados que não são seus;</li>
-                <li>tentar burlar provas, a correção, o ranking da Jornada ou a segurança do sistema;</li>
+                <li>tentar burlar provas, a correção ou a segurança do sistema;</li>
                 <li>enviar fotos ofensivas ou que não sejam suas;</li>
                 <li>usar o site para qualquer fim ilegal.</li>
               </ul>

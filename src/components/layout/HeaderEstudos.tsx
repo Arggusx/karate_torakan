@@ -20,7 +20,6 @@ const LINKS: Record<Idioma, { href: string; label: string }[]> = {
     { href: "/estudos/historia", label: "História" },
     { href: "/estudos/tecnicas", label: "Técnicas" },
     { href: "/estudos/fundamentos", label: "Fundamentos" },
-    { href: "/estudos/jornada", label: "Jornada" },
   ],
   // Fase 1 do inglês: só os katas.
   en: [{ href: "/en/estudos/tecnicas", label: "Katas" }],
@@ -33,7 +32,6 @@ const BARRA: Record<Idioma, ItemBarra[]> = {
     { href: "/estudos/historia", label: "História", icone: "historia" },
     { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
     { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
-    { href: "/estudos/jornada", label: "Jornada", icone: "jornada" },
   ],
   en: [{ href: "/en/estudos/tecnicas", label: "Katas", icone: "tecnicas" }],
 };
@@ -89,8 +87,8 @@ export function HeaderEstudos({ idioma = "pt" }: { idioma?: Idioma }) {
           <ButtonLink href={noPortal("/login")} size="sm" className="hidden md:inline-flex">
             {AREA_DO_ALUNO[idioma].botao}
           </ButtonLink>
-          {/* No celular, "Entrar" cede o lugar da barra inferior à Jornada e
-              fica aqui, como ícone. */}
+          {/* No celular, "Entrar" fica aqui, como ícone: a barra inferior é
+              só das seções de estudo. */}
           <Link
             href={noPortal("/login")}
             aria-label={AREA_DO_ALUNO[idioma].aria}
