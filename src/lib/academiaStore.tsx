@@ -85,7 +85,8 @@ interface AcademiaContexto {
     // A foto é da própria pessoa (Minha conta ou Google), nunca do cadastro.
     professor: Omit<Professor, "id" | "foto" | "avatarUrl"> & { senha: string },
   ) => Promise<Resultado>;
-  entrar: (usuario: string, senha: string) => Promise<Resultado>;
+  /** `captcha`: token do Turnstile, conferido pelo servidor. */
+  entrar: (usuario: string, senha: string, captcha?: string | null) => Promise<Resultado>;
   sair: () => Promise<void>;
 }
 
@@ -497,12 +498,12 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
   );
 
   const entrar = useCallback<AcademiaContexto["entrar"]>(
-    async (usuario, senha) => {
+    async (usuario, senha, captcha) => {
       try {
         const resposta = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ usuario, senha }),
+          body: JSON.stringify({ usuario, senha, captcha: captcha ?? undefined }),
         });
         const dados = await resposta.json();
 

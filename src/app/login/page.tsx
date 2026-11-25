@@ -8,6 +8,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { BotaoGoogle } from "@/components/ui/BotaoGoogle";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/Button";
+import { SITE_KEY_TURNSTILE, Turnstile } from "@/components/ui/Turnstile";
 import { useAcademia } from "@/lib/academiaStore";
 import { naAcademy } from "@/lib/enderecos";
 import { DESTINO_POR_PERFIL } from "@/services/dataService";
@@ -29,6 +30,11 @@ export default function LoginPage() {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [comGoogle, setComGoogle] = useState(false);
+  // Captcha (Turnstile): o token vale uma vez; depois de cada tentativa
+  // recusada, `renovarCaptcha` pede outro ao widget.
+  const [captcha, setCaptcha] = useState<string | null>(null);
+  const [renovarCaptcha, setRenovarCaptcha] = useState(0);
+  const aguardandoCaptcha = Boolean(SITE_KEY_TURNSTILE) && !captcha;
 
   // O botão do Google só aparece onde ele está configurado.
   useEffect(() => {
@@ -50,10 +56,11 @@ export default function LoginPage() {
     setEnviando(true);
     setErro(null);
 
-    entrar(usuario, senha).then((resultado) => {
+    entrar(usuario, senha, captcha).then((resultado) => {
       if (!resultado.ok || !resultado.sessao) {
         setErro(resultado.erro ?? "Não foi possível entrar.");
         setEnviando(false);
+        setRenovarCaptcha((n) => n + 1);
         return;
       }
       // Conta criada pela equipe: antes do portal, a pessoa escolhe como vai
@@ -130,8 +137,22 @@ export default function LoginPage() {
                 </p>
               ) : null}
 
-              <Button type="submit" className="w-full" disabled={enviando}>
-                {enviando ? "Entrando..." : "Entrar"}
+              <Turnstile
+                onToken={setCaptcha}
+                renovar={renovarCaptcha}
+                className="min-h-[65px]"
+              />
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={enviando || aguardandoCaptcha}
+              >
+                {enviando
+                  ? "Entrando..."
+                  : aguardandoCaptcha
+                    ? "Verificando..."
+                    : "Entrar"}
               </Button>
             </form>
 
