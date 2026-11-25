@@ -8,7 +8,6 @@
 
 .anim-makiwara,
 .anim-bokken,
-.anim-enso,
 .anim-garra,
 .anim-lanterna,
 .anim-faixa {
@@ -21,40 +20,6 @@
   stroke: rgb(var(--line-strong));
   stroke-width: 2;
   stroke-linecap: round;
-}
-
-/* -------------------------------------------------------------- Ensō */
-
-.anim-enso-traco {
-  fill: none;
-  stroke: rgb(var(--accent-solid));
-  stroke-width: 7;
-  stroke-linecap: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  animation: enso-pincel 5s cubic-bezier(0.6, 0, 0.25, 1) infinite;
-}
-
-/* Desenha rápido como pincelada, segura, e apaga devagar antes de recomeçar. */
-@keyframes enso-pincel {
-  0% {
-    stroke-dashoffset: 100;
-    stroke-width: 3;
-    opacity: 1;
-  }
-  35% {
-    stroke-dashoffset: 0;
-    stroke-width: 8;
-  }
-  75% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  95%,
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
 }
 
 /* ----------------------------------------------------------- Makiwara */
@@ -434,7 +399,6 @@
 /* ----------------------------------------------- menos movimento: tudo parado */
 
 @media (prefers-reduced-motion: reduce) {
-  .anim-enso-traco,
   .anim-garra-risco {
     animation: none;
     stroke-dashoffset: 0;

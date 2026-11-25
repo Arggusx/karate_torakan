@@ -258,3 +258,227 @@
     animation: none;
   }
 }
+
+/* =============================================================================
+   Explicação "Como funciona", contas de progresso e alternativas do quiz.
+   Vieram do CSS da Jornada (removida da main e guardada na branch `jornada`):
+   a prova do aluno usa os mesmos componentes.
+   ========================================================================== */
+
+/* ------------------------------------------------------------ Como funciona */
+.jogo-intro {
+  margin: 0 0 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px dashed rgb(var(--gold));
+  background: rgb(var(--gold) / 0.08);
+}
+
+.jogo-intro header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.jogo-intro header strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.05rem;
+  color: rgb(var(--heading));
+}
+
+.jogo-intro ol {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.75rem 0;
+  padding-left: 1.3rem;
+  list-style: decimal;
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+
+.jogo-intro-nota {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  color: rgb(var(--muted));
+}
+
+.jogo-intro-fechar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 1.2rem;
+  color: rgb(var(--muted));
+}
+
+.jogo-intro-fechar:hover {
+  background: rgb(var(--elevated));
+}
+
+.jogo-intro-interrogacao {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.jogo-intro-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated));
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+}
+
+.jogo-intro-botao:hover {
+  color: rgb(var(--heading));
+}
+
+/* ------------------------------------------------------------ contas */
+.contas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.conta {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--game) 45%, rgb(var(--line)));
+  background: rgb(var(--surface));
+}
+
+.contas-sm .conta {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-width: 1.5px;
+}
+
+.conta.is-feita {
+  background: var(--game);
+  border-color: var(--game);
+}
+
+.conta.is-agora {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--game) 25%, transparent);
+  animation: conta-pulsa 1.8s ease-in-out infinite;
+}
+
+@keyframes conta-pulsa {
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--game) 12%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------ quiz */
+.quiz-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.quiz-contador {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgb(var(--muted));
+}
+
+.quiz-enunciado {
+  margin: 1.1rem 0 0.9rem;
+  font-family: var(--fonte-display);
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgb(var(--heading));
+}
+
+.quiz-alternativas {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.quiz-alternativa {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgb(var(--line));
+  border-bottom-width: 3px;
+  background: rgb(var(--surface));
+  text-align: left;
+  font-size: 0.93rem;
+  line-height: 1.45;
+  color: rgb(var(--fg));
+  transition:
+    border-color var(--duration-fast),
+    transform 0.12s var(--ease-out),
+    background-color var(--duration-fast);
+}
+
+.quiz-alternativa:not(:disabled):hover {
+  border-color: var(--game);
+  transform: translateY(-1px);
+}
+
+.quiz-alternativa[aria-pressed="true"] {
+  border-color: var(--game);
+  background: color-mix(in srgb, var(--game) 10%, rgb(var(--surface)));
+}
+
+.quiz-alternativa.is-certa {
+  border-color: #5e8c63;
+  background: rgb(94 140 99 / 0.14);
+}
+
+.quiz-alternativa.is-errada {
+  border-color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.08);
+}
+
+.quiz-letra {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated));
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgb(var(--muted));
+}
+
+.quiz-alternativa[aria-pressed="true"] .quiz-letra {
+  background: var(--game);
+  color: #fffaf4;
+}
+
+.quiz-fim-titulo {
+  font-family: var(--fonte-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--game);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .conta.is-agora {
+    animation: none;
+  }
+}

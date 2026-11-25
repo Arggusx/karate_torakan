@@ -1,14 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { jornada, useJornada } from "@/lib/jornadaStore";
 
 /**
- * "Como funciona": a explicação de um jogo, como a GameIntro do Oratio.
- * Aberta na primeira visita; depois fica atrás do botão "?" e abre de novo
- * quando a pessoa quiser.
+ * "Como funciona": a explicação de uma tela, aberta na primeira visita e
+ * depois guardada atrás do botão "?", que a reabre quando a pessoa quiser.
+ *
+ * Quais explicações já foram vistas fica só neste aparelho (localStorage).
+ * Sem acesso ao armazenamento (aba anônima, bloqueio), a explicação abre
+ * toda vez — nada quebra.
  */
+
+const CHAVE = "torakan:intros-vistas";
+
+function lerVistas(): string[] {
+  try {
+    const bruto = localStorage.getItem(CHAVE);
+    return bruto ? (JSON.parse(bruto) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function marcarVista(id: string) {
+  try {
+    const vistas = lerVistas();
+    if (!vistas.includes(id)) localStorage.setItem(CHAVE, JSON.stringify([...vistas, id]));
+  } catch {
+    // Sem armazenamento: só não lembra.
+  }
+}
+
 export function ComoFunciona({
   id,
   passos,
@@ -20,17 +43,18 @@ export function ComoFunciona({
   nota?: string;
   titulo?: string;
 }) {
-  const { introsVistas } = useJornada();
-  const primeiraVez = !introsVistas.includes(id);
-  const [aberto, setAberto] = useState<boolean | null>(null);
-  const mostrar = aberto ?? primeiraVez;
+  // Começa fechado no servidor e decide no navegador, que é onde a lista mora.
+  const [aberto, setAberto] = useState(false);
+  useEffect(() => {
+    setAberto(!lerVistas().includes(id));
+  }, [id]);
 
   const fechar = () => {
     setAberto(false);
-    jornada.verIntro(id);
+    marcarVista(id);
   };
 
-  if (!mostrar) {
+  if (!aberto) {
     return (
       <button type="button" className="jogo-intro-botao" onClick={() => setAberto(true)}>
         <span aria-hidden className="jogo-intro-interrogacao">?</span>

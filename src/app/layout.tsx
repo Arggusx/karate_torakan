@@ -17,7 +17,6 @@ import { AcademiaProvider } from "@/lib/academiaStore";
 import { baseDa } from "@/lib/enderecos";
 import "./globals.css";
 import "./animacoes.css";
-import "./jornada.css";
 import "./provas.css";
 import "./componentes.css";
 import "./layouts.css";

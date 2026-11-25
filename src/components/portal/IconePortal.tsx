@@ -23,7 +23,6 @@ export type NomeIcone =
   | "fundamentos"
   | "planos"
   | "entrar"
-  | "jornada"
   | "prova";
 
 export function IconePortal({
@@ -168,15 +167,6 @@ const TRACOS: Record<NomeIcone, React.ReactNode> = {
       <path d="M9.5 3.5h-3A2.5 2.5 0 0 0 4 6v12a2.5 2.5 0 0 0 2.5 2.5h3" />
       <path d="M14 16.5 18.5 12 14 7.5" />
       <path d="M18.5 12h-11" />
-    </>
-  ),
-  // Torii: a entrada do caminho.
-  jornada: (
-    <>
-      <path d="M3 6.5c3 1 15 1 18 0" />
-      <path d="M4.5 10h15" />
-      <path d="M7 6.8V21M17 6.8V21" />
-      <path d="M12 7.3V10" />
     </>
   ),
   // Folha de prova com a marca de conferido.

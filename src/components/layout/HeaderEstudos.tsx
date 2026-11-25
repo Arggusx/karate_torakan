@@ -17,7 +17,6 @@ const LINKS = [
   { href: "/estudos/historia", label: "História" },
   { href: "/estudos/tecnicas", label: "Técnicas" },
   { href: "/estudos/fundamentos", label: "Fundamentos" },
-  { href: "/estudos/jornada", label: "Jornada" },
 ];
 
 /** No celular, os mesmos destinos vão para a barra inferior. */
@@ -26,7 +25,6 @@ const BARRA: ItemBarra[] = [
   { href: "/estudos/historia", label: "História", icone: "historia" },
   { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
   { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
-  { href: "/estudos/jornada", label: "Jornada", icone: "jornada" },
 ];
 
 export function HeaderEstudos() {
@@ -69,8 +67,8 @@ export function HeaderEstudos() {
           <ButtonLink href={noPortal("/login")} size="sm" className="hidden md:inline-flex">
             Área do Aluno / Professor
           </ButtonLink>
-          {/* No celular, "Entrar" cede o lugar da barra inferior à Jornada e
-              fica aqui, como ícone. */}
+          {/* No celular, "Entrar" fica aqui, como ícone: a barra inferior é
+              só das seções de estudo. */}
           <Link
             href={noPortal("/login")}
             aria-label="Entrar na área do aluno ou do professor"

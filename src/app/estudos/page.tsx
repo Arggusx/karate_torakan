@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { HeroPagina } from "@/components/layout/HeroPagina";
 import {
-  Enso,
   FaixaAoVento,
   Makiwara,
   Lanterna,
@@ -182,30 +181,6 @@ export default function EstudosHomePage() {
 
       </div>
 
-      {/* Chamada para a Jornada: faixa horizontal com foto, entre o índice e os pilares. */}
-      <div className="section py-10">
-        <Link href="/estudos/jornada" className="cta-jornada group">
-          <Image
-            src="/imagens/estudos.jpg"
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 1120px, 100vw"
-            className="cta-jornada-foto"
-          />
-          <div className="cta-jornada-texto">
-            <p className="eyebrow">Jornada · 旅</p>
-            <h2 className="heading-lg mt-1">Estudar jogando, sem nota</h2>
-            <p className="body-muted mt-1 max-w-md">
-              Seis ilhas para explorar faixa a faixa, treino livre e o ranking do dojo. Errar não tira nada:
-              é só tentar de novo.
-            </p>
-            <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-accent">
-              Abrir a Jornada <span className="transition-transform group-hover:translate-x-1">→</span>
-            </span>
-          </div>
-          <Enso className="cta-jornada-enso" />
-        </Link>
-      </div>
 
       {/* Os 3 pilares do treino, em mosaico: o Kihon com a foto do dojo em
           destaque e os outros dois ao lado. "Para que serve" abre na sanfona. */}
