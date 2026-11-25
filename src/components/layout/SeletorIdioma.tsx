@@ -11,11 +11,11 @@ import { usePathname } from "next/navigation";
  * próprio endereço (/estudos/... e /en/estudos/...), para o Google indexar
  * as duas versões.
  *
- * Por enquanto só Técnicas e os katas têm versão em inglês. Numa página em português
- * sem equivalente, o botão leva a Técnicas em inglês.
+ * Por enquanto Técnicas (com os katas) e Fundamentos têm versão em inglês.
+ * Numa página em português sem equivalente, o botão leva a Técnicas em inglês.
  */
 
-const COM_VERSAO_EN = /^\/estudos\/tecnicas(\/kata\/[^/]+)?\/?$/;
+const COM_VERSAO_EN = /^\/estudos\/(tecnicas(\/kata\/[^/]+)?|fundamentos)\/?$/;
 
 function destino(caminho: string): { href: string; idioma: "pt" | "en" } {
   if (caminho === "/en" || caminho.startsWith("/en/")) {

@@ -5,6 +5,8 @@ import { CampoBusca } from "@/components/portal/CampoBusca";
 import { FilterChips } from "@/components/ui/Tabs";
 import { Sanfona } from "@/components/ui/Sanfona";
 import { VerMais } from "@/components/ui/VerMais";
+import type { Idioma } from "@/i18n/idioma";
+import { TEXTOS_FUNDAMENTOS } from "@/i18n/textos-fundamentos";
 import type { Curiosidade, DicionarioItem } from "@/types";
 
 /**
@@ -14,12 +16,6 @@ import type { Curiosidade, DicionarioItem } from "@/types";
  */
 
 type Tipo = "tudo" | "termo" | "curiosidade";
-
-const TIPOS = [
-  { value: "tudo" as const, label: "Tudo" },
-  { value: "termo" as const, label: "Dicionário" },
-  { value: "curiosidade" as const, label: "Curiosidades" },
-];
 
 interface Verbete {
   tipo: Exclude<Tipo, "tudo">;
@@ -34,10 +30,18 @@ const semAcento = (s: string) =>
 export function ConsultaDojo({
   dicionario,
   curiosidades,
+  idioma = "pt",
 }: {
   dicionario: DicionarioItem[];
   curiosidades: Curiosidade[];
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS_FUNDAMENTOS[idioma];
+  const tipos: { value: Tipo; label: string }[] = [
+    { value: "tudo", label: t.tudo },
+    { value: "termo", label: t.dicionario },
+    { value: "curiosidade", label: t.curiosidades },
+  ];
   const [tipo, setTipo] = useState<Tipo>("tudo");
   const [busca, setBusca] = useState("");
 
@@ -68,20 +72,21 @@ export function ConsultaDojo({
           id="busca-consulta"
           valor={busca}
           onChange={setBusca}
-          placeholder="Buscar termo ou curiosidade"
+          placeholder={t.buscarVerbete}
+          rotuloLimpar={t.limparBusca}
           className="sm:w-72"
         />
-        <FilterChips options={TIPOS} value={tipo} onChange={setTipo} />
+        <FilterChips options={tipos} value={tipo} onChange={setTipo} />
       </div>
 
       {filtrados.length === 0 ? (
-        <p className="card px-4 py-6 text-center text-xs text-muted">Nada encontrado para “{busca}”.</p>
+        <p className="card px-4 py-6 text-center text-xs text-muted">{t.nadaEncontrado(busca)}</p>
       ) : (
-        <VerMais key={`${tipo}:${busca}`} inicial={8} rotulo="Ver mais verbetes">
+        <VerMais key={`${tipo}:${busca}`} inicial={8} rotulo={t.verMaisVerbetes} rotuloMenos={t.verMenos}>
           {filtrados.map((v) => (
             <Sanfona
               key={`${v.tipo}:${v.titulo}`}
-              sobretitulo={v.tipo === "termo" ? "Dicionário" : "Curiosidade"}
+              sobretitulo={v.tipo === "termo" ? t.dicionario : t.curiosidade}
               titulo={v.titulo}
               lateral={v.lateral ? <span className="font-kanji text-base">{v.lateral}</span> : undefined}
             >

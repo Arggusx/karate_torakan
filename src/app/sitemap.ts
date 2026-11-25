@@ -46,7 +46,7 @@ function entradas(base: string, secoes: Secao[]): MetadataRoute.Sitemap {
     const parDeIdiomas = (caminho: string) => ({
       languages: { "pt-BR": `${base}${caminho}`, en: `${base}/en${caminho}` },
     });
-    for (const caminho of ["/estudos/tecnicas"]) {
+    for (const caminho of ["/estudos/tecnicas", "/estudos/fundamentos"]) {
       lista.push({
         url: `${base}/en${caminho}`,
         changeFrequency: "monthly",

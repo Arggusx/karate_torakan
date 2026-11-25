@@ -1,0 +1,146 @@
+import type { Idioma } from "@/i18n/idioma";
+
+/** Textos fixos da página de Fundamentos e dos componentes dela. */
+const PT = {
+  heroSobretitulo: "Fundamentos · 基本",
+  heroTitulo: "Graduação, etiqueta e princípio",
+  heroDescricao:
+    "A faixa registra um percurso, não um troféu. Aqui estão as exigências de cada graduação e os princípios que dão sentido a cada movimento.",
+  rotuloAbas: "Tópicos de Fundamentos",
+  abaFaixas: "Faixas",
+  abaFilosofia: "Dojo e filosofia",
+  abaOrigem: "Origem dos katas",
+  abaDicionario: "Dicionário",
+  // Faixas
+  faixasSobretitulo: "Do 7º Kyu ao 1º Dan",
+  faixasTitulo: "A faixa registra um percurso",
+  faixasTexto:
+    "Cada graduação tem um tempo mínimo e um programa de exame: os katas e o kihon que o aluno precisa mostrar no tatame. A cor escurece conforme o caminho avança.",
+  ordemFaixas: "Ordem das faixas",
+  faixa: (nome: string) => `Faixa ${nome}`,
+  significadoCor: "O significado da cor",
+  tempo: "Tempo",
+  // Filosofia
+  dojoKunSobretitulo: "Dojo Kun · recitado em seiza",
+  dojoKunTitulo: (n: number) => `Os ${n} lemas do dojo`,
+  etiquetaSobretitulo: "Etiqueta",
+  etiquetaTitulo: "Como se comportar no dojo",
+  detalhes: "Detalhes",
+  principiosSobretitulo: "Princípios técnicos",
+  principiosTitulo: "O que torna o movimento eficaz",
+  verMaisPrincipios: "Ver mais princípios",
+  nijuKunTitulo: "Preceitos de Funakoshi",
+  verTodos: "Ver todos",
+  verMenos: "Ver menos",
+  // Origem
+  origemSobretitulo: "Origem dos katas",
+  origemTitulo: "De onde vem cada kata",
+  origemTexto:
+    "Os 26 katas do Shotokan vieram de três escolas de Okinawa e chegaram ao Japão com outros nomes. Aqui está de onde veio cada um e por que o programa tem a ordem que tem.",
+  escolasSobretitulo: "1 · De onde vieram",
+  escolasTitulo: "Três escolas de Okinawa",
+  escolasTexto:
+    "Antes de existir “Shotokan”, cada cidade de Okinawa guardava seus katas. Funakoshi reuniu o que aprendeu e, ao levar tudo para o Japão nos anos 1920 e 1930, trocou muitos nomes chineses por nomes japoneses — o Pinan virou Heian, o Kusanku virou Kanku.",
+  dosKatas: (n: number) => `${n} dos 26 katas`,
+  caminhoSobretitulo: "2 · Em que ordem se aprende",
+  caminhoTitulo: "O caminho de aprendizado",
+  caminhoTexto: (raiz: string) =>
+    `Itosu desmontou o ${raiz} em katas menores para ensinar crianças: os Heian e o Tekki Shodan. Cada um deles treina o que um kata avançado vai exigir depois. Leia cada linha como “quem domina este, está pronto para aquele”.`,
+  kataDeOrigem: "Kata de origem",
+  prepara: "prepara",
+  notaJion: "O Jion aparece duas vezes porque o cartaz o liga ao Heian Shodan e ao Tekki Shodan. Fonte:",
+  dossieSobretitulo: "3 · Kata por kata",
+  dossieTitulo: "A história de cada um",
+  dossieTexto: "O nome antigo, quem trouxe ou criou e o que se sabe — e, onde a tradição diverge, o texto avisa.",
+  todos: "Todos",
+  antes: "antes",
+  significado: "Significado",
+  quem: "Quem",
+  abrirFicha: (nome: string) => `Abrir a ficha do ${nome} →`,
+  verMaisKatas: "Ver mais katas",
+  // Consulta
+  consultaSobretitulo: "Consulta",
+  consultaTitulo: "O que se ouve no tatame",
+  consultaTexto: (termos: number, curiosidades: number) =>
+    `${termos} termos do dicionário e ${curiosidades} curiosidades que explicam por que as coisas são como são. Abra um verbete para ler.`,
+  tudo: "Tudo",
+  dicionario: "Dicionário",
+  curiosidades: "Curiosidades",
+  curiosidade: "Curiosidade",
+  buscarVerbete: "Buscar termo ou curiosidade",
+  limparBusca: "Limpar busca",
+  nadaEncontrado: (busca: string) => `Nada encontrado para “${busca}”.`,
+  verMaisVerbetes: "Ver mais verbetes",
+};
+
+export type TextosFundamentos = typeof PT;
+
+const EN: TextosFundamentos = {
+  heroSobretitulo: "Fundamentals · 基本",
+  heroTitulo: "Rank, etiquette and principle",
+  heroDescricao:
+    "The belt records a journey, not a trophy. Here are the requirements of each rank and the principles that give meaning to every move.",
+  rotuloAbas: "Fundamentals topics",
+  abaFaixas: "Belts",
+  abaFilosofia: "Dojo and philosophy",
+  abaOrigem: "Origin of the katas",
+  abaDicionario: "Glossary",
+  faixasSobretitulo: "From 7th Kyu to 1st Dan",
+  faixasTitulo: "The belt records a journey",
+  faixasTexto:
+    "Each rank has a minimum time and an exam program: the katas and kihon the student needs to show on the mat. The color darkens as the path goes on.",
+  ordemFaixas: "Order of the belts",
+  faixa: (nome: string) => `${nome} belt`,
+  significadoCor: "The meaning of the color",
+  tempo: "Time",
+  dojoKunSobretitulo: "Dojo Kun · recited in seiza",
+  dojoKunTitulo: (n: number) => `The ${n} precepts of the dojo`,
+  etiquetaSobretitulo: "Etiquette",
+  etiquetaTitulo: "How to behave in the dojo",
+  detalhes: "Details",
+  principiosSobretitulo: "Technical principles",
+  principiosTitulo: "What makes a move effective",
+  verMaisPrincipios: "More principles",
+  nijuKunTitulo: "Funakoshi's precepts",
+  verTodos: "Show all",
+  verMenos: "Show less",
+  origemSobretitulo: "Origin of the katas",
+  origemTitulo: "Where each kata comes from",
+  origemTexto:
+    "The 26 Shotokan katas came from three schools in Okinawa and reached Japan under other names. Here is where each one came from and why the program has the order it has.",
+  escolasSobretitulo: "1 · Where they came from",
+  escolasTitulo: "Three schools of Okinawa",
+  escolasTexto:
+    "Before “Shotokan” existed, each town in Okinawa kept its own katas. Funakoshi gathered what he had learned and, when he took it all to Japan in the 1920s and 1930s, swapped many Chinese names for Japanese ones — Pinan became Heian, Kusanku became Kanku.",
+  dosKatas: (n: number) => `${n} of the 26 katas`,
+  caminhoSobretitulo: "2 · The order of learning",
+  caminhoTitulo: "The learning path",
+  caminhoTexto: (raiz: string) =>
+    `Itosu broke ${raiz} down into smaller katas to teach children: the Heian katas and Tekki Shodan. Each of them trains what an advanced kata will demand later. Read each line as “whoever masters this one is ready for that one”.`,
+  kataDeOrigem: "Source kata",
+  prepara: "prepares",
+  notaJion: "Jion appears twice because the poster links it to both Heian Shodan and Tekki Shodan. Source:",
+  dossieSobretitulo: "3 · Kata by kata",
+  dossieTitulo: "The story of each one",
+  dossieTexto: "The old name, who brought or created it and what is known — and, where tradition disagrees, the text says so.",
+  todos: "All",
+  antes: "formerly",
+  significado: "Meaning",
+  quem: "Who",
+  abrirFicha: (nome: string) => `Open the ${nome} sheet →`,
+  verMaisKatas: "More katas",
+  consultaSobretitulo: "Reference",
+  consultaTitulo: "What you hear on the mat",
+  consultaTexto: (termos: number, curiosidades: number) =>
+    `${termos} glossary terms and ${curiosidades} facts that explain why things are the way they are. Open an entry to read it.`,
+  tudo: "All",
+  dicionario: "Glossary",
+  curiosidades: "Did you know",
+  curiosidade: "Did you know",
+  buscarVerbete: "Search a term or fact",
+  limparBusca: "Clear search",
+  nadaEncontrado: (busca: string) => `Nothing found for “${busca}”.`,
+  verMaisVerbetes: "More entries",
+};
+
+export const TEXTOS_FUNDAMENTOS: Record<Idioma, TextosFundamentos> = { pt: PT, en: EN };

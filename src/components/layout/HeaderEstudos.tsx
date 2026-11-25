@@ -21,8 +21,11 @@ const LINKS: Record<Idioma, { href: string; label: string }[]> = {
     { href: "/estudos/tecnicas", label: "Técnicas" },
     { href: "/estudos/fundamentos", label: "Fundamentos" },
   ],
-  // Inglês: por enquanto, Técnicas e os katas.
-  en: [{ href: "/en/estudos/tecnicas", label: "Techniques" }],
+  // Inglês: por enquanto, Técnicas (com os katas) e Fundamentos.
+  en: [
+    { href: "/en/estudos/tecnicas", label: "Techniques" },
+    { href: "/en/estudos/fundamentos", label: "Fundamentals" },
+  ],
 };
 
 /** No celular, os mesmos destinos vão para a barra inferior. */
@@ -33,7 +36,10 @@ const BARRA: Record<Idioma, ItemBarra[]> = {
     { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
     { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
   ],
-  en: [{ href: "/en/estudos/tecnicas", label: "Techniques", icone: "tecnicas" }],
+  en: [
+    { href: "/en/estudos/tecnicas", label: "Techniques", icone: "tecnicas" },
+    { href: "/en/estudos/fundamentos", label: "Fundamentals", icone: "fundamentos" },
+  ],
 };
 
 const AREA_DO_ALUNO: Record<Idioma, { botao: string; aria: string }> = {
