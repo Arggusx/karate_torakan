@@ -1,0 +1,51 @@
+import type { KataEn } from "./tipos";
+
+export default {
+  significadoNome: "Ten Hands",
+  significadoLiteral: "Ten hands — Ju = ten, Te = hand",
+  faixaRecomendada: "2nd Dan",
+  nivelDificuldade: "Advanced",
+  posicoesKiai: "Move 26",
+  observacaoContagem:
+    "CORRECTED: the original version listed 27 lines because one move (3) had the two haito on separate lines (3A/3B); merged into one, the detailed list closes at 26 moves. A convention discrepancy remains: official summaries (Wikipedia, JKA) list 24 moves in total, grouping some other combination more compactly than the detailed source used here. One source also marks an extra kiai on the fumikomi-geri (move 11).",
+  comentario: ["Techniques against staff attacks."],
+  bunkai: [
+    "Double hooking moves: blocking, twisting and disarming attacks delivered with a staff (Bo) or short weapons.",
+  ],
+  resumo: {
+    significado: "Ten hands — as effective as ten opponents.",
+    text: "A kata focused on disarms and strong defenses against long-staff attacks (Bo-dori), with hooking blocks and firm stances.",
+    decomposicao: ["Ten", "Hands"],
+  },
+  movimentos: [
+    ["Wrist hooking block, right hand", "Zenkutsu-dachi"],
+    ["Double palm-heel block", "Zenkutsu-dachi (turning 45°)"],
+    [
+      "Left ridge-hand block, braced on the right arm, chained with a right ridge-hand strike",
+      "Kiba-dachi (one official move)",
+    ],
+    ["Right palm-heel strike", "Kiba-dachi"],
+    ["Left palm-heel strike", "Kiba-dachi"],
+    ["Right palm-heel strike", "Kiba-dachi"],
+    ["High cross block followed by a low double wedge block"],
+    ["Mountain-shaped (yama) wedge block", "Kiba-dachi"],
+    ["Stamping kick with the left leg", "Turn 180° to the left, kiba-dachi"],
+    ["Stamping kick with the right leg", "Turn 180° to the right, kiba-dachi"],
+    ["Stamping kick with the left leg", "Turn 180° to the left, kiba-dachi (one source marks a kiai here)"],
+    ["Low double wedge block", "Hachiji-dachi"],
+    ["Right high knife-hand block", "Zenkutsu-dachi"],
+    ["Two-handed block, as if holding a staff (jo)", "Zenkutsu-dachi"],
+    ["Repositioning the hands on the staff (clockwise)", "Zenkutsu-dachi"],
+    ["Holding/controlling the staff", "Sagi-ashi-dachi (heron stance, one leg)"],
+    ["Thrust with the staff", "Zenkutsu-dachi"],
+    ["Repositioning the hands on the staff (counterclockwise)", "Zenkutsu-dachi"],
+    ["Holding/controlling the staff (opposite side)", "Sagi-ashi-dachi"],
+    ["Thrust with the staff (opposite side)", "Zenkutsu-dachi"],
+    ["Manji block", "Kokutsu-dachi, turning ~270° left"],
+    ["Manji block, opposite direction", "Kokutsu-dachi"],
+    ["Left high rising block", "Zenkutsu-dachi"],
+    ["Right high rising block", "Zenkutsu-dachi"],
+    ["Left high rising block (reversed direction)", "Zenkutsu-dachi"],
+    ["Right high rising block", "Zenkutsu-dachi"],
+  ],
+} satisfies KataEn;

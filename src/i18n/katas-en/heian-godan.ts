@@ -1,0 +1,48 @@
+import type { KataEn } from "./tipos";
+
+export default {
+  significadoNome: "Peace and Tranquility 5",
+  significadoLiteral: "Peace (Hei) and tranquility (an)",
+  faixaRecomendada: "2nd Kyu (Green)",
+  nivelDificuldade: "Intermediate",
+  posicoesKiai: "Moves 11 and 18",
+  observacaoContagem:
+    "Discrepancy: other summary sources place the kiai on 12 and 19. The exact technical names of the final moves (20–23) vary between sources, although the choreography is consistent.",
+  contagemAlternativa: "The ISO counts 25 moves in this kata; the numbering used here has 23.",
+  comentario: ["Basic kata, designed to train and refine fundamental techniques."],
+  bunkai: [
+    "Kosa Dachi / Uchi Uke + Gyaku Zuki: defending a straight punch and countering fast at belt level.",
+    "Low Juji Uke + Mikazuki Geri: stopping a low kick by crossing the fists, holding the leg, and landing a crescent kick with the sole of the foot on the opponent's arm to off-balance them.",
+    "Jump (Tobi Uke): leaping over a sweep or a low staff strike and landing softly into a choke or counterattack.",
+  ],
+  resumo: {
+    significado: "Peace and tranquility — fifth level.",
+    text: "The synthesis of the Heian katas. It works blocks at different levels, simultaneous punch and elbow counters, and the iconic turning jump (Tobi-komi) landing in Kosa-dachi.",
+    decomposicao: ["Peace and tranquility", "Fifth level"],
+  },
+  movimentos: [
+    ["Inside block (left)", "Turn left, kokutsu-dachi"],
+    ["Reverse punch (right)", "No step, kokutsu-dachi"],
+    ["Hook punch (left)", "Bring the feet together, then step again, heisoku-dachi"],
+    ["Inside block (right)", "Turn right, kokutsu-dachi"],
+    ["Reverse punch (left)", "No step, kokutsu-dachi"],
+    ["Hook punch (right)", "Bring the feet together and step, heisoku-dachi"],
+    ["Reinforced block (right)", "Step forward on the kata's axis, kokutsu-dachi"],
+    ["Low X-block (left in front)", "Step forward, zenkutsu-dachi"],
+    ["High open-hand X-block", "No step, zenkutsu-dachi"],
+    ["Pressing/holding block (left)", "Step with the right foot, zenkutsu-dachi"],
+    ["Middle-level straight punch (right)", "Step forward, zenkutsu-dachi"],
+    ["Downward block (right)", "Turn 180° to the left, kiba-dachi"],
+    ["Back-hand block + crescent kick", "Turn 180°, kiba-dachi"],
+    ["Front elbow strike (right)", "No step, kiba-dachi"],
+    ["Reinforced block (right)", "No step, kosa-dachi (crossed stance)"],
+    ["Double rising punch to the rear (right)", "Turn left, renoji-dachi (L stance)"],
+    ["Low X-block", "Jump turning 180°, kosa-dachi"],
+    ["Reinforced block (right)", "Turn 90°, zenkutsu-dachi"],
+    ["Low knife-hand sweep + low fingertip thrust", "Turn 180°, zenkutsu-dachi"],
+    ["Double crossed block (high and low at once, opposite directions)", "No step, kokutsu-dachi"],
+    ["Flowing block + low fingertip thrust", "Turn 180° and shift 90°, zenkutsu-dachi"],
+    ["Simultaneous", "No step, kokutsu-dachi"],
+    ["Final block", "Step forward, zenkutsu-dachi/kokutsu-dachi (return to yoi)"],
+  ],
+} satisfies KataEn;

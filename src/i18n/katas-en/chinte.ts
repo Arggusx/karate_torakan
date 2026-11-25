@@ -1,0 +1,63 @@
+import type { KataEn } from "./tipos";
+
+export default {
+  significadoNome: "Strange / Rare Hands",
+  significadoLiteral: "Strange techniques / strange hands — Chin = strange, odd; Te = hand",
+  faixaRecomendada: "2nd Dan",
+  nivelDificuldade: "Advanced",
+  posicoesKiai: "Moves 28 and 32",
+  observacaoContagem:
+    "CORRECTED: the original version grouped the series of nihon-nukite (moves 22–24) and the final sequence of 3 jumps (moves 29–31) into a single line each, because no source described each strike individually. They were split into their own lines (the exact direction of each strike within those series is still not fully confirmed). An atypical kata in Shotokan because it uses circular techniques and ends with 3 small jumps/slides backward (yori-ashi), each shorter than the previous one. One prose source marks an extra kiai on move 9 — a discrepancy not fully resolved. One isolated source lists 34 moves in total.",
+  contagemAlternativa: "The ISO counts 33 moves in this kata; the numbering used here has 32.",
+  comentario: [
+    "Trains hand techniques that should be enough to free the karateka from attacks by stronger fighters.",
+  ],
+  bunkai: [
+    "Nihon Nukite (two fingers): an emergency counter aimed at the attacker's eyes when grabbed around the body.",
+  ],
+  resumo: {
+    significado: "Rare hands / unusual hands.",
+    text: "Contains circular techniques with the fingertips aimed at vital points (Nihon-nukite) and ends with three rhythmic jumps back to the starting point of the Enbusen.",
+    decomposicao: ["Rare or unusual", "Hands"],
+  },
+  movimentos: [
+    ["Vertical circular hammer-fist strike to the right, stopping almost at the collarbone", "Heisoku-dachi"],
+    ["The same circular strike, mirrored to the left, with a full stop (kime)", "Heisoku-dachi"],
+    ["Open two-handed rising block (right hand over the left)", "Step into kiba-dachi turning the body"],
+    ["Vertical knife-hand block (right)", "Fudo-dachi, pulling the right leg back"],
+    ["Vertical punch (left), chudan", "Transition to zenkutsu-dachi"],
+    ["Vertical knife-hand block (left)", "Stepping the left leg forward, fudo-dachi"],
+    ["Vertical punch (right), chudan", "Transition to zenkutsu-dachi"],
+    ["Vertical knife-hand block (right)", "Stepping the right leg forward, fudo-dachi"],
+    ["Vertical rising elbow strike (left), jodan", "Sharp transition to zenkutsu-dachi (one prose source marks a kiai here)"],
+    ["Knife-hand block", "Turn 180°, left kokutsu-dachi"],
+    ["Knife-hand block", "Stepping the right leg forward, right kokutsu-dachi"],
+    ["Snapping front kick with the rear (left) leg", "Keeping the arms in the shuto-uke position"],
+    ["Left arm in gedan-barai, right arm in uchi-ude-uke, simultaneous", "Stepping back into zenkutsu-dachi"],
+    ["Scooping/sweeping block with the right arm", "Stepping forward as the feet come together"],
+    ["Circular ridge-hand strike/block, clockwise", "Legs straightening, kiba-dachi"],
+    ["Continuation of the circular strike, palms down", "Yori-ashi, kiba-dachi"],
+    ["Wedge block, mirrored to the right side", "Yori-ashi, kiba-dachi"],
+    ["Crossing the arms low in front, ending in a double uchi-ude-uke block", "Yori-ashi, kiba-dachi"],
+    [
+      "The arms rise crossing the fists and come down striking; the right leg forms sagi-ashi-dachi",
+      "Sagi-ashi-dachi (heron stance)",
+    ],
+    ["Downward circular middle-knuckle punch (right hand)", "Zenkutsu-dachi, hanmi position, chudan"],
+    ["Similar circular strike with the left fist, the body turning to shomen"],
+    [
+      "Two-finger spear strike, first of the series (a rare technique, unique to this kata)",
+      "Zenkutsu-dachi (exact direction not fully confirmed)",
+    ],
+    ["Two-finger spear strike, second of the series", "Zenkutsu-dachi (exact direction not fully confirmed)"],
+    ["Two-finger spear strike, third of the series", "Zenkutsu-dachi (exact direction not fully confirmed)"],
+    ["Side palm-heel block (teisho)", "Fudo-dachi"],
+    ["Outward circular palm-heel strike", "Zenkutsu-dachi"],
+    ["Wedge block with both fists", "Zenkutsu-dachi"],
+    ["Scissor punch with both fists (a technique unique to Chinte)", "Fudo-dachi"],
+    ["Vertical knife-hand block, with the 1st of the 3 small final jumps/slides backward", "Fudo-dachi"],
+    ["Vertical punch, with the 2nd jump/slide (shorter than the 1st)", "Zenkutsu-dachi"],
+    ["Vertical knife-hand block, with the 3rd jump/slide (the shortest)", "Fudo-dachi"],
+    ["Vertical punch combined with a knuckle strike under the chin", "Heisoku-dachi, final move"],
+  ],
+} satisfies KataEn;

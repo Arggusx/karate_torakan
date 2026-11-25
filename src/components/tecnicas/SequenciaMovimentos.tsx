@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import type { Idioma } from "@/i18n/idioma";
+import { TEXTOS } from "@/i18n/textos";
 import { acharTecnica } from "@/services/dataService";
 import type { MovimentoKata } from "@/types";
 
@@ -21,9 +23,12 @@ const PREVIA = 5;
  */
 export function SequenciaMovimentos({
   movimentos,
+  idioma = "pt",
 }: {
   movimentos: MovimentoKata[];
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS[idioma];
   const [aberto, setAberto] = useState(false);
   const [altura, setAltura] = useState<number>();
   const caixa = useRef<HTMLDivElement>(null);
@@ -58,9 +63,9 @@ export function SequenciaMovimentos({
   return (
     <section className="card overflow-hidden">
       <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-        <h2 className="heading-md">Sequência de movimentos</h2>
+        <h2 className="heading-md">{t.sequencia}</h2>
         <span className="text-2xs tabular-nums text-subtle">
-          {movimentos.length} movimentos
+          {t.nMovimentos(movimentos.length)}
         </span>
       </div>
 
@@ -78,22 +83,23 @@ export function SequenciaMovimentos({
               <thead>
                 <tr className="border-b border-line bg-elevated">
                   <th className="w-12 px-3 py-2 text-2xs font-medium uppercase tracking-[0.08em] text-muted">
-                    Nº
+                    {t.colunaNumero}
                   </th>
                   <th className="w-1/4 px-3 py-2 text-2xs font-medium uppercase tracking-[0.08em] text-muted">
-                    Técnica
+                    {t.colunaTecnica}
                   </th>
                   <th className="px-3 py-2 text-2xs font-medium uppercase tracking-[0.08em] text-muted">
-                    Tradução / Explicação
+                    {t.colunaTraducao}
                   </th>
                   <th className="w-1/3 px-3 py-2 text-2xs font-medium uppercase tracking-[0.08em] text-muted">
-                    Direção / Base
+                    {t.colunaDirecao}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {movimentos.map((movimento) => {
-                  const ficha = acharTecnica(movimento.tecnica);
+                  // Em inglês ainda não há catálogo de técnicas para linkar.
+                  const ficha = idioma === "pt" ? acharTecnica(movimento.tecnica) : undefined;
                   return (
                     <tr
                       key={`${movimento.numero}${movimento.fases ?? ""}`}
@@ -156,9 +162,7 @@ export function SequenciaMovimentos({
             aria-expanded={aberto}
             className="flex w-full items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-medium text-accent transition-colors hover:bg-elevated"
           >
-            {aberto
-              ? "Recolher"
-              : `Ver os ${movimentos.length} movimentos`}
+            {aberto ? t.recolher : t.verTodos(movimentos.length)}
             <span
               aria-hidden
               className={`text-2xs transition-transform duration-300 ${aberto ? "rotate-180" : ""}`}

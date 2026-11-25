@@ -7,29 +7,46 @@ import {
   BarraInferiorSite,
   type ItemBarra,
 } from "@/components/layout/BarraInferiorSite";
+import { SeletorIdioma } from "@/components/layout/SeletorIdioma";
 import { IconePortal } from "@/components/portal/IconePortal";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ButtonLink } from "@/components/ui/Button";
+import type { Idioma } from "@/i18n/idioma";
 import { noPortal, noSite } from "@/lib/enderecos";
 
-const LINKS = [
-  { href: "/estudos", label: "Home" },
-  { href: "/estudos/historia", label: "História" },
-  { href: "/estudos/tecnicas", label: "Técnicas" },
-  { href: "/estudos/fundamentos", label: "Fundamentos" },
-  { href: "/estudos/jornada", label: "Jornada" },
-];
+const LINKS: Record<Idioma, { href: string; label: string }[]> = {
+  pt: [
+    { href: "/estudos", label: "Home" },
+    { href: "/estudos/historia", label: "História" },
+    { href: "/estudos/tecnicas", label: "Técnicas" },
+    { href: "/estudos/fundamentos", label: "Fundamentos" },
+    { href: "/estudos/jornada", label: "Jornada" },
+  ],
+  // Fase 1 do inglês: só os katas.
+  en: [{ href: "/en/estudos/tecnicas", label: "Katas" }],
+};
 
 /** No celular, os mesmos destinos vão para a barra inferior. */
-const BARRA: ItemBarra[] = [
-  { href: "/estudos", label: "Estudos", icone: "estudos", exato: true },
-  { href: "/estudos/historia", label: "História", icone: "historia" },
-  { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
-  { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
-  { href: "/estudos/jornada", label: "Jornada", icone: "jornada" },
-];
+const BARRA: Record<Idioma, ItemBarra[]> = {
+  pt: [
+    { href: "/estudos", label: "Estudos", icone: "estudos", exato: true },
+    { href: "/estudos/historia", label: "História", icone: "historia" },
+    { href: "/estudos/tecnicas", label: "Técnicas", icone: "tecnicas" },
+    { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
+    { href: "/estudos/jornada", label: "Jornada", icone: "jornada" },
+  ],
+  en: [{ href: "/en/estudos/tecnicas", label: "Katas", icone: "tecnicas" }],
+};
 
-export function HeaderEstudos() {
+const AREA_DO_ALUNO: Record<Idioma, { botao: string; aria: string }> = {
+  pt: {
+    botao: "Área do Aluno / Professor",
+    aria: "Entrar na área do aluno ou do professor",
+  },
+  en: { botao: "Student / Instructor area", aria: "Sign in to the student or instructor area" },
+};
+
+export function HeaderEstudos({ idioma = "pt" }: { idioma?: Idioma }) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
@@ -42,13 +59,15 @@ export function HeaderEstudos() {
         <div className="flex items-center gap-6">
           <Link href={noSite("/")} className="flex items-center gap-2">
             <MarcaTorakan className="h-8 w-8" />
-            <span className="font-marca text-2xl leading-none text-accent">
+            {/* Abaixo de 360px (celulares bem estreitos) fica só a marca: com
+                os três botões à direita, o nome não cabe sem cortar. */}
+            <span className="font-marca text-2xl leading-none text-accent max-[359px]:hidden">
               Torakan
             </span>
           </Link>
 
           <nav className="hidden items-center gap-6 md:flex">
-            {LINKS.map((link) => {
+            {LINKS[idioma].map((link) => {
               const active = isActive(link.href);
               return (
                 <Link
@@ -64,16 +83,17 @@ export function HeaderEstudos() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <SeletorIdioma />
           <ThemeToggle />
           <ButtonLink href={noPortal("/login")} size="sm" className="hidden md:inline-flex">
-            Área do Aluno / Professor
+            {AREA_DO_ALUNO[idioma].botao}
           </ButtonLink>
           {/* No celular, "Entrar" cede o lugar da barra inferior à Jornada e
               fica aqui, como ícone. */}
           <Link
             href={noPortal("/login")}
-            aria-label="Entrar na área do aluno ou do professor"
+            aria-label={AREA_DO_ALUNO[idioma].aria}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-elevated text-muted transition-colors hover:text-accent md:hidden"
           >
             <IconePortal nome="entrar" className="h-5 w-5" />
@@ -82,7 +102,7 @@ export function HeaderEstudos() {
         </div>
       </div>
     </header>
-    <BarraInferiorSite itens={BARRA} />
+    <BarraInferiorSite itens={BARRA[idioma]} />
     </>
   );
 }

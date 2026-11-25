@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import type { Idioma } from "@/i18n/idioma";
+import { TEXTOS } from "@/i18n/textos";
 import { baseDoMovimento, type TracadoEmbusen } from "@/services/embusen";
 
 /**
@@ -19,10 +21,13 @@ import { baseDoMovimento, type TracadoEmbusen } from "@/services/embusen";
 export function Embusen({
   tracado,
   movimentos,
+  idioma = "pt",
 }: {
   tracado: TracadoEmbusen;
   movimentos: string[];
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS[idioma];
   const [modo, setModo] = useState<"tracado" | "completo">("tracado");
   const [atual, setAtual] = useState(0);
   const [tocando, setTocando] = useState(false);
@@ -111,14 +116,14 @@ export function Embusen({
         <div>
           <h3 className="heading-md">Embusen · 演武線</h3>
           <p className="mt-0.5 text-2xs text-muted">
-            Linha de deslocamento — forma de {tracado.forma}
+            {t.linhaDeslocamento(tracado.forma)}
           </p>
         </div>
         <div className="inline-flex w-fit shrink-0 overflow-hidden rounded-md border border-line">
           {(
             [
-              ["tracado", "Traçado"],
-              ["completo", "Com bases"],
+              ["tracado", t.tracado],
+              ["completo", t.comBases],
             ] as const
           ).map(([valor, rotulo]) => (
             <button
@@ -140,8 +145,7 @@ export function Embusen({
 
       {tracado.emConferencia ? (
         <p className="border-b border-status-warn/40 bg-status-warn/10 px-4 py-2 text-2xs leading-relaxed text-status-warn">
-          Traçado ainda em conferência contra referência técnica. A sequência de
-          movimentos abaixo está correta; as posições no diagrama podem mudar.
+          {t.tracadoEmConferencia}
         </p>
       ) : null}
 
@@ -150,7 +154,7 @@ export function Embusen({
           viewBox={`0 0 ${maxX - minX} ${maxY - minY}`}
           className="w-full rounded-md border border-line bg-canvas"
           role="img"
-          aria-label={`Diagrama do embusen, forma de ${tracado.forma}`}
+          aria-label={t.diagramaEmbusen(tracado.forma)}
         >
           {/* Malha do tatame, para dar noção de distância. */}
           <defs>
@@ -246,7 +250,7 @@ export function Embusen({
               {String(passo.numero).padStart(2, "0")}
             </span>
             <span className="text-2xs uppercase tracking-[0.08em] text-subtle">
-              de {passos.length}
+              {t.deTotal(passos.length)}
             </span>
             {passo.kiai ? (
               <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-2xs font-medium text-accent">
@@ -269,8 +273,7 @@ export function Embusen({
                   />
                 ))}
               </span>
-              {ordemNoPonto}º de {movimentosNoPonto} movimentos nesta posição —
-              sem deslocamento
+              {t.semDeslocamento(ordemNoPonto, movimentosNoPonto)}
             </p>
           ) : null}
 
@@ -287,7 +290,7 @@ export function Embusen({
             <figure className="relative mt-2 aspect-[4/3] w-full overflow-hidden rounded-md border border-line bg-elevated">
               <Image
                 src={passo.foto}
-                alt={`Movimento ${passo.numero} do kata`}
+                alt={t.movimentoDoKata(passo.numero)}
                 fill
                 sizes="(min-width: 640px) 320px, 100vw"
                 className="object-cover"
@@ -314,10 +317,10 @@ export function Embusen({
               size="sm"
               onClick={() => {
                 if (atual >= passos.length - 1) setAtual(0);
-                setTocando((t) => !t);
+                setTocando((ligado) => !ligado);
               }}
             >
-              {tocando ? "Pausar" : "Executar kata"}
+              {tocando ? t.pausar : t.executar}
             </Button>
             <Button
               size="sm"
@@ -347,7 +350,7 @@ export function Embusen({
               <button
                 key={p.numero}
                 type="button"
-                aria-label={`Movimento ${p.numero}`}
+                aria-label={t.movimento(p.numero)}
                 onClick={() => {
                   setTocando(false);
                   setAtual(i);
@@ -377,7 +380,7 @@ export function Embusen({
               <figure className="relative h-full min-h-[160px] w-full overflow-hidden rounded-md border border-line bg-canvas">
                 <Image
                   src={tracado.imagemReferencia}
-                  alt={`Diagrama de referência do embusen, forma de ${tracado.forma}`}
+                  alt={t.referenciaEmbusen(tracado.forma)}
                   fill
                   sizes="(min-width: 640px) 360px, 100vw"
                   className="object-contain p-2"
@@ -386,9 +389,9 @@ export function Embusen({
             ) : (
               <div className="flex h-full min-h-[160px] w-full items-center justify-center rounded-md border border-dashed border-line bg-canvas px-4 text-center">
                 <p className="text-2xs leading-relaxed text-subtle">
-                  Diagrama de referência
+                  {t.diagramaReferencia}
                   <br />
-                  <span className="text-subtle/70">em preparo</span>
+                  <span className="text-subtle/70">{t.emPreparo}</span>
                 </p>
               </div>
             )}
