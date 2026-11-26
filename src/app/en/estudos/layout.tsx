@@ -7,9 +7,8 @@ import { baseDa, noSite } from "@/lib/enderecos";
 import "../../academy.css";
 
 /**
- * Academy em inglês (/en/estudos). Fase 1: índice e páginas dos katas.
- * O rodapé é curto de propósito: as outras seções ainda só existem em
- * português, e o botão PT no cabeçalho leva até elas.
+ * Academy em inglês (/en/estudos): Home, História, Técnicas (com os katas)
+ * e Fundamentos. O botão PT no cabeçalho leva à mesma página em português.
  */
 export const metadata: Metadata = {
   metadataBase: baseDa("academy"),

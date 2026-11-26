@@ -42,11 +42,11 @@ function entradas(base: string, secoes: Secao[]): MetadataRoute.Sitemap {
         priority: prioridade,
       });
     }
-    // Katas nos dois idiomas, cada um apontando para a versão do outro.
+    // Versões em inglês, cada página apontando para a do outro idioma.
     const parDeIdiomas = (caminho: string) => ({
       languages: { "pt-BR": `${base}${caminho}`, en: `${base}/en${caminho}` },
     });
-    for (const caminho of ["/estudos/tecnicas", "/estudos/fundamentos"]) {
+    for (const caminho of ["/estudos", "/estudos/historia", "/estudos/tecnicas", "/estudos/fundamentos"]) {
       lista.push({
         url: `${base}/en${caminho}`,
         changeFrequency: "monthly",

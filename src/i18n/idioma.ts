@@ -2,8 +2,8 @@
  * Idiomas do academy. O português é o padrão e mora em /estudos; o inglês
  * espelha as mesmas páginas sob /en/estudos.
  *
- * Por enquanto só os katas têm versão em inglês (fase 1). As rotas abaixo
- * concentram os endereços para os componentes não montarem caminho à mão.
+ * As rotas abaixo concentram os endereços para os componentes não montarem
+ * caminho à mão.
  */
 
 export type Idioma = "pt" | "en";

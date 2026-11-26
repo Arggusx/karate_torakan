@@ -11,18 +11,18 @@ import { usePathname } from "next/navigation";
  * próprio endereço (/estudos/... e /en/estudos/...), para o Google indexar
  * as duas versões.
  *
- * Por enquanto Técnicas (com os katas) e Fundamentos têm versão em inglês.
- * Numa página em português sem equivalente, o botão leva a Técnicas em inglês.
+ * Todo o academy tem versão em inglês. Numa página em português sem
+ * equivalente, o botão leva à Home do academy em inglês.
  */
 
-const COM_VERSAO_EN = /^\/estudos\/(tecnicas(\/kata\/[^/]+)?|fundamentos)\/?$/;
+const COM_VERSAO_EN = /^\/estudos(\/(tecnicas(\/kata\/[^/]+)?|fundamentos|historia))?\/?$/;
 
 function destino(caminho: string): { href: string; idioma: "pt" | "en" } {
   if (caminho === "/en" || caminho.startsWith("/en/")) {
     return { href: caminho.replace(/^\/en/, "") || "/estudos", idioma: "pt" };
   }
   return {
-    href: COM_VERSAO_EN.test(caminho) ? `/en${caminho}` : "/en/estudos/tecnicas",
+    href: COM_VERSAO_EN.test(caminho) ? `/en${caminho}` : "/en/estudos",
     idioma: "en",
   };
 }

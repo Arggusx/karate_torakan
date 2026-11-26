@@ -21,8 +21,9 @@ const LINKS: Record<Idioma, { href: string; label: string }[]> = {
     { href: "/estudos/tecnicas", label: "Técnicas" },
     { href: "/estudos/fundamentos", label: "Fundamentos" },
   ],
-  // Inglês: por enquanto, Técnicas (com os katas) e Fundamentos.
   en: [
+    { href: "/en/estudos", label: "Home" },
+    { href: "/en/estudos/historia", label: "History" },
     { href: "/en/estudos/tecnicas", label: "Techniques" },
     { href: "/en/estudos/fundamentos", label: "Fundamentals" },
   ],
@@ -37,6 +38,8 @@ const BARRA: Record<Idioma, ItemBarra[]> = {
     { href: "/estudos/fundamentos", label: "Fundamentos", icone: "fundamentos" },
   ],
   en: [
+    { href: "/en/estudos", label: "Study", icone: "estudos", exato: true },
+    { href: "/en/estudos/historia", label: "History", icone: "historia" },
     { href: "/en/estudos/tecnicas", label: "Techniques", icone: "tecnicas" },
     { href: "/en/estudos/fundamentos", label: "Fundamentals", icone: "fundamentos" },
   ],
@@ -54,7 +57,7 @@ export function HeaderEstudos({ idioma = "pt" }: { idioma?: Idioma }) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
-    href === "/estudos" ? pathname === href : pathname.startsWith(href);
+    href === "/estudos" || href === "/en/estudos" ? pathname === href : pathname.startsWith(href);
 
   return (
     <>

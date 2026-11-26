@@ -1,6 +1,16 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { PaginaEstudos } from "@/components/estudos/PaginaEstudos";
 
-/** Fase 1 do inglês: a entrada do academy em inglês é o índice dos katas. */
+export const metadata: Metadata = {
+  title: "Study Portal",
+  description:
+    "The three pillars of Shotokan Karate study: history, techniques and fundamentals.",
+  alternates: {
+    canonical: "/en/estudos",
+    languages: { "pt-BR": "/estudos", en: "/en/estudos" },
+  },
+};
+
 export default function EstudosEnPage() {
-  redirect("/en/estudos/tecnicas");
+  return <PaginaEstudos idioma="en" />;
 }

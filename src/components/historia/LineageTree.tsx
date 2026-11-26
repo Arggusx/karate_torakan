@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/Badge";
+import type { Idioma } from "@/i18n/idioma";
 
 export interface NoLinhagem {
   nome: string;
@@ -160,21 +161,34 @@ export const LINHAGEM_JAPAO: NoLinhagem = {
  * redireciona sozinha para o artigo quando o nome bate, e mostra resultados
  * quando não bate. Nunca dá 404.
  */
-function buscaNaWikipedia(nome: string): string {
+function buscaNaWikipedia(nome: string, idioma: Idioma): string {
   const termo = encodeURIComponent(nome.replace(/"/g, ""));
-  return `https://pt.wikipedia.org/w/index.php?search=${termo}`;
+  return `https://${idioma}.wikipedia.org/w/index.php?search=${termo}`;
 }
 
-function NoCard({ no }: { no: NoLinhagem }) {
+const WIKI: Record<Idioma, { procurar: (nome: string) => string; novaAba: string; link: string }> = {
+  pt: {
+    procurar: (nome) => `Procurar ${nome} na Wikipédia`,
+    novaAba: "(abre a Wikipédia em nova aba)",
+    link: "Procurar na Wikipédia ↗",
+  },
+  en: {
+    procurar: (nome) => `Search Wikipedia for ${nome}`,
+    novaAba: "(opens Wikipedia in a new tab)",
+    link: "Search Wikipedia ↗",
+  },
+};
+
+function NoCard({ no, idioma }: { no: NoLinhagem; idioma: Idioma }) {
   return (
     <div className="card card-hover border-l-2 border-l-accent px-3 py-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
         <a
-          href={buscaNaWikipedia(no.nome)}
+          href={buscaNaWikipedia(no.nome, idioma)}
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex items-baseline gap-1 text-xs font-semibold text-fg transition-colors hover:text-accent"
-          title={`Procurar ${no.nome} na Wikipédia`}
+          title={WIKI[idioma].procurar(no.nome)}
         >
           {no.nome}
           <span
@@ -183,7 +197,7 @@ function NoCard({ no }: { no: NoLinhagem }) {
           >
             ↗
           </span>
-          <span className="sr-only">(abre a Wikipédia em nova aba)</span>
+          <span className="sr-only">{WIKI[idioma].novaAba}</span>
         </a>
         <span className="flex items-center gap-2">
           {no.org ? <Badge tone="accent">{no.org}</Badge> : null}
@@ -204,7 +218,7 @@ function NoCard({ no }: { no: NoLinhagem }) {
  * e data; aberta, o papel, o link e os discípulos — que também abrem, um
  * nível mais para dentro. Sem rolagem lateral e sem encolher a letra.
  */
-function RamoMovel({ no }: { no: NoLinhagem }) {
+function RamoMovel({ no, idioma }: { no: NoLinhagem; idioma: Idioma }) {
   const sub = [no.org, no.anos].filter(Boolean).join(" · ");
   return (
     <li>
@@ -223,13 +237,13 @@ function RamoMovel({ no }: { no: NoLinhagem }) {
         </summary>
         <div className="linhagem-movel-corpo">
           {no.papel ? <p>{no.papel}</p> : null}
-          <a href={buscaNaWikipedia(no.nome)} target="_blank" rel="noopener noreferrer">
-            Procurar na Wikipédia ↗
+          <a href={buscaNaWikipedia(no.nome, idioma)} target="_blank" rel="noopener noreferrer">
+            {WIKI[idioma].link}
           </a>
           {no.filhos?.length ? (
             <ul className="linhagem-movel-filhos">
               {no.filhos.map((filho) => (
-                <RamoMovel key={filho.nome} no={filho} />
+                <RamoMovel key={filho.nome} no={filho} idioma={idioma} />
               ))}
             </ul>
           ) : null}
@@ -239,14 +253,14 @@ function RamoMovel({ no }: { no: NoLinhagem }) {
   );
 }
 
-function Ramo({ no }: { no: NoLinhagem }) {
+function Ramo({ no, idioma }: { no: NoLinhagem; idioma: Idioma }) {
   return (
     <li className="tree-item">
-      <NoCard no={no} />
+      <NoCard no={no} idioma={idioma} />
       {no.filhos?.length ? (
         <ul className="tree-children mt-2">
           {no.filhos.map((filho) => (
-            <Ramo key={filho.nome} no={filho} />
+            <Ramo key={filho.nome} no={filho} idioma={idioma} />
           ))}
         </ul>
       ) : null}
@@ -332,8 +346,10 @@ export function ArvoreGenealogica({
   titulo,
   legenda,
   rodape,
+  idioma = "pt",
 }: {
   raiz: NoLinhagem;
+  idioma?: Idioma;
   titulo: string;
   legenda?: string;
   rodape?: string;
@@ -349,20 +365,20 @@ export function ArvoreGenealogica({
 
       {/* Celular: raiz à vista e os ramos em sanfonas. */}
       <div className="p-3 sm:hidden">
-        <NoCard no={raiz} />
+        <NoCard no={raiz} idioma={idioma} />
         <ul className="linhagem-movel-filhos mt-2">
           {raiz.filhos?.map((filho) => (
-            <RamoMovel key={filho.nome} no={filho} />
+            <RamoMovel key={filho.nome} no={filho} idioma={idioma} />
           ))}
         </ul>
       </div>
 
       <div className="hidden overflow-x-auto p-4 sm:block">
         <div className="min-w-[420px]">
-          <NoCard no={raiz} />
+          <NoCard no={raiz} idioma={idioma} />
           <ul className="tree-children mt-2">
             {raiz.filhos?.map((filho) => (
-              <Ramo key={filho.nome} no={filho} />
+              <Ramo key={filho.nome} no={filho} idioma={idioma} />
             ))}
           </ul>
         </div>
