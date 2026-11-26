@@ -28,25 +28,28 @@ export function HeroLanding() {
       />
       <div aria-hidden className="landing-hero-degrade absolute inset-0 -z-10" />
 
-      {/* O 空手 a pincel e em vermelho, que vinha do layout anterior, no
-          canto superior direito. Enfeite: o título diz o mesmo. */}
-      <p
-        aria-hidden
-        className="landing-kanji pointer-events-none absolute right-6 top-24 font-kanji text-[clamp(4.5rem,16vw,11rem)] leading-[0.85] tracking-[-0.04em] text-accent lg:right-10 lg:top-[120px]"
-      >
-        空手
-      </p>
-
-      <GarraTigre className="landing-garra pointer-events-none absolute bottom-[120px] right-12 hidden h-[150px] w-[150px] lg:block" />
+      {/* A garra fica no alto: embaixo, à direita, agora mora o kanji. */}
+      <GarraTigre className="landing-garra pointer-events-none absolute right-12 top-[120px] hidden h-[150px] w-[150px] lg:block" />
 
       <div className="landing-container relative w-full pb-20 lg:pb-24">
         <p className="landing-rotulo mb-6 text-muted">
           Karatê Shotokan · Academia Tigre
         </p>
-        <h1 className="landing-titulo max-w-[1100px] text-[clamp(40px,6vw,88px)] leading-[0.98]">
-          O caminho da mão vazia,{" "}
-          <span className="text-muted">ensinado do jeito certo.</span>
-        </h1>
+        {/* Título à esquerda e o 空手 do layout anterior à direita, na mesma
+            linha. No celular não cabem lado a lado: o kanji sobe e fica à
+            direita, acima do título. */}
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between sm:gap-10">
+          <h1 className="landing-titulo max-w-[1100px] text-[clamp(40px,6vw,88px)] leading-[0.98]">
+            O caminho da mão vazia,{" "}
+            <span className="text-muted">ensinado do jeito certo.</span>
+          </h1>
+          <p
+            aria-hidden
+            className="landing-kanji order-first shrink-0 self-end font-kanji text-[clamp(4.5rem,13vw,11rem)] leading-[0.85] tracking-[-0.04em] text-accent sm:order-none"
+          >
+            空手
+          </p>
+        </div>
         <div className="mt-10 flex flex-wrap gap-3.5">
           <a href="#onde-fica" className="landing-botao landing-botao-principal">
             Fazer a primeira aula grátis
