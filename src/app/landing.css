@@ -243,7 +243,22 @@
   animation: none;
 }
 
+/* O kanji do hero sobe ao lugar junto com a foto. Só deslocamento, nunca
+   opacidade: se a animação não rodar, ele aparece do mesmo jeito. */
+@keyframes landing-kanji {
+  from {
+    transform: translateY(40px);
+  }
+  to {
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .landing-kanji {
+    animation: landing-kanji 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
+  }
+
   .landing-hero-tinta {
     animation: landing-tinta 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
   }
