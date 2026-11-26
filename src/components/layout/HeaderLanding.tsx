@@ -7,7 +7,7 @@ import "@/app/landing.css";
 
 /*
   Header da vitrine no redesign "tinta sumi" (DESIGN.md, seção 6): logo,
-  TORAKAN, as quatro âncoras da landing e o botão "Aula grátis".
+  TORAKAN, as quatro âncoras da landing e o botão "Semana grátis".
 
   Também aparece em /planos e nas páginas legais, por isso as âncoras levam o
   endereço do site (noSite): de qualquer página elas voltam para a seção certa
@@ -52,7 +52,7 @@ export function HeaderLanding() {
             href={noSite("/#contato")}
             className="landing-botao landing-botao-tinta !px-4 !py-3 text-sm sm:!px-5"
           >
-            Aula grátis
+            Semana grátis
           </a>
         </div>
       </nav>

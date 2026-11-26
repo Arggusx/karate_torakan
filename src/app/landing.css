@@ -283,20 +283,9 @@
 /* ---------------------------------------------------------------- kata */
 
 /*
-  No desktop a seção é alta e o conteúdo fica preso no topo enquanto o
-  embusen se desenha. No celular o conteúdo não cabe preso, então a seção
-  rola normal e o desenho acompanha a passagem dela pela tela.
+  A seção rola normal em todas as telas e o embusen se desenha enquanto ela
+  passa. Antes, no desktop, ela ficava presa por 1100px de rolagem.
 */
-@media (min-width: 1024px) {
-  .landing-kata {
-    height: 1100px;
-  }
-
-  .landing-kata-palco {
-    position: sticky;
-    top: 64px;
-  }
-}
 
 /* -------------------------------------------------------------- cards */
 

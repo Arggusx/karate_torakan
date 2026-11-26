@@ -52,7 +52,7 @@ export function HeroLanding() {
         </div>
         <div className="mt-10 flex flex-wrap gap-3.5">
           <a href="#onde-fica" className="landing-botao landing-botao-principal">
-            Fazer a primeira aula grátis
+            Agendar a semana grátis
           </a>
           <a href="#turmas" className="landing-botao landing-botao-secundario">
             Ver turmas e horários
