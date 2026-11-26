@@ -28,24 +28,18 @@ export function HeroLanding() {
       />
       <div aria-hidden className="landing-hero-degrade absolute inset-0 -z-10" />
 
+      {/* O 空手 a pincel e em vermelho, que vinha do layout anterior, no
+          canto superior direito. Enfeite: o título diz o mesmo. */}
       <p
         aria-hidden
-        className="pointer-events-none absolute right-6 top-24 hidden font-mincho text-[64px] font-extrabold tracking-[0.2em] text-fg/10 [writing-mode:vertical-rl] sm:block lg:right-10 lg:top-[120px] dark:text-fg/[0.14]"
+        className="landing-kanji pointer-events-none absolute right-6 top-24 font-kanji text-[clamp(3.5rem,10vw,7.5rem)] leading-[0.85] tracking-[-0.04em] text-accent lg:right-10 lg:top-[120px]"
       >
-        空手道
+        空手
       </p>
 
       <GarraTigre className="landing-garra pointer-events-none absolute bottom-[120px] right-12 hidden h-[150px] w-[150px] lg:block" />
 
       <div className="landing-container relative w-full pb-20 lg:pb-24">
-        {/* O 空手 em escala de cartaz, a pincel e em vermelho, que vinha do
-            layout anterior. Enfeite: o título logo abaixo diz o mesmo. */}
-        <p
-          aria-hidden
-          className="landing-kanji mb-8 font-kanji text-[clamp(4.5rem,16vw,11rem)] leading-[0.85] tracking-[-0.04em] text-accent"
-        >
-          空手
-        </p>
         <p className="landing-rotulo mb-6 text-muted">
           Karatê Shotokan · Academia Tigre
         </p>
