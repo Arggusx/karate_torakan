@@ -32,7 +32,7 @@ export function HeroLanding() {
           canto superior direito. Enfeite: o título diz o mesmo. */}
       <p
         aria-hidden
-        className="landing-kanji pointer-events-none absolute right-6 top-24 font-kanji text-[clamp(3.5rem,10vw,7.5rem)] leading-[0.85] tracking-[-0.04em] text-accent lg:right-10 lg:top-[120px]"
+        className="landing-kanji pointer-events-none absolute right-6 top-24 font-kanji text-[clamp(4.5rem,16vw,11rem)] leading-[0.85] tracking-[-0.04em] text-accent lg:right-10 lg:top-[120px]"
       >
         空手
       </p>
@@ -43,7 +43,7 @@ export function HeroLanding() {
         <p className="landing-rotulo mb-6 text-muted">
           Karatê Shotokan · Academia Tigre
         </p>
-        <h1 className="landing-titulo max-w-[1100px] text-[clamp(48px,8vw,124px)] leading-[0.98]">
+        <h1 className="landing-titulo max-w-[1100px] text-[clamp(40px,6vw,88px)] leading-[0.98]">
           O caminho da mão vazia,{" "}
           <span className="text-muted">ensinado do jeito certo.</span>
         </h1>
