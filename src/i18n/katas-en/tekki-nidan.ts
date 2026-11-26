@@ -1,0 +1,47 @@
+import type { KataEn } from "./tipos";
+
+export default {
+  significadoNome: "Iron Horse 2",
+  significadoLiteral: "Iron horseman",
+  faixaRecomendada: "1st Dan (Black)",
+  nivelDificuldade: "Advanced",
+  posicoesKiai: "Moves 16 and 24",
+  observacaoContagem:
+    "Count, stances and kiai points confirmed by 3+ sources; the left/right side of each individual move has good-to-moderate confidence — check against a reference video.",
+  comentario: ["Developed by Master Itosu from Tekki."],
+  bunkai: [
+    "Jodan Tate Uke / high kamae: defending a high hook while holding the opponent's head/neck.",
+    "Short-range double punch: breaking a double grab from the front by clamping the attacker's elbows and hitting the floating ribs.",
+  ],
+  resumo: {
+    significado: "Iron horseman — second level.",
+    text: "Second form of the Tekki series. It emphasizes hooking defenses (Kagi-zuki), grabs and short side strikes without losing the alignment of Kiba-dachi.",
+    decomposicao: ["Iron horseman", "Second level"],
+  },
+  movimentos: [
+    ["Ready position: slowly open both forearms horizontally", "Turn the head right, cross the left foot in front (kosa-dachi), slow"],
+    ["Right-foot stamp + left middle inside block", "Kiba-dachi, shift to the right"],
+    ["Low frontal feint/strike with the forearm", "Cross the foot (kosa-ashi), kosa-dachi, low level"],
+    ["Low pushing side block with the right forearm", "Kiba-dachi, gedan"],
+    ["Feet come together, forearms open horizontally again, slowly", "Mirrored restart toward the opposite side"],
+    ["Repeat move 2 with sides reversed (right-arm block)", "Kiba-dachi"],
+    ["Repeat move 3, mirrored", "Kosa-dachi"],
+    ["Repeat move 4, mirrored (left arm)", "Kiba-dachi, gedan"],
+    ["Turn the head, draw the fist back to the hip", "Kiba-dachi"],
+    ["Reinforced inside block (supporting hand), middle level", "Kiba-dachi"],
+    ["Draw the hip back, step/stamp, front elbow strike", "Kiba-dachi, chudan"],
+    ["Tiger-mouth grabbing block, slowly", "Kiba-dachi"],
+    ["Hook punch, middle level", "Kiba-dachi"],
+    ["Cross the foot keeping the upper body still, slowly", "Kosa-dachi"],
+    ["Stamp + inside block", "Kiba-dachi, gedan/chudan"],
+    ["High sweeping block + downward block, followed by a vertical punch", "Kiba-dachi"],
+    ["Mirror of move 9", "Kiba-dachi"],
+    ["Mirror of move 10", "Kiba-dachi"],
+    ["Mirror of move 11", "Kiba-dachi"],
+    ["Mirror of move 12, slowly", "Kiba-dachi"],
+    ["Mirror of move 13", "Kiba-dachi"],
+    ["Mirror of move 14, slowly", "Kosa-dachi"],
+    ["Mirror of move 15", "Kiba-dachi"],
+    ["Mirror of move 16", "Kiba-dachi"],
+  ],
+} satisfies KataEn;

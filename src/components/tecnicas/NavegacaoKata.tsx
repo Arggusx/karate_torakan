@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
+import { rotaKata, type Idioma } from "@/i18n/idioma";
+import { TEXTOS } from "@/i18n/textos";
 
 /**
  * Navegação entre katas com virada de página.
@@ -21,11 +23,14 @@ import type { MouseEvent } from "react";
 export function NavegacaoKata({
   anterior,
   proximo,
+  idioma = "pt",
 }: {
   anterior: { id: string; nome: string } | null;
   proximo: { id: string; nome: string } | null;
+  idioma?: Idioma;
 }) {
   const router = useRouter();
+  const t = TEXTOS[idioma];
 
   function virar(
     evento: MouseEvent<HTMLAnchorElement>,
@@ -58,42 +63,38 @@ export function NavegacaoKata({
     <nav className="grid gap-3 sm:grid-cols-2">
       {anterior ? (
         <Link
-          href={`/estudos/tecnicas/kata/${anterior.id}`}
-          onClick={(e) =>
-            virar(e, `/estudos/tecnicas/kata/${anterior.id}`, "tras")
-          }
+          href={rotaKata(idioma, anterior.id)}
+          onClick={(e) => virar(e, rotaKata(idioma, anterior.id), "tras")}
           className="card card-hover px-4 py-3"
         >
-          <p className="text-2xs text-muted">← Kata anterior</p>
+          <p className="text-2xs text-muted">{t.kataAnterior}</p>
           <p className="mt-0.5 text-sm font-semibold text-fg">
             {anterior.nome}
           </p>
         </Link>
       ) : (
         <div className="card px-4 py-3 opacity-50">
-          <p className="text-2xs text-muted">← Kata anterior</p>
+          <p className="text-2xs text-muted">{t.kataAnterior}</p>
           <p className="mt-0.5 text-sm font-semibold text-fg">
-            Início da sequência
+            {t.inicioSequencia}
           </p>
         </div>
       )}
 
       {proximo ? (
         <Link
-          href={`/estudos/tecnicas/kata/${proximo.id}`}
-          onClick={(e) =>
-            virar(e, `/estudos/tecnicas/kata/${proximo.id}`, "frente")
-          }
+          href={rotaKata(idioma, proximo.id)}
+          onClick={(e) => virar(e, rotaKata(idioma, proximo.id), "frente")}
           className="card card-hover px-4 py-3 text-right"
         >
-          <p className="text-2xs text-muted">Próximo kata →</p>
+          <p className="text-2xs text-muted">{t.proximoKata}</p>
           <p className="mt-0.5 text-sm font-semibold text-fg">{proximo.nome}</p>
         </Link>
       ) : (
         <div className="card px-4 py-3 text-right opacity-50">
-          <p className="text-2xs text-muted">Próximo kata →</p>
+          <p className="text-2xs text-muted">{t.proximoKata}</p>
           <p className="mt-0.5 text-sm font-semibold text-fg">
-            Fim da sequência
+            {t.fimSequencia}
           </p>
         </div>
       )}

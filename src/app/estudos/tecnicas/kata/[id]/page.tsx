@@ -22,7 +22,13 @@ export async function generateMetadata({
     // template " · Torakan" da raiz deixa de chegar aqui sozinho.
     title: { absolute: `${kata.nome} — ${kata.significadoNome} · Torakan` },
     description: kata.resumo?.text ?? kata.tecnicasDestaque,
-    alternates: { canonical: `/estudos/tecnicas/kata/${kata.id}` },
+    alternates: {
+      canonical: `/estudos/tecnicas/kata/${kata.id}`,
+      languages: {
+        "pt-BR": `/estudos/tecnicas/kata/${kata.id}`,
+        en: `/en/estudos/tecnicas/kata/${kata.id}`,
+      },
+    },
   };
 }
 

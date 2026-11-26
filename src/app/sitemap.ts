@@ -42,12 +42,28 @@ function entradas(base: string, secoes: Secao[]): MetadataRoute.Sitemap {
         priority: prioridade,
       });
     }
-    for (const kata of getKatas()) {
+    // Versões em inglês, cada página apontando para a do outro idioma.
+    const parDeIdiomas = (caminho: string) => ({
+      languages: { "pt-BR": `${base}${caminho}`, en: `${base}/en${caminho}` },
+    });
+    for (const caminho of ["/estudos", "/estudos/historia", "/estudos/tecnicas", "/estudos/fundamentos"]) {
       lista.push({
-        url: `${base}/estudos/tecnicas/kata/${kata.id}`,
-        changeFrequency: "yearly",
-        priority: 0.7,
+        url: `${base}/en${caminho}`,
+        changeFrequency: "monthly",
+        priority: 0.8,
+        alternates: parDeIdiomas(caminho),
       });
+    }
+    for (const kata of getKatas()) {
+      const caminho = `/estudos/tecnicas/kata/${kata.id}`;
+      for (const url of [`${base}${caminho}`, `${base}/en${caminho}`]) {
+        lista.push({
+          url,
+          changeFrequency: "yearly",
+          priority: 0.7,
+          alternates: parDeIdiomas(caminho),
+        });
+      }
     }
   }
 

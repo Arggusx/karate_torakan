@@ -5,6 +5,9 @@ import { EmbusenImage } from "@/components/tecnicas/EmbusenImage";
 import { NavegacaoKata } from "@/components/tecnicas/NavegacaoKata";
 import { SequenciaMovimentos } from "@/components/tecnicas/SequenciaMovimentos";
 import { Badge } from "@/components/ui/Badge";
+import { rotaTecnicas, type Idioma } from "@/i18n/idioma";
+import { TECNICAS_EN } from "@/i18n/katas-en";
+import { TEXTOS } from "@/i18n/textos";
 import { acharTecnica, listarDestaques } from "@/services/dataService";
 import { tracadoDoKata } from "@/services/embusen";
 import type { KataCompleto } from "@/types";
@@ -13,19 +16,22 @@ export function KataDetailView({
   kata,
   anterior,
   proximo,
+  idioma = "pt",
 }: {
   kata: KataCompleto;
   anterior: KataCompleto | null;
   proximo: KataCompleto | null;
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS[idioma];
   const tracado = tracadoDoKata(kata.id);
 
   const ficha = [
-    { label: "Movimentos", valor: String(kata.quantidadeMovimentos) },
-    { label: "Kiais", valor: kata.posicoesKiai },
-    { label: "Origem", valor: kata.origemLinhagem ?? kata.categoria },
+    { label: t.movimentos, valor: String(kata.quantidadeMovimentos) },
+    { label: t.kiais, valor: kata.posicoesKiai },
+    { label: t.origem, valor: kata.origemLinhagem ?? kata.categoria },
     {
-      label: "Duração",
+      label: t.duracao,
       valor: kata.duracaoSegundos ? `~${kata.duracaoSegundos}s` : kata.nivelDificuldade,
     },
   ];
@@ -35,15 +41,21 @@ export function KataDetailView({
     Boolean,
   ) as string[];
 
+  const voltar = (
+    <>
+      <span aria-hidden>←</span> {t.voltarTecnicas}
+    </>
+  );
+
   return (
     <div className="space-y-4">
       {/* Cabeçalho */}
       <div className="card p-5">
         <Link
-          href="/estudos/tecnicas"
+          href={rotaTecnicas(idioma)}
           className="inline-flex items-center gap-1.5 rounded-md border border-line-strong bg-elevated px-3 py-1.5 text-xs font-medium text-fg transition-colors hover:border-accent hover:text-accent"
         >
-          <span aria-hidden>←</span> Voltar para Técnicas
+          {voltar}
         </Link>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -106,7 +118,7 @@ export function KataDetailView({
         */}
         {notasDeContagem.length ? (
           <div className="border-t border-line bg-elevated px-4 py-2.5">
-            <p className="label">Sobre a contagem</p>
+            <p className="label">{t.sobreContagem}</p>
             <ul className="mt-1 space-y-1">
               {notasDeContagem.map((nota) => (
                 <li key={nota} className="text-2xs leading-relaxed text-muted">
@@ -122,7 +134,7 @@ export function KataDetailView({
         {/* Vídeo */}
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h2 className="heading-md">Vídeo demonstrativo</h2>
+            <h2 className="heading-md">{t.videoDemonstrativo}</h2>
             <span className="text-2xs text-subtle">YouTube</span>
           </div>
           <div className="relative aspect-video w-full bg-elevated">
@@ -130,13 +142,13 @@ export function KataDetailView({
               <iframe
                 className="absolute inset-0 h-full w-full"
                 src={kata.videoUrl}
-                title={`Kata ${kata.nome} — demonstração`}
+                title={`Kata ${kata.nome} — ${t.demonstracao}`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-xs text-muted">Vídeo não cadastrado.</p>
+                <p className="text-xs text-muted">{t.videoNaoCadastrado}</p>
               </div>
             )}
           </div>
@@ -151,18 +163,18 @@ export function KataDetailView({
           <section className="card">
             <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
               <h2 className="heading-md">Embusen</h2>
-              <span className="text-2xs text-subtle">Linha de atuação</span>
+              <span className="text-2xs text-subtle">{t.linhaDeAtuacao}</span>
             </div>
             <div className="grid grid-cols-2 gap-3 p-4">
               <EmbusenImage
                 src={kata.embusenOficialImg}
-                alt={`Embusen oficial do kata ${kata.nome}`}
-                legenda="Oficial"
+                alt={`${t.embusenOficial} ${kata.nome}`}
+                legenda={t.oficial}
               />
               <EmbusenImage
                 src={kata.embusenCompletoImg}
-                alt={`Embusen completo do kata ${kata.nome}`}
-                legenda="Completo"
+                alt={`${t.embusenCompleto} ${kata.nome}`}
+                legenda={t.completo}
               />
             </div>
           </section>
@@ -177,7 +189,7 @@ export function KataDetailView({
       {kata.comentario?.length ? (
         <section className="card">
           <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h2 className="heading-md">O que este kata treina</h2>
+            <h2 className="heading-md">{t.oQueTreina}</h2>
             <span className="text-2xs text-subtle">ISO · 2013</span>
           </div>
           <ol className="divide-y divide-line">
@@ -202,34 +214,41 @@ export function KataDetailView({
         */}
         <section className="card">
           <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-            <h2 className="heading-md">Técnicas destaque</h2>
-            <span className="text-2xs text-subtle">toque para ver a ficha</span>
+            <h2 className="heading-md">{t.tecnicasDestaque}</h2>
+            <span className="text-2xs text-subtle">{t.toqueParaFicha}</span>
           </div>
           <ul className="divide-y divide-line">
             {listarDestaques(kata).map((destaque) => {
-              const ficha = acharTecnica(destaque);
+              const fichaTecnica = acharTecnica(destaque);
+              const significado =
+                idioma === "en" ? TECNICAS_EN[fichaTecnica?.nome ?? ""] : fichaTecnica?.pt;
+              const conteudo = (
+                <>
+                  <span className="text-xs font-medium text-fg">
+                    {destaque}
+                    {fichaTecnica?.kanji ? (
+                      <span className="ml-1.5 font-kanji text-2xs text-subtle">
+                        {fichaTecnica.kanji}
+                      </span>
+                    ) : null}
+                  </span>
+                  {significado ? (
+                    <span className="shrink-0 text-2xs text-muted">{significado}</span>
+                  ) : null}
+                </>
+              );
               return (
                 <li key={destaque}>
-                  {ficha ? (
+                  {fichaTecnica ? (
                     <Link
-                      href={`/estudos/tecnicas#${encodeURIComponent(ficha.nome)}`}
+                      href={`${rotaTecnicas(idioma)}#${encodeURIComponent(fichaTecnica.nome)}`}
                       className="flex items-baseline justify-between gap-3 px-4 py-2.5 transition-colors hover:bg-elevated"
                     >
-                      <span className="text-xs font-medium text-fg">
-                        {destaque}
-                        {ficha.kanji ? (
-                          <span className="ml-1.5 font-kanji text-2xs text-subtle">
-                            {ficha.kanji}
-                          </span>
-                        ) : null}
-                      </span>
-                      <span className="shrink-0 text-2xs text-muted">
-                        {ficha.pt}
-                      </span>
+                      {conteudo}
                     </Link>
                   ) : (
-                    <span className="flex px-4 py-2.5 text-xs text-fg/85">
-                      {destaque}
+                    <span className="flex items-baseline justify-between gap-3 px-4 py-2.5">
+                      {conteudo}
                     </span>
                   )}
                 </li>
@@ -240,7 +259,7 @@ export function KataDetailView({
 
         <section className="card">
           <div className="border-b border-line px-4 py-2.5">
-            <h2 className="heading-md">Bunkai — aplicações</h2>
+            <h2 className="heading-md">{t.bunkai}</h2>
           </div>
           <ul className="divide-y divide-line">
             {kata.bunkai.map((aplicacao, index) => (
@@ -259,14 +278,14 @@ export function KataDetailView({
 
       {/* Embusen — só aparece para os katas com traçado conferido. */}
       {tracado ? (
-        <Embusen tracado={tracado} movimentos={kata.movimentos} />
+        <Embusen tracado={tracado} movimentos={kata.movimentos} idioma={idioma} />
       ) : null}
 
       {/* Sequência completa, com prévia e expansão animada. */}
-      <SequenciaMovimentos movimentos={kata.movimentosDetalhados} />
+      <SequenciaMovimentos movimentos={kata.movimentosDetalhados} idioma={idioma} />
 
       {/* Navegação sequencial, com virada de página. */}
-      <NavegacaoKata anterior={anterior} proximo={proximo} />
+      <NavegacaoKata anterior={anterior} proximo={proximo} idioma={idioma} />
 
       {/*
         Segundo botão de voltar. A página é longa — depois de percorrer 65
@@ -274,10 +293,10 @@ export function KataDetailView({
       */}
       <div className="flex justify-center pb-2">
         <Link
-          href="/estudos/tecnicas"
+          href={rotaTecnicas(idioma)}
           className="inline-flex items-center gap-1.5 rounded-md border border-line-strong bg-elevated px-4 py-2 text-sm font-medium text-fg transition-colors hover:border-accent hover:text-accent"
         >
-          <span aria-hidden>←</span> Voltar para Técnicas
+          {voltar}
         </Link>
       </div>
     </div>

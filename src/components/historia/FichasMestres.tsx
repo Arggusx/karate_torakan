@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import Image from "next/image";
+import type { Idioma } from "@/i18n/idioma";
 import type { Mestre } from "@/types";
 
 /**
@@ -46,7 +47,7 @@ function Hanko({ kanji }: { kanji: string }) {
   );
 }
 
-export function FichasMestres({ mestres }: { mestres: Mestre[] }) {
+export function FichasMestres({ mestres, idioma = "pt" }: { mestres: Mestre[]; idioma?: Idioma }) {
   return (
     <div className="mestres-grade">
       {mestres.map((mestre, i) => {
@@ -62,7 +63,7 @@ export function FichasMestres({ mestres }: { mestres: Mestre[] }) {
               {foto ? (
                 <Image
                   src={`/imagens/mestres/${foto.arquivo}`}
-                  alt={`Retrato de ${mestre.nome}`}
+                  alt={idioma === "en" ? `Portrait of ${mestre.nome}` : `Retrato de ${mestre.nome}`}
                   fill
                   sizes="(min-width: 768px) 240px, 40vw"
                 />
@@ -75,7 +76,7 @@ export function FichasMestres({ mestres }: { mestres: Mestre[] }) {
               <h3 className="heading-md mt-0.5">{mestre.nome}</h3>
               <p className="font-kanji text-sm text-subtle">{mestre.kanji}</p>
               <p className="mt-2 text-xs leading-relaxed text-fg/85">{mestre.text}</p>
-              {foto ? <p className="mt-2 text-[10px] text-subtle">Foto: {foto.credito}</p> : null}
+              {foto ? <p className="mt-2 text-[10px] text-subtle">{idioma === "en" ? "Photo" : "Foto"}: {foto.credito}</p> : null}
             </div>
           </article>
         );

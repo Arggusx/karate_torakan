@@ -6,6 +6,8 @@ import { NivelTag } from "@/components/ui/Badge";
 import { IconeFaixa } from "@/components/ui/IconeFaixa";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { cn } from "@/lib/cn";
+import { rotaKata, type Idioma } from "@/i18n/idioma";
+import { TEXTOS_TECNICAS } from "@/i18n/textos-tecnicas";
 import { listarDestaques } from "@/services/dataService";
 import type { KataCompleto } from "@/types";
 
@@ -13,11 +15,14 @@ export function KataTable({
   titulo,
   descricao,
   katas,
+  idioma = "pt",
 }: {
   titulo: string;
   descricao: string;
   katas: KataCompleto[];
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS_TECNICAS[idioma];
   const [aberto, setAberto] = useState<string | null>(null);
 
   if (katas.length === 0) return null;
@@ -30,7 +35,7 @@ export function KataTable({
           <p className="mt-0.5 text-xs text-muted">{descricao}</p>
         </div>
         <span className="text-2xs tabular-nums text-subtle">
-          {katas.length} katas
+          {t.nKatas(katas.length)}
         </span>
       </div>
 
@@ -44,6 +49,7 @@ export function KataTable({
           <CardKata
             key={kata.id}
             kata={kata}
+            idioma={idioma}
             aberto={aberto === kata.id}
             onAlternar={() => setAberto(aberto === kata.id ? null : kata.id)}
           />
@@ -54,13 +60,13 @@ export function KataTable({
         <Table minWidth="min-w-[1000px]">
           <THead>
             <TR>
-              <TH>Kata</TH>
-              <TH className="text-right">Mov.</TH>
-              <TH>Nível</TH>
-              <TH>Significado</TH>
-              <TH>Kiais</TH>
-              <TH>Faixa</TH>
-              <TH>Movimentos destaque</TH>
+              <TH>{t.colKata}</TH>
+              <TH className="text-right">{t.colMov}</TH>
+              <TH>{t.colNivel}</TH>
+              <TH>{t.colSignificado}</TH>
+              <TH>{t.colKiais}</TH>
+              <TH>{t.colFaixa}</TH>
+              <TH>{t.colDestaques}</TH>
             </TR>
           </THead>
           <TBody>
@@ -68,7 +74,7 @@ export function KataTable({
               <TR key={kata.id}>
                 <TD>
                   <Link
-                    href={`/estudos/tecnicas/kata/${kata.id}`}
+                    href={rotaKata(idioma, kata.id)}
                     className="font-medium text-fg hover:text-accent"
                   >
                     {kata.nome}
@@ -120,10 +126,12 @@ export function KataTable({
 /** Versão mobile: colapsado mostra nome, kanji e a tag de nível. */
 function CardKata({
   kata,
+  idioma,
   aberto,
   onAlternar,
 }: {
   kata: KataCompleto;
+  idioma: Idioma;
   aberto: boolean;
   onAlternar: () => void;
 }) {
@@ -159,17 +167,17 @@ function CardKata({
 
       {aberto ? (
         <dl className="divide-y divide-line border-t border-line">
-          <Campo rotulo="Movimentos">
+          <Campo rotulo={TEXTOS_TECNICAS[idioma].campoMovimentos}>
             <span className="tabular-nums">{kata.quantidadeMovimentos}</span>
           </Campo>
-          <Campo rotulo="Significado">{kata.significadoNome}</Campo>
-          <Campo rotulo="Kiais">{kata.posicoesKiai}</Campo>
-          <Campo rotulo="Faixa">
+          <Campo rotulo={TEXTOS_TECNICAS[idioma].colSignificado}>{kata.significadoNome}</Campo>
+          <Campo rotulo={TEXTOS_TECNICAS[idioma].colKiais}>{kata.posicoesKiai}</Campo>
+          <Campo rotulo={TEXTOS_TECNICAS[idioma].colFaixa}>
             <IconeFaixa cor={kata.corFaixa} nome={kata.faixaRecomendada} />
           </Campo>
           <div className="px-3 py-2">
             <dt className="text-2xs uppercase tracking-[0.08em] text-muted">
-              Movimentos destaque
+              {TEXTOS_TECNICAS[idioma].colDestaques}
             </dt>
             <dd className="mt-1.5 flex flex-wrap gap-1">
               {listarDestaques(kata).map((destaque) => (
@@ -184,10 +192,10 @@ function CardKata({
           </div>
           <div className="px-3 py-2.5">
             <Link
-              href={`/estudos/tecnicas/kata/${kata.id}`}
+              href={rotaKata(idioma, kata.id)}
               className="text-xs font-medium text-accent"
             >
-              Abrir ficha completa →
+              {TEXTOS_TECNICAS[idioma].abrirFicha}
             </Link>
           </div>
         </dl>

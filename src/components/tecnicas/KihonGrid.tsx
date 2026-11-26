@@ -7,6 +7,9 @@ import {
   TecnicaModal,
 } from "@/components/tecnicas/TecnicaModal";
 import { VerMais } from "@/components/ui/VerMais";
+import type { Idioma } from "@/i18n/idioma";
+import { CATEGORIAS_EN } from "@/i18n/tecnicas-en";
+import { TEXTOS_TECNICAS } from "@/i18n/textos-tecnicas";
 import { cn } from "@/lib/cn";
 import { getCategoriasTecnicas } from "@/services/dataService";
 import type { Tecnica } from "@/types";
@@ -20,10 +23,13 @@ const CATEGORIAS = getCategoriasTecnicas();
 export function KihonGrid({
   tecnicas,
   mostrarTudo = false,
+  idioma = "pt",
 }: {
   tecnicas: Tecnica[];
   mostrarTudo?: boolean;
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS_TECNICAS[idioma];
   const [selecionada, setSelecionada] = useState<Tecnica | null>(null);
   const [expandida, setExpandida] = useState<string | null>(null);
 
@@ -44,9 +50,7 @@ export function KihonGrid({
   if (tecnicas.length === 0) {
     return (
       <div className="card p-8 text-center">
-        <p className="body-muted">
-          Nenhuma técnica encontrada para o filtro selecionado.
-        </p>
+        <p className="body-muted">{t.nenhumaTecnica}</p>
       </div>
     );
   }
@@ -67,10 +71,10 @@ export function KihonGrid({
                       <span>{categoria.kanji.charAt(0)}</span>
                     )}
                   </span>
-                  {categoria.label}
+                  {idioma === "en" ? CATEGORIAS_EN[categoria.id] ?? categoria.label : categoria.label}
                 </h3>
                 <span className="text-2xs tabular-nums text-subtle">
-                  {itens.length} técnicas
+                  {t.nTecnicas(itens.length)}
                 </span>
               </div>
 
@@ -78,11 +82,14 @@ export function KihonGrid({
                 key={`${categoria.id}:${mostrarTudo}`}
                 inicial={mostrarTudo ? itens.length : 6}
                 className="grade-centrada grade-3"
+                rotulo={t.verMais}
+                rotuloMenos={t.verMenos}
               >
                 {itens.map((tecnica) => (
                   <CardTecnica
                     key={tecnica.nome}
                     tecnica={tecnica}
+                    idioma={idioma}
                     aberta={expandida === tecnica.nome}
                     onAbrirModal={() => setSelecionada(tecnica)}
                     onAlternar={() =>
@@ -101,6 +108,7 @@ export function KihonGrid({
       <TecnicaModal
         tecnica={selecionada}
         onClose={() => setSelecionada(null)}
+        idioma={idioma}
       />
     </>
   );
@@ -112,11 +120,13 @@ export function KihonGrid({
  */
 function CardTecnica({
   tecnica,
+  idioma,
   aberta,
   onAbrirModal,
   onAlternar,
 }: {
   tecnica: Tecnica;
+  idioma: Idioma;
   aberta: boolean;
   onAbrirModal: () => void;
   onAlternar: () => void;
@@ -139,7 +149,7 @@ function CardTecnica({
             {tecnica.tipo}
           </span>
           <span className="text-2xs font-medium text-accent">
-            Ver detalhes →
+            {TEXTOS_TECNICAS[idioma].verDetalhes}
           </span>
         </span>
       </button>
@@ -169,7 +179,7 @@ function CardTecnica({
 
       {aberta ? (
         <div className="border-t border-line p-3.5 sm:hidden">
-          <TecnicaDetalhe tecnica={tecnica} compacto />
+          <TecnicaDetalhe tecnica={tecnica} compacto idioma={idioma} />
         </div>
       ) : null}
     </article>

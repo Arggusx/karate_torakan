@@ -70,7 +70,8 @@ export function secaoDoCaminho(caminho: string): Secao | "comum" {
   if (comeca("/api") || comeca("/privacidade") || comeca("/termos")) {
     return "comum";
   }
-  if (comeca("/estudos")) return "academy";
+  // /en é o academy em inglês.
+  if (comeca("/estudos") || comeca("/en")) return "academy";
   if (comeca("/portal") || comeca("/login") || comeca("/primeiro-acesso")) {
     return "portal";
   }

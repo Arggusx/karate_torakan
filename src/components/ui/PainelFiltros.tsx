@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { Idioma } from "@/i18n/idioma";
+import { TEXTOS_TECNICAS } from "@/i18n/textos-tecnicas";
 
 export interface GrupoFiltro {
   id: string;
@@ -28,13 +30,16 @@ export function PainelFiltros({
   onAplicar,
   contar,
   antes,
+  idioma = "pt",
 }: {
   grupos: GrupoFiltro[];
   valores: ValoresFiltro;
   onAplicar: (valores: ValoresFiltro) => void;
   contar?: (rascunho: ValoresFiltro) => number;
   antes?: ReactNode;
+  idioma?: Idioma;
 }) {
+  const t = TEXTOS_TECNICAS[idioma];
   const dialogo = useRef<HTMLDialogElement>(null);
   const [rascunho, setRascunho] = useState(valores);
 
@@ -72,7 +77,7 @@ export function PainelFiltros({
         <svg viewBox="0 0 24 24" aria-hidden>
           <path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4" />
         </svg>
-        Filtros
+        {t.filtros}
         {ativos.length > 0 ? <span className="filtros-conta">{ativos.length}</span> : null}
       </button>
 
@@ -82,7 +87,7 @@ export function PainelFiltros({
           type="button"
           className="filtros-chip-ativo"
           onClick={() => onAplicar({ ...valores, [grupo.id]: null })}
-          aria-label={`Tirar filtro ${grupo.rotulo}: ${opcao.rotulo}`}
+          aria-label={t.tirarFiltro(grupo.rotulo, opcao.rotulo)}
         >
           {opcao.rotulo}
           <span aria-hidden>×</span>
@@ -90,18 +95,18 @@ export function PainelFiltros({
       ))}
       {ativos.length > 1 ? (
         <button type="button" className="filtros-limpar" onClick={() => onAplicar(limpos)}>
-          Limpar tudo
+          {t.limparTudo}
         </button>
       ) : null}
 
       <dialog ref={dialogo} className="filtros-painel" aria-labelledby="filtros-titulo">
         <header className="filtros-painel-topo">
-          <h2 id="filtros-titulo">Filtros</h2>
+          <h2 id="filtros-titulo">{t.filtros}</h2>
           <button
             type="button"
             className="filtros-fechar"
             onClick={() => dialogo.current?.close()}
-            aria-label="Fechar sem aplicar"
+            aria-label={t.fecharSemAplicar}
           >
             ×
           </button>
@@ -136,10 +141,10 @@ export function PainelFiltros({
 
         <footer className="filtros-painel-pe">
           <button type="button" className="filtros-limpar-rascunho" onClick={() => setRascunho(limpos)}>
-            Limpar
+            {t.limpar}
           </button>
           <button type="button" className="filtros-aplicar" onClick={aplicar}>
-            Aplicar filtros{totalRascunho !== undefined ? ` (${totalRascunho})` : ""}
+            {t.aplicarFiltros}{totalRascunho !== undefined ? ` (${totalRascunho})` : ""}
           </button>
         </footer>
       </dialog>
