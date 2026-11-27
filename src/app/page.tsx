@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { noSite } from "@/lib/enderecos";
+import { MENSALIDADE } from "@/lib/precos";
 import { EfeitosLanding } from "@/components/layout/EfeitosLanding";
 import { FooterLanding } from "@/components/layout/FooterLanding";
 import { HeaderLanding } from "@/components/layout/HeaderLanding";
@@ -42,7 +43,7 @@ const TURMAS = [
 const INCLUSO = [
   "Turmas de no máximo 20 alunos",
   "Equipe de faixas pretas",
-  "Primeira aula grátis",
+  "Primeira semana grátis",
 ];
 
 /** Rei → Aquecimento → Kihon → Kata → Kumite → Rei. */
@@ -76,13 +77,6 @@ const NUMEROS_DOJO = [
   { valor: "黒帯", rotulo: "equipe de faixas pretas" },
 ];
 
-/*
-  Valor aprovado para a vitrine. Fica escrito aqui, e não lido de
-  VALOR_MENSALIDADE_CENTAVOS, para a landing não mudar junto com um valor de
-  teste no .env.
-*/
-const MENSALIDADE = "R$ 70";
-
 export const metadata: Metadata = {
   // `absolute` para não ganhar o " · Torakan" do template: a home leva a
   // cidade no título, que é o que a busca local procura.
@@ -90,7 +84,7 @@ export const metadata: Metadata = {
     absolute: "Torakan — Academia de Karatê Shotokan em Olho d'Água das Flores",
   },
   description:
-    "Academia Tigre de Karatê: aulas de Karatê Shotokan para crianças a partir de 7 anos e adultos, terça, quinta e sexta. Primeira aula grátis. Rua 15 de Novembro, 1104, Centro.",
+    "Academia Tigre de Karatê: aulas de Karatê Shotokan para crianças a partir de 7 anos e adultos, terça, quinta e sexta. Primeira semana grátis. Rua 15 de Novembro, 1104, Centro.",
   alternates: { canonical: "/" },
 };
 
@@ -146,7 +140,7 @@ export default function LandingPage() {
         {/* 01 — Turmas e mensalidade */}
         <section id="turmas" className="landing-container landing-secao scroll-mt-16">
           <p className="landing-rotulo mb-5">01 — Turmas e mensalidade</p>
-          <h2 className="landing-titulo mb-14 text-[clamp(36px,4.5vw,64px)] leading-[1.05]">
+          <h2 className="landing-titulo mb-10 text-[clamp(36px,4.5vw,64px)] leading-[1.05]">
             Uma turma pra cada idade.
           </h2>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -154,7 +148,7 @@ export default function LandingPage() {
               <article
                 key={turma.nome}
                 data-subir
-                className="landing-card border border-line bg-canvas/60 p-9"
+                className="landing-card border border-line bg-canvas/60 p-7"
               >
                 <p className="landing-rotulo tracking-[0.16em]">Turma</p>
                 <h3 className="landing-titulo mb-1 mt-3 text-[40px] leading-tight">
@@ -172,7 +166,7 @@ export default function LandingPage() {
             {/* Mensalidade: o card invertido, com o carimbo 虎. */}
             <article
               data-subir
-              className="landing-card relative bg-fg p-9 text-canvas md:col-span-2 lg:col-span-1"
+              className="landing-card relative bg-fg p-7 text-canvas md:col-span-2 lg:col-span-1"
             >
               <span
                 aria-hidden
@@ -199,59 +193,40 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* 02 — Como é a aula */}
+        {/* 02 — Como é a aula: as seis etapas numa faixa só, sem foto. */}
         <section id="aula" className="landing-container landing-secao scroll-mt-16 !pt-0">
           <p className="landing-rotulo mb-5">02 — Como é a aula</p>
-          <div className="grid items-start gap-14 lg:grid-cols-2">
-            <div>
-              <h2 className="landing-titulo mb-5 text-[clamp(36px,4.5vw,64px)] leading-[1.05]">
-                Do primeiro rei ao último.
-              </h2>
-              <p className="mb-10 max-w-[460px] leading-relaxed text-muted">
-                Toda aula passa pelos três pilares do Shotokan, com correção de
-                perto do começo ao fim.
-              </p>
-              <div className="landing-card relative aspect-[5/4] overflow-hidden">
-                <Image
-                  src="/imagens/faixa.jpg"
-                  alt="Karateca ajustando a faixa preta"
-                  fill
-                  sizes="(min-width: 1024px) 608px, 100vw"
-                  data-tinta
-                  className="landing-foto landing-tinta object-cover"
-                />
-              </div>
-            </div>
-
-            <ol className="flex flex-col">
-              {AULA.map((etapa, i) => (
-                <li
-                  key={`${etapa.titulo}-${i}`}
-                  data-subir
-                  className="grid grid-cols-[72px_1fr] gap-5 border-t border-line py-6 last:border-b"
-                >
-                  {etapa.kanji ? (
-                    <span aria-hidden className="font-mincho text-[40px] leading-none">
-                      {etapa.marca}
-                    </span>
-                  ) : (
-                    <span aria-hidden className="landing-rotulo pt-1.5 text-sm">
-                      {etapa.marca}
-                    </span>
-                  )}
-                  <div>
-                    <h3 className="mb-1.5 text-xl font-bold">{etapa.titulo}</h3>
-                    <p className="leading-normal text-muted">{etapa.texto}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <h2 className="landing-titulo text-[clamp(36px,4.5vw,64px)] leading-[1.05]">
+              Do primeiro rei ao último.
+            </h2>
+            <p className="max-w-[420px] leading-relaxed text-muted">
+              Toda aula passa pelos três pilares do Shotokan, com correção de
+              perto do começo ao fim.
+            </p>
           </div>
+          <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-[18px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
+            {AULA.map((etapa, i) => (
+              <li key={`${etapa.titulo}-${i}`} data-subir className="bg-canvas p-5">
+                {etapa.kanji ? (
+                  <span aria-hidden className="block font-mincho text-[32px] leading-none">
+                    {etapa.marca}
+                  </span>
+                ) : (
+                  <span aria-hidden className="landing-rotulo block pt-2 text-sm">
+                    {etapa.marca}
+                  </span>
+                )}
+                <h3 className="mb-1 mt-4 font-bold">{etapa.titulo}</h3>
+                <p className="text-sm leading-snug text-muted">{etapa.texto}</p>
+              </li>
+            ))}
+          </ol>
         </section>
 
         {/* 03 — O primeiro kata: embusen e contador ligados à rolagem. */}
         <section data-kata className="landing-kata relative border-t border-line">
-          <div className="landing-kata-palco landing-container grid items-center gap-12 py-24 lg:grid-cols-2 lg:py-14">
+          <div className="landing-kata-palco landing-container grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-20">
             <div>
               <p className="landing-rotulo mb-5">03 — O primeiro kata</p>
               <h2 className="landing-titulo text-[clamp(44px,6vw,88px)] leading-none">
@@ -306,8 +281,8 @@ export default function LandingPage() {
         </section>
 
         {/* O dojo */}
-        <section id="dojo" className="scroll-mt-16 pb-24 lg:pb-40">
-          <div className="relative h-[420px] lg:h-[600px]">
+        <section id="dojo" className="scroll-mt-16 pb-16 lg:pb-24">
+          <div className="relative h-[300px] lg:h-[420px]">
             <Image
               src="/imagens/dojo.jpg"
               alt="Karateca executando chute no dojo"
@@ -317,10 +292,10 @@ export default function LandingPage() {
               className="landing-foto landing-tinta object-cover"
             />
           </div>
-          <div className="landing-container relative -mt-[120px] grid gap-3 sm:grid-cols-3">
+          <div className="landing-container relative -mt-[80px] grid gap-3 sm:grid-cols-3">
             {NUMEROS_DOJO.map((numero) => (
-              <div key={numero.rotulo} data-subir className="landing-card bg-elevated p-8 dark:bg-surface">
-                <p className="font-mincho text-[56px] font-extrabold leading-tight">
+              <div key={numero.rotulo} data-subir className="landing-card bg-elevated p-6 dark:bg-surface">
+                <p className="font-mincho text-[44px] font-extrabold leading-tight">
                   {numero.valor}
                 </p>
                 <p className="mt-1.5 text-muted">{numero.rotulo}</p>
@@ -329,16 +304,21 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* 04 — Onde fica */}
+        {/* 04 — Onde fica, que também é o fechamento: o convite da semana
+            grátis mora aqui, em vez de numa seção só para ele. */}
         <section
           id="onde-fica"
           className="landing-container landing-secao scroll-mt-16 grid items-stretch gap-10 !pt-0 lg:grid-cols-2"
         >
-          <div>
+          <div id="contato" className="scroll-mt-16">
             <p className="landing-rotulo mb-5">04 — Onde fica</p>
-            <h2 className="landing-titulo mb-6 text-[clamp(32px,4vw,52px)] leading-[1.05]">
-              Venha conhecer o dojo.
+            <h2 className="landing-titulo mb-4 text-[clamp(32px,4vw,52px)] leading-[1.05]">
+              A primeira semana é por nossa conta.
             </h2>
+            <p className="mb-6 max-w-[460px] leading-relaxed text-muted">
+              Venha treinar uma semana inteira e conversar com o sensei antes de
+              decidir.
+            </p>
             <address className="not-italic leading-[1.8] text-muted">
               Rua 15 de Novembro, 1104 · Centro
               <br />
@@ -348,9 +328,14 @@ export default function LandingPage() {
               <br />
               Infantil 18h30–19h30 · Avançado 19h30–21h
             </address>
-            <a href={MAPS_LINK} className="landing-botao landing-botao-secundario mt-7">
-              Abrir no Google Maps
-            </a>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href={MAPS_LINK} className="landing-botao landing-botao-principal">
+                Ver como chegar
+              </a>
+              <Link href="/planos" className="landing-botao landing-botao-secundario">
+                Planos e matrícula
+              </Link>
+            </div>
           </div>
           {/* O Google só é chamado depois do clique (LGPD). */}
           <MapaAoClicar
@@ -358,31 +343,6 @@ export default function LandingPage() {
             titulo="Mapa: Rua 15 de Novembro, 1104, Olho d’Água das Flores – AL"
             className="landing-card min-h-[320px] w-full border border-line"
           />
-        </section>
-
-        {/* CTA final. Por enquanto leva ao Google Maps; o canal de contato entra depois. */}
-        <section
-          id="contato"
-          className="landing-secao relative overflow-hidden border-t border-line px-8 text-center"
-        >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-mincho text-[360px] font-extrabold leading-none text-elevated dark:text-surface lg:text-[560px]"
-          >
-            虎
-          </div>
-          <div className="relative mx-auto max-w-[820px]">
-            <h2 data-subir className="landing-titulo text-[clamp(44px,7vw,104px)] leading-none">
-              A primeira aula é por nossa conta.
-            </h2>
-            <p className="mx-auto mb-10 mt-6 max-w-[520px] leading-relaxed text-muted">
-              Venha conhecer o dojo, treinar uma aula completa e conversar com o
-              sensei antes de decidir.
-            </p>
-            <a href={MAPS_LINK} className="landing-botao landing-botao-principal !px-8 !py-5">
-              Ver como chegar
-            </a>
-          </div>
         </section>
       </main>
 

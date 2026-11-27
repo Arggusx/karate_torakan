@@ -82,8 +82,8 @@ export function EfeitosLanding() {
             ).padStart(2, "0");
           };
 
-          // Desktop: a seção é alta e o palco fica preso (ver .landing-kata).
-          // Celular: o desenho acompanha a passagem da seção pela tela.
+          // Em todas as telas o desenho acompanha a passagem da seção pela
+          // tela; ela não fica mais presa no desktop (ver .landing-kata).
           const telas = gsap.matchMedia();
           const montar = (start: string, end: string) => {
             estado.progresso = 0;
@@ -101,12 +101,7 @@ export function EfeitosLanding() {
               pintar();
             };
           };
-          telas.add("(min-width: 1024px)", () =>
-            montar("top 64px", "bottom bottom"),
-          );
-          telas.add("(max-width: 1023.98px)", () =>
-            montar("top 70%", "bottom 60%"),
-          );
+          telas.add("all", () => montar("top 70%", "bottom 60%"));
         }
       });
 

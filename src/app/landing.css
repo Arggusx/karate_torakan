@@ -243,7 +243,22 @@
   animation: none;
 }
 
+/* O kanji do hero sobe ao lugar junto com a foto. Só deslocamento, nunca
+   opacidade: se a animação não rodar, ele aparece do mesmo jeito. */
+@keyframes landing-kanji {
+  from {
+    transform: translateY(40px);
+  }
+  to {
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .landing-kanji {
+    animation: landing-kanji 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
+  }
+
   .landing-hero-tinta {
     animation: landing-tinta 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
   }
@@ -268,20 +283,9 @@
 /* ---------------------------------------------------------------- kata */
 
 /*
-  No desktop a seção é alta e o conteúdo fica preso no topo enquanto o
-  embusen se desenha. No celular o conteúdo não cabe preso, então a seção
-  rola normal e o desenho acompanha a passagem dela pela tela.
+  A seção rola normal em todas as telas e o embusen se desenha enquanto ela
+  passa. Antes, no desktop, ela ficava presa por 1100px de rolagem.
 */
-@media (min-width: 1024px) {
-  .landing-kata {
-    height: 1100px;
-  }
-
-  .landing-kata-palco {
-    position: sticky;
-    top: 64px;
-  }
-}
 
 /* -------------------------------------------------------------- cards */
 
