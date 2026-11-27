@@ -174,6 +174,14 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
   const recarregar = useCallback(async () => {
     try {
       const resposta = await fetch("/api/academia", { cache: "no-store" });
+      // Sem login a API não entrega nada: é o estado normal da tela de login.
+      if (resposta.status === 401) {
+        setTurmas([]);
+        setAlunos([]);
+        setProfessores([]);
+        setErroCarregamento(null);
+        return;
+      }
       const dados = (await resposta.json()) as RespostaAcademia & {
         erro?: string;
       };
@@ -538,6 +546,8 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
           usuario: dados.conta.usuario,
         };
         setSessao(nova);
+        // Os dados da academia só vêm depois do login.
+        await recarregar();
         return {
           ok: true,
           sessao: nova,
@@ -547,12 +557,15 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
         return { ok: false, erro: "Falha de conexão com o servidor." };
       }
     },
-    [],
+    [recarregar],
   );
 
   const sair = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
     setSessao(null);
+    setTurmas([]);
+    setAlunos([]);
+    setProfessores([]);
   }, []);
 
   const valor = useMemo(

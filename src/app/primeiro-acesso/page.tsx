@@ -72,7 +72,7 @@ export default function PrimeiroAcessoPage() {
   async function criarSenha(evento: FormEvent) {
     evento.preventDefault();
     setErro(null);
-    if (senha.length < 6) return setErro("A senha precisa de ao menos 6 caracteres.");
+    if (senha.length < 8) return setErro("A senha precisa de ao menos 8 caracteres.");
     if (senha !== confirmar) return setErro("A confirmação não bate com a senha.");
 
     setSalvando(true);
@@ -154,7 +154,7 @@ export default function PrimeiroAcessoPage() {
                       className="input"
                       value={senha}
                       onChange={(e) => setSenha(e.target.value)}
-                      placeholder="Mínimo de 6 caracteres"
+                      placeholder="Mínimo de 8 caracteres"
                     />
                   </div>
                   <div>

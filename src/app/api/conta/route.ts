@@ -24,6 +24,29 @@ export const dynamic = "force-dynamic";
 
 const LIMITE_AVATAR = 400_000; // ~400 KB de data URL, folgado para 256px JPEG.
 
+/**
+ * Aceita só PNG, JPEG ou WebP em base64 e confere os primeiros bytes do
+ * arquivo: o tipo declarado no "data:image/..." não basta, e SVG (que pode
+ * levar script) fica de fora.
+ */
+function avatarValido(valor: string): boolean {
+  const partes = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/.exec(valor);
+  if (!partes) return false;
+  const bytes = Buffer.from(partes[2], "base64");
+  if (bytes.length < 12) return false;
+  const tipo = partes[1];
+  if (tipo === "png") {
+    return bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  }
+  if (tipo === "jpeg") {
+    return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  }
+  return (
+    bytes.subarray(0, 4).toString("ascii") === "RIFF" &&
+    bytes.subarray(8, 12).toString("ascii") === "WEBP"
+  );
+}
+
 export async function GET() {
   const sessao = await sessaoAtual();
   if (!sessao) {
@@ -75,16 +98,16 @@ export async function PATCH(request: Request) {
     if (corpo.avatarUrl !== undefined) {
       const valor = corpo.avatarUrl;
       if (valor !== null) {
-        if (!valor.startsWith("data:image/")) {
-          return NextResponse.json(
-            { erro: "Formato de imagem inválido." },
-            { status: 400 },
-          );
-        }
         if (valor.length > LIMITE_AVATAR) {
           return NextResponse.json(
             { erro: "A imagem ficou grande demais. Tente outra." },
             { status: 413 },
+          );
+        }
+        if (!avatarValido(valor)) {
+          return NextResponse.json(
+            { erro: "Formato de imagem inválido. Use PNG, JPEG ou WebP." },
+            { status: 400 },
           );
         }
       }
@@ -101,7 +124,9 @@ export async function PATCH(request: Request) {
       novoUsuario = resultado.usuario;
     }
 
-    // 3. Troca de senha — exige a senha atual.
+    // 3. Troca de senha — exige a senha atual. Derruba as outras sessões e
+    // regrava o cookie deste aparelho com a versão nova.
+    let trocouSenha = false;
     if (corpo.novaSenha !== undefined && corpo.novaSenha !== "") {
       const resultado = await trocarSenha(
         sessao.id,
@@ -111,13 +136,14 @@ export async function PATCH(request: Request) {
       if (!resultado.ok) {
         return NextResponse.json({ erro: resultado.erro }, { status: 400 });
       }
+      trocouSenha = true;
     }
 
-    if (novoUsuario) {
+    if (novoUsuario || trocouSenha) {
       await gravarCookieSessao({
         id: sessao.id,
         nome: sessao.nome,
-        usuario: novoUsuario,
+        usuario: novoUsuario ?? sessao.usuario,
         perfil: sessao.perfil,
       });
     }

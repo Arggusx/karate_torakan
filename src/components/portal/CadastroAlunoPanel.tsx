@@ -143,7 +143,7 @@ export function CadastroAlunoPanel() {
               className="input mt-1"
               value={senha}
               onChange={(event) => setSenha(event.target.value)}
-              placeholder="Mínimo de 6 caracteres"
+              placeholder="Mínimo de 8 caracteres"
             />
             <p className="mt-1 text-2xs text-subtle">
               Combine a senha com o aluno ou o responsável.

@@ -38,9 +38,9 @@ export async function POST(request: Request) {
   if (!corpo.nome?.trim()) {
     return NextResponse.json({ erro: "Informe o nome." }, { status: 400 });
   }
-  if (!corpo.usuario || !corpo.senha || corpo.senha.length < 6) {
+  if (!corpo.usuario || !corpo.senha || corpo.senha.length < 8) {
     return NextResponse.json(
-      { erro: "Usuário e senha (mínimo 6 caracteres) são obrigatórios." },
+      { erro: "Usuário e senha (mínimo 8 caracteres) são obrigatórios." },
       { status: 400 },
     );
   }
