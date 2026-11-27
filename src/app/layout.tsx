@@ -52,6 +52,11 @@ const fonteTexto = Inter({
  * sempre na mesma palavra.
  */
 const fonteMarca = Nanum_Brush_Script({
+  // Fontes asiáticas (esta e as três abaixo): o Google as divide em centenas
+  // de pedaços por faixa de caracteres. Com preload, o Next pedia todos
+  // (488 preloads, 5 MB na home) e a foto do hero esperava na fila. Sem
+  // preload, o navegador baixa só os pedaços dos caracteres que aparecem.
+  preload: false,
   subsets: ["latin"],
   weight: "400",
   display: "swap",
@@ -66,6 +71,7 @@ const fonteMarca = Nanum_Brush_Script({
  * cobre o japonês de verdade e dá o mesmo traço de pincel da marca.
  */
 const fonteKanji = Yuji_Syuku({
+  preload: false,
   subsets: ["latin"],
   weight: "400",
   display: "swap",
@@ -80,6 +86,7 @@ const fonteKanji = Yuji_Syuku({
 
 /** Títulos, nome da marca e kanji decorativo. */
 const fonteMincho = Shippori_Mincho({
+  preload: false,
   subsets: ["latin"],
   weight: ["500", "700", "800"],
   display: "swap",
@@ -88,6 +95,7 @@ const fonteMincho = Shippori_Mincho({
 
 /** Texto corrido e interface. */
 const fonteGotica = Zen_Kaku_Gothic_New({
+  preload: false,
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   display: "swap",

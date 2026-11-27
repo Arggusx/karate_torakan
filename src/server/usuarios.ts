@@ -105,6 +105,25 @@ export async function autenticar(
   return publico;
 }
 
+/**
+ * Admin com o Google vinculado só entra pelo Google: a senha sozinha não
+ * basta para a conta que vê e mexe em tudo. A verificação em duas etapas fica
+ * com a conta Google (ligue-a em myaccount.google.com › Segurança).
+ *
+ * Saída de emergência: ADMIN_SENHA_PERMITIDA=1 na Vercel libera a senha de
+ * novo (por exemplo, se o login com Google parar de funcionar).
+ */
+export async function adminPrecisaDoGoogle(conta: { id: number; role: string }): Promise<boolean> {
+  if (conta.role !== "admin" || process.env.ADMIN_SENHA_PERMITIDA === "1") return false;
+  try {
+    const linhas = await sql`SELECT google_sub FROM users WHERE id = ${conta.id} LIMIT 1`;
+    return Boolean((linhas[0] as { google_sub: string | null } | undefined)?.google_sub);
+  } catch (erro) {
+    if (semColunasGoogle(erro)) return false;
+    throw erro;
+  }
+}
+
 export async function usuarioEmUso(usuario: string): Promise<boolean> {
   const linhas = await sql`
     SELECT 1 FROM users WHERE usuario = ${normalizarUsuario(usuario)} LIMIT 1`;

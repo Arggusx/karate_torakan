@@ -38,3 +38,7 @@ tsconfig.tsbuildinfo
 
 # Credenciais de login (só local, nunca no repositório)
 credenciais.txt
+
+# Backups do banco (db/BACKUP.md): nunca no Git
+*.dump
+*.dump.gpg

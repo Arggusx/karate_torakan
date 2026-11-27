@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { gravarCookieSessao } from "@/server/sessao";
 import { esperaParaTentar, registrarAcerto, registrarErro } from "@/server/tentativas";
 import { captchaValido, ipDaRequisicao } from "@/server/turnstile";
-import { autenticar } from "@/server/usuarios";
+import { googleConfigurado } from "@/server/google";
+import { adminPrecisaDoGoogle, autenticar } from "@/server/usuarios";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -71,6 +72,18 @@ export async function POST(request: Request) {
     }
 
     await registrarAcerto(corpo.usuario);
+
+    // Admin com Google vinculado: a senha certa não basta, falta o Google.
+    if (googleConfigurado() && (await adminPrecisaDoGoogle(conta))) {
+      return NextResponse.json(
+        {
+          erro: "Contas de administrador entram pelo botão “Entrar com Google”.",
+          exigeGoogle: true,
+        },
+        { status: 403 },
+      );
+    }
+
     await gravarCookieSessao({
       id: conta.id,
       nome: conta.nome,
