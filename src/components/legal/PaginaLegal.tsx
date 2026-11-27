@@ -8,16 +8,21 @@ import { HeroPagina } from "@/components/layout/HeroPagina";
  * Contato do responsável pelos dados (o "controlador" da LGPD). Enquanto não
  * houver um e-mail definido, as páginas indicam a secretaria da academia.
  */
-export const CONTATO_EMAIL: string | null = null;
+export const CONTATO_EMAIL: string | null = "privacidade.torakandojo@gmail.com";
 
 /**
- * Identificação completa do controlador (razão social ou nome, e CNPJ ou CPF)
- * e o encarregado pelo tratamento de dados (LGPD, arts. 9º e 41). Enquanto
- * estiverem vazios, a política mostra só o nome da academia e indica a
- * secretaria. Preencher assim que a academia definir.
+ * Identificação do controlador e do encarregado pelo tratamento de dados
+ * (LGPD, arts. 9º e 41).
+ *
+ * A academia não tem CNPJ: o controlador é o dono, pessoa física. O CPF fica
+ * de fora de propósito — nome e contato bastam para identificá-lo, e publicar
+ * o documento numa página aberta só o exporia a fraude. Se um dia houver CNPJ,
+ * ele entra em `documento`.
  */
-export const CONTROLADOR: { nome: string; documento: string } | null = null;
-export const ENCARREGADO: string | null = null;
+export const CONTROLADOR: { nome: string; documento?: string } | null = {
+  nome: "Egnaldo Timoteo Pereira",
+};
+export const ENCARREGADO: string | null = "Douglas Moreira Timoteo";
 
 export const ATUALIZADO_EM = "27 de novembro de 2026";
 

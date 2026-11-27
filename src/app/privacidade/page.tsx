@@ -22,14 +22,17 @@ export default function PrivacidadePage() {
           conteudo: (
             <>
               <p>
-                O Torakan (虎館) é o site e o portal da Academia Tigre de Karatê
-                {CONTROLADOR ? ` (${CONTROLADOR.nome}, ${CONTROLADOR.documento})` : ""}, Rua 15 de Novembro,
-                1104, Centro, Olho d’Água das Flores – AL. A academia é a responsável (controladora, nos
-                termos da Lei Geral de Proteção de Dados — Lei nº 13.709/2018) pelos dados tratados aqui.
+                O Torakan (虎館) é o site e o portal da Academia Tigre de Karatê, Rua 15 de Novembro, 1104,
+                Centro, Olho d’Água das Flores – AL. A academia é a responsável (controladora, nos termos da
+                Lei Geral de Proteção de Dados — Lei nº 13.709/2018) pelos dados tratados aqui
+                {CONTROLADOR
+                  ? `, na pessoa do seu dono e professor, ${CONTROLADOR.nome}${CONTROLADOR.documento ? ` (${CONTROLADOR.documento})` : ""}`
+                  : ""}
+                .
               </p>
               <p>
                 {ENCARREGADO
-                  ? `O encarregado pelo tratamento de dados é ${ENCARREGADO}. `
+                  ? `O encarregado pelo tratamento de dados, que atende os pedidos sobre dados pessoais, é ${ENCARREGADO}, responsável pelo site. `
                   : "A pessoa responsável por atender pedidos sobre dados pessoais é a direção da academia. "}
                 Para qualquer assunto de privacidade, fale <Contato />.
               </p>
