@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
+import { sql } from "@/lib/db";
 import type { Perfil } from "@/server/usuarios";
 
 /**
@@ -41,6 +42,63 @@ export interface SessaoServidor {
   perfil: Perfil;
   /** Epoch em segundos. */
   exp: number;
+  /**
+   * Versão da sessão na conta (users.sessao_versao). Sair, trocar a senha ou
+   * ter a senha redefinida aumenta a versão no banco, e todo cookie emitido
+   * antes deixa de valer.
+   */
+  v?: number;
+}
+
+// ------------------------------------------------------ conferência no banco
+
+/** O banco ainda não tem a coluna (migração 012 não rodou)? */
+function semColunaVersao(erro: unknown) {
+  return (
+    erro instanceof Error &&
+    /column .*sessao_versao.* does not exist/i.test(erro.message)
+  );
+}
+
+interface ContaDaSessao {
+  nome: string;
+  usuario: string;
+  role: Perfil;
+  ativo: boolean;
+  sessao_versao: number | null;
+}
+
+/**
+ * Lê a conta dona da sessão. Sem a coluna de versão (banco ainda sem a
+ * migração 012), confere só conta ativa e perfil — melhor do que derrubar
+ * todo mundo durante o deploy.
+ */
+async function contaDaSessao(id: number): Promise<ContaDaSessao | null> {
+  try {
+    const linhas = await sql`
+      SELECT nome, usuario, role, ativo, sessao_versao
+        FROM users WHERE id = ${id} LIMIT 1`;
+    return (linhas[0] as ContaDaSessao) ?? null;
+  } catch (erro) {
+    if (!semColunaVersao(erro)) throw erro;
+    const linhas = await sql`
+      SELECT nome, usuario, role, ativo, NULL::int AS sessao_versao
+        FROM users WHERE id = ${id} LIMIT 1`;
+    return (linhas[0] as ContaDaSessao) ?? null;
+  }
+}
+
+/**
+ * Invalida todas as sessões abertas da conta, em qualquer aparelho. Usado no
+ * logout, na troca e na redefinição de senha.
+ */
+export async function encerrarSessoes(id: number): Promise<void> {
+  try {
+    await sql`
+      UPDATE users SET sessao_versao = sessao_versao + 1 WHERE id = ${id}`;
+  } catch (erro) {
+    if (!semColunaVersao(erro)) throw erro;
+  }
 }
 
 function segredo(): string {
@@ -100,10 +158,12 @@ export function lerToken(token: string | undefined): SessaoServidor | null {
 // ------------------------------------------------------------- cookie
 
 export async function gravarCookieSessao(
-  dados: Omit<SessaoServidor, "exp">,
+  dados: Omit<SessaoServidor, "exp" | "v">,
 ): Promise<void> {
+  const conta = await contaDaSessao(dados.id);
+  const v = conta?.sessao_versao ?? undefined;
   const jarra = await cookies();
-  jarra.set(NOME_COOKIE, criarToken(dados), {
+  jarra.set(NOME_COOKIE, criarToken({ ...dados, v }), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -118,9 +178,29 @@ export async function limparCookieSessao(): Promise<void> {
   jarra.delete({ name: NOME_COOKIE, path: "/", domain: await dominioDoCookie() });
 }
 
+/**
+ * Quem está chamando. Além da assinatura do cookie, confere no banco a cada
+ * pedido: a conta precisa existir e estar ativa, e a versão da sessão precisa
+ * bater. Nome, usuário e perfil vêm do banco — uma mudança de perfil vale na
+ * hora, sem esperar o cookie expirar.
+ */
 export async function sessaoAtual(): Promise<SessaoServidor | null> {
   const jarra = await cookies();
-  return lerToken(jarra.get(NOME_COOKIE)?.value);
+  const token = lerToken(jarra.get(NOME_COOKIE)?.value);
+  if (!token) return null;
+
+  const conta = await contaDaSessao(token.id);
+  if (!conta || !conta.ativo) return null;
+  if (conta.sessao_versao !== null && (token.v ?? 0) !== conta.sessao_versao) {
+    return null;
+  }
+
+  return {
+    ...token,
+    nome: conta.nome,
+    usuario: conta.usuario,
+    perfil: conta.role,
+  };
 }
 
 // ---------------------------------------------------------- guardas

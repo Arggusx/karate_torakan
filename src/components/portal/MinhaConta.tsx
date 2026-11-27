@@ -297,7 +297,7 @@ export function MinhaConta({
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
                   autoComplete="new-password"
-                  placeholder="Mínimo de 6 caracteres"
+                  placeholder="Mínimo de 8 caracteres"
                 />
               </div>
               <div>

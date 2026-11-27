@@ -2,6 +2,10 @@ import "server-only";
 import bcrypt from "bcryptjs";
 import { randomBytes, randomInt } from "node:crypto";
 import { sql } from "@/lib/db";
+import { encerrarSessoes } from "@/server/sessao";
+
+/** Tamanho mínimo de qualquer senha escolhida ou criada no portal. */
+export const SENHA_MINIMA = 8;
 
 /**
  * Contas de acesso (alunos, professores e admin) e leitura das turmas.
@@ -182,8 +186,11 @@ export async function trocarSenha(
   senhaAtual: string,
   novaSenha: string,
 ): Promise<{ ok: boolean; erro?: string }> {
-  if (novaSenha.length < 6) {
-    return { ok: false, erro: "A nova senha precisa de ao menos 6 caracteres." };
+  if (novaSenha.length < SENHA_MINIMA) {
+    return {
+      ok: false,
+      erro: `A nova senha precisa de ao menos ${SENHA_MINIMA} caracteres.`,
+    };
   }
 
   const conta = await lerConta(id);
@@ -207,6 +214,9 @@ export async function trocarSenha(
   if (conta.google_disponivel) {
     await sql`UPDATE users SET tem_senha = true WHERE id = ${id}`;
   }
+  // Senha nova derruba as sessões abertas com a antiga; quem trocou recebe
+  // um cookie novo na própria rota (/api/conta).
+  await encerrarSessoes(id);
   return { ok: true };
 }
 
@@ -252,6 +262,8 @@ export async function redefinirSenha(alvoId: number): Promise<string> {
   } catch (erro) {
     if (!semColunasGoogle(erro)) throw erro;
   }
+  // Quem estava logado com a senha antiga sai em todos os aparelhos.
+  await encerrarSessoes(alvoId);
   return temporaria;
 }
 
