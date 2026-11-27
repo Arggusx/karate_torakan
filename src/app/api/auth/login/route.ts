@@ -27,7 +27,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Corpo inválido." }, { status: 400 });
   }
 
-  if (!corpo.usuario || !corpo.senha) {
+  if (
+    typeof corpo.usuario !== "string" ||
+    typeof corpo.senha !== "string" ||
+    !corpo.usuario ||
+    !corpo.senha ||
+    corpo.usuario.length > 120 ||
+    corpo.senha.length > 200
+  ) {
     return NextResponse.json(
       { erro: "Informe usuário e senha." },
       { status: 400 },

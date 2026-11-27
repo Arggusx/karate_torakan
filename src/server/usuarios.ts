@@ -54,6 +54,23 @@ export function normalizarUsuario(valor: string): string {
     .replace(/(^[.]|[.]$)/g, "");
 }
 
+/**
+ * Nomes que soam como a equipe ou o sistema. Ninguém escolhe um deles para
+ * si nem recebe um no cadastro de aluno: "admin" mandando mensagem no grupo
+ * da turma parece oficial. (Contas que já existem com esses nomes ficam.)
+ */
+const RESERVADOS = new Set([
+  "admin", "administrador", "adm", "root", "sistema", "suporte", "ajuda",
+  "contato", "secretaria", "financeiro", "professor", "prof", "sensei",
+  "mestre", "torakan", "academia", "dojo", "tigre", "equipe", "staff",
+  "oficial", "seguranca", "noreply", "no-reply",
+]);
+
+export function usuarioReservado(valor: string): boolean {
+  const nome = normalizarUsuario(valor);
+  return RESERVADOS.has(nome) || RESERVADOS.has(nome.replace(/[._-]?\d+$/, ""));
+}
+
 // --------------------------------------------------------------- consultas
 
 /** Validade da senha temporária (dada pela equipe) até a pessoa trocar. */
@@ -168,6 +185,12 @@ export async function trocarUsuario(
   const usuario = normalizarUsuario(novoUsuario);
   if (usuario.length < 3) {
     return { ok: false, erro: "O usuário precisa de ao menos 3 caracteres." };
+  }
+  if (usuario.length > 40) {
+    return { ok: false, erro: "O usuário pode ter no máximo 40 caracteres." };
+  }
+  if (usuarioReservado(usuario)) {
+    return { ok: false, erro: "Esse nome é reservado para a equipe. Escolha outro." };
   }
 
   const ocupado = await sql`
@@ -451,24 +474,26 @@ export async function criarAluno(dados: {
 }): Promise<{ id: number }> {
   const usuario = normalizarUsuario(dados.usuario);
 
+  // Conta e perfil numa instrução só: se a turma não existir (ou o perfil
+  // falhar por outro motivo), a conta também não é criada. Antes eram duas
+  // e sobrava uma conta sem perfil, capaz de entrar no portal.
   const linhas = await sql`
-    INSERT INTO users (nome, email, senha_hash, role, usuario, idade,
-                       data_nascimento, ativo, precisa_trocar_senha,
-                       senha_alterada_em, financial_status)
-    VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
-            'aluno', ${usuario}, ${dados.idade},
-            ${dados.dataNascimento}::date, true, true, now(), 'pendente')
-    RETURNING id`;
+    WITH conta AS (
+      INSERT INTO users (nome, email, senha_hash, role, usuario, idade,
+                         data_nascimento, ativo, precisa_trocar_senha,
+                         senha_alterada_em, financial_status)
+      VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
+              'aluno', ${usuario}, ${dados.idade},
+              ${dados.dataNascimento}::date, true, true, now(), 'pendente')
+      RETURNING id
+    ), perfil AS (
+      INSERT INTO alunos_perfil (user_id, turma_id, faixa_atual, status_mensalidade)
+      SELECT id, ${dados.turmaId}, ${dados.faixa}, 'pendente' FROM conta
+      RETURNING user_id
+    )
+    SELECT user_id AS id FROM perfil`;
 
-  const id = linhas[0].id as number;
-
-  await sql`
-    INSERT INTO alunos_perfil (user_id, turma_id, faixa_atual, status_mensalidade)
-    VALUES (${id}, ${dados.turmaId}, ${dados.faixa}, 'pendente')
-    ON CONFLICT (user_id) DO UPDATE
-      SET turma_id = EXCLUDED.turma_id, faixa_atual = EXCLUDED.faixa_atual`;
-
-  return { id };
+  return { id: linhas[0].id as number };
 }
 
 export async function criarProfessor(dados: {

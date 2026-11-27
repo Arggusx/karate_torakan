@@ -6,7 +6,7 @@ import {
   type DadosContato,
 } from "@/server/contato";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
-import { criarAluno, usuarioEmUso } from "@/server/usuarios";
+import { criarAluno, usuarioEmUso, usuarioReservado } from "@/server/usuarios";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,7 +35,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Corpo inválido." }, { status: 400 });
   }
 
-  if (!corpo.nome?.trim()) {
+  if (
+    typeof corpo.nome !== "string" ||
+    typeof corpo.usuario !== "string" ||
+    typeof corpo.senha !== "string"
+  ) {
+    return NextResponse.json({ erro: "Corpo inválido." }, { status: 400 });
+  }
+  if (!corpo.nome.trim()) {
     return NextResponse.json({ erro: "Informe o nome." }, { status: 400 });
   }
   if (!corpo.usuario || !corpo.senha || corpo.senha.length < 8) {
@@ -58,6 +65,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ erro: erro.message }, { status: 400 });
       }
       throw erro;
+    }
+
+    if (usuarioReservado(corpo.usuario)) {
+      return NextResponse.json(
+        { erro: `O usuário "${corpo.usuario}" é reservado para a equipe. Escolha outro.` },
+        { status: 400 },
+      );
     }
 
     if (await usuarioEmUso(corpo.usuario)) {
@@ -105,6 +119,10 @@ export async function POST(request: Request) {
   } catch (erro) {
     if (erro instanceof SemPermissao) {
       return NextResponse.json({ erro: erro.message }, { status: erro.status });
+    }
+    // Turma que não existe: nada foi gravado (conta e perfil vão juntos).
+    if ((erro as { code?: string })?.code === "23503") {
+      return NextResponse.json({ erro: "Turma não encontrada." }, { status: 400 });
     }
     console.error("[academia/alunos]", erro);
     return NextResponse.json(
