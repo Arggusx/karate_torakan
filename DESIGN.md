@@ -132,9 +132,9 @@ Todas via `next/font/google`, como hoje. Títulos de hero: `clamp(48px, 8vw, 124
 Ordem das seções, conforme o protótipo:
 
 1. **Header**: logo + TORAKAN · Turmas · A aula · O dojo · Contato · botão "Aula grátis".
-2. **Hero**: foto `hero-karate.jpg` com revelação em tinta, kanji 空手道 vertical, Garra do Tigre. Título "O caminho da mão vazia, ensinado do jeito certo." Botões: "Fazer a primeira aula grátis" (→ Onde fica) e "Ver turmas e horários".
+2. **Hero**: foto `hero-karate.webp` com revelação em tinta, kanji 空手道 vertical, Garra do Tigre. Título "O caminho da mão vazia, ensinado do jeito certo." Botões: "Fazer a primeira aula grátis" (→ Onde fica) e "Ver turmas e horários".
 3. **01 — Turmas e mensalidade**: Infantil (7 a 12 anos, ter/qui/sex, 18h30–19h30), Avançado (13+, ter/qui/sex, 19h30–21h), card de mensalidade R$ 70/mês invertido (máx. 20 alunos, equipe de faixas pretas, primeira aula grátis).
-4. **02 — Como é a aula**: Rei → Aquecimento → Kihon → Kata → Kumite → Rei, com a foto `faixa.jpg`.
+4. **02 — Como é a aula**: Rei → Aquecimento → Kihon → Kata → Kumite → Rei, com a foto `faixa.webp`.
 5. **03 — O primeiro kata**: Heian Shodan, contador 00/21 + embusen em I desenhado pelo scroll.
 6. **O dojo**: foto + 180 m² de tatame, 20 alunos por turma, equipe de faixas pretas.
 7. **04 — Onde fica**: Rua 15 de Novembro, 1104 · Centro · Olho d'Água das Flores – AL · 57442-000, com mapa do Google embutido (iframe com `loading="lazy"`).

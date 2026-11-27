@@ -19,7 +19,7 @@ export function HeroLanding() {
     >
       {/* Crédito e licença da foto em public/imagens/CREDITOS.md. */}
       <Image
-        src="/imagens/hero-karate.jpg"
+        src="/imagens/hero-karate.webp"
         alt="Dois karatecas treinando ao ar livre"
         fill
         priority

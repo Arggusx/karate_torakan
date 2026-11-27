@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { exigirPerfil } from "@/server/sessao";
 import { liberarModelo } from "@/server/provas";
 import { corpoJson, idDaRota, respostaDeErroProva } from "@/server/provasRota";
@@ -17,6 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ erro: "Escolha os alunos." }, { status: 400 });
     }
     const resultado = await liberarModelo(id, corpo.alunoIds.map(Number), sessao.id);
+    await registrarAuditoria("prova.liberar", { atorId: sessao.id, detalhes: { modeloId: id, ...resultado } });
     return NextResponse.json(resultado);
   } catch (erro) {
     return respostaDeErroProva(erro, "api/provas/modelos/:id/liberar", "Falha ao liberar a prova.");

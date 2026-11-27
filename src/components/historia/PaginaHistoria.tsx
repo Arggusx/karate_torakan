@@ -18,7 +18,7 @@ export function PaginaHistoria({ idioma = "pt" }: { idioma?: Idioma }) {
       <HeroPagina
         sobretitulo={t.sobretitulo}
         titulo={t.titulo}
-        imagem="/imagens/historia.jpg"
+        imagem="/imagens/historia.webp"
         kanji="歴史"
         descricao={t.descricao(timeline.length, mestres.length)}
       />
@@ -27,7 +27,7 @@ export function PaginaHistoria({ idioma = "pt" }: { idioma?: Idioma }) {
       <section className="section pt-10">
         <div className="hist-banner">
           <div className="hist-banner-foto expande">
-            <Image src="/imagens/historia.jpg" alt="" fill sizes="(min-width: 1120px) 1120px, 100vw" />
+            <Image src="/imagens/historia.webp" alt="" fill sizes="(min-width: 1120px) 1120px, 100vw" />
           </div>
           <div className="hist-banner-cartao" data-inclinar="4">
             <p className="eyebrow">{t.bannerSobretitulo}</p>

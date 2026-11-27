@@ -49,7 +49,7 @@ export default async function PlanosPage() {
     <div className="landing flex min-h-screen flex-col text-fg">
       <HeaderLanding />
 
-      <main className="flex-1">
+      <main id="conteudo" tabIndex={-1} className="flex-1">
         {/* Preço e o que ele cobre, na mesma dobra. */}
         <section className="landing-container grid items-center gap-10 pb-14 pt-28 lg:grid-cols-[1.1fr_0.9fr] lg:pb-20 lg:pt-36">
           <div>

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import { lerPapel, redefinirSenha } from "@/server/usuarios";
 
@@ -41,7 +42,9 @@ export async function POST(
       );
     }
 
-    return NextResponse.json({ senha: await redefinirSenha(alvoId) });
+    const senha = await redefinirSenha(alvoId);
+    await registrarAuditoria("senha.redefinir", { atorId: sessao.id, alvoId });
+    return NextResponse.json({ senha });
   } catch (erro) {
     if (erro instanceof SemPermissao) {
       return NextResponse.json({ erro: erro.message }, { status: erro.status });

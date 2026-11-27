@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { gravarCookieSessao, sessaoAtual } from "@/server/sessao";
 import {
   COOKIE_ESTADO,
@@ -60,6 +61,7 @@ export async function GET(request: Request) {
       const sessao = await sessaoAtual();
       if (!sessao) return ir("/login?erro=sessao");
       const resultado = await vincularGoogle(sessao.id, { sub: google.sub, email: google.email });
+      if (resultado.ok) await registrarAuditoria("conta.google.vincular", { atorId: sessao.id });
       if (resultado.ok) await fotoDoGoogleSeVazia(sessao.id, google.foto);
       return ir(com(estado.volta, { google: resultado.ok ? "vinculado" : "ja-vinculado" }));
     }
@@ -74,6 +76,7 @@ export async function GET(request: Request) {
       usuario: conta.usuario,
       perfil: conta.role,
     });
+    await registrarAuditoria("login.google", { atorId: conta.id });
     return ir(conta.precisa_trocar_senha ? "/primeiro-acesso" : DESTINO_POR_PERFIL[conta.role]);
   } catch (erro) {
     const indisponivel = semColunasGoogle(erro);

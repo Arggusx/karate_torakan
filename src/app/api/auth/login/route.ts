@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { gravarCookieSessao } from "@/server/sessao";
 import { esperaParaTentar, registrarAcerto, registrarErro } from "@/server/tentativas";
 import { captchaValido, ipDaRequisicao } from "@/server/turnstile";
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await registrarAcerto(corpo.usuario);
+    await registrarAcerto(corpo.usuario, ip);
 
     // Admin com Google vinculado: a senha certa não basta, falta o Google.
     if (googleConfigurado() && (await adminPrecisaDoGoogle(conta))) {
@@ -84,6 +85,7 @@ export async function POST(request: Request) {
       );
     }
 
+    await registrarAuditoria("login", { atorId: conta.id });
     await gravarCookieSessao({
       id: conta.id,
       nome: conta.nome,

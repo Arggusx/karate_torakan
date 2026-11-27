@@ -754,3 +754,28 @@ html[data-corte]::view-transition-new(corte-lamina) {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
 }
+
+/* Link "Pular para o conteúdo": invisível até receber o foco do teclado. */
+.pular-conteudo {
+  position: fixed;
+  left: 1rem;
+  top: -4rem;
+  z-index: 1000;
+  padding: 0.65rem 1rem;
+  border-radius: 0.6rem;
+  background: rgb(var(--accent-solid, var(--accent)));
+  color: rgb(var(--on-accent, 255 255 255));
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: top 0.15s ease-out;
+}
+
+.pular-conteudo:focus {
+  top: 1rem;
+  outline: 2px solid rgb(var(--fg));
+  outline-offset: 2px;
+}
+
+main#conteudo:focus {
+  outline: none;
+}

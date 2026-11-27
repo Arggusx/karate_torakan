@@ -138,7 +138,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/imagens/dojo.jpg",
+        // JPEG de 1200x630: o WhatsApp não mostra prévia de WebP em todo aparelho.
+        url: "/imagens/og-dojo.jpg",
+        width: 1200,
+        height: 630,
         alt: "Aluno executando um chute no dojo da Academia Tigre de Karatê",
       },
     ],
@@ -160,6 +163,10 @@ export default function RootLayout({
       className={`${fonteDisplay.variable} ${fonteTexto.variable} ${fonteMarca.variable} ${fonteKanji.variable} ${fonteMincho.variable} ${fonteGotica.variable} ${fonteMono.variable}`}
     >
       <body className="min-h-screen bg-canvas text-fg">
+        {/* Teclado e leitor de tela: o primeiro Tab pula o menu e vai ao conteúdo. */}
+        <a href="#conteudo" className="pular-conteudo">
+          Pular para o conteúdo
+        </a>
         <ThemeProvider>
           {/* Ondas, halos e sakura: fica atrás de tudo e não recebe clique. */}
           <FundoAsiatico />

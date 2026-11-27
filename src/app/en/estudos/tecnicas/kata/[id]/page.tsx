@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { DadosKata } from "@/components/seo/DadosKata";
 import { KataDetailView } from "@/components/tecnicas/KataDetailView";
 import { kataNoIdioma, katasNoIdioma, vizinhosNoIdioma } from "@/i18n/katas";
 
@@ -42,6 +43,7 @@ export default async function KataEnPage({
 
   return (
     <div className="section pt-10">
+      <DadosKata kata={kata} idioma="en" />
       <KataDetailView kata={kata} anterior={anterior} proximo={proximo} idioma="en" />
     </div>
   );

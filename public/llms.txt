@@ -1,0 +1,46 @@
+# Torakan — Academia Tigre de Karatê
+
+> Dojo de Karatê Shotokan em Olho d'Água das Flores (AL), com turmas para crianças a partir de 7 anos e para adolescentes e adultos, e um acervo de estudo aberto (Torakan Academy) com a história, as técnicas, os 26 katas e os fundamentos do estilo, em português e em inglês.
+
+## O dojo
+
+- Nome: Academia Tigre de Karatê (marca Torakan, 虎館).
+- Estilo: Karatê Shotokan.
+- Endereço: Rua 15 de Novembro, 1104, Centro, Olho d'Água das Flores, AL, 57442-000, Brasil.
+- Aulas: terça, quinta e sexta-feira.
+  - Turma Infantil: 7 a 12 anos, das 18h30 às 19h30.
+  - Turma Avançado: 13 anos ou mais, das 19h30 às 21h.
+- Turmas de no máximo 20 alunos, com equipe de faixas pretas.
+- Mensalidade: R$ 70 por mês, sem taxa de matrícula e sem fidelidade.
+- A primeira semana de aulas é grátis.
+- Exames de graduação sem custo extra.
+- Pagamento: PIX ou cartão pelo portal do aluno, ou PIX e dinheiro direto ao professor.
+
+## Perguntas frequentes
+
+- Qual a idade mínima? 7 anos, na turma Infantil.
+- Tem turma para adultos? Sim: a turma Avançado é para quem tem 13 anos ou mais.
+- Quanto custa? R$ 70 por mês, sem taxa de matrícula e sem fidelidade.
+- Tem aula experimental? Sim: a primeira semana inteira é grátis.
+- Em que dias há aula? Terça, quinta e sexta, à noite.
+- Como é uma aula? Começa e termina com a saudação (rei) e passa por aquecimento, kihon (técnicas básicas), kata (formas) e kumite (combate com parceiro, com controle).
+
+## Páginas principais
+
+- [Início](https://www.torakandojo.com/): turmas, como é a aula e onde fica o dojo.
+- [Planos e matrícula](https://www.torakandojo.com/planos): mensalidade, o que inclui, como começar e formas de pagamento.
+- [Política de Privacidade](https://www.torakandojo.com/privacidade)
+- [Termos de Uso](https://www.torakandojo.com/termos)
+
+## Acervo de estudo (Torakan Academy)
+
+- [Estudos](https://academy.torakandojo.com/estudos): visão geral do acervo.
+- [História](https://academy.torakandojo.com/estudos/historia): de Okinawa ao Japão e ao Brasil, linhagem e mestres do Shotokan.
+- [Técnicas e katas](https://academy.torakandojo.com/estudos/tecnicas): kihon (bases, socos, defesas, chutes, guardas) e os 26 katas, cada um com ficha própria.
+- [Fundamentos](https://academy.torakandojo.com/estudos/fundamentos): faixas e graduação, Dojo Kun, Niju Kun, etiqueta, princípios técnicos, origem dos katas e dicionário.
+- [Study (English)](https://academy.torakandojo.com/en/estudos): the same study collection in English.
+
+## Observações
+
+- A contagem de movimentos e a posição dos kiai seguem o acervo do dojo; outras escolas às vezes contam diferente.
+- O portal do aluno e do professor (portal.torakandojo.com) é privado e não deve ser indexado.

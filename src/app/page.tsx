@@ -100,7 +100,7 @@ const DADOS_ESTRUTURADOS = {
   alternateName: "Torakan",
   description: "Dojo de Karatê Shotokan com turmas infantil e avançada.",
   url: noSite("/") || undefined,
-  image: noSite("/imagens/dojo.jpg") || undefined,
+  image: noSite("/imagens/og-dojo.jpg") || undefined,
   sport: "Karate",
   priceRange: MENSALIDADE,
   address: {
@@ -134,7 +134,7 @@ export default function LandingPage() {
       <HeaderLanding />
       <EfeitosLanding />
 
-      <main className="flex-1">
+      <main id="conteudo" tabIndex={-1} className="flex-1">
         <HeroLanding />
 
         {/* 01 — Turmas e mensalidade */}
@@ -284,7 +284,7 @@ export default function LandingPage() {
         <section id="dojo" className="scroll-mt-16 pb-16 lg:pb-24">
           <div className="relative h-[300px] lg:h-[420px]">
             <Image
-              src="/imagens/dojo.jpg"
+              src="/imagens/dojo.webp"
               alt="Karateca executando chute no dojo"
               fill
               sizes="100vw"

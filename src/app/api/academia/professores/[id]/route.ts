@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import { buscarConta, desativarConta } from "@/server/usuarios";
 
@@ -49,6 +50,7 @@ export async function DELETE(
     }
 
     const removido = await desativarConta(professorId);
+    await registrarAuditoria("professor.desativar", { atorId: sessao.id, alvoId: professorId });
     return NextResponse.json({ ok: true, nome: removido?.nome });
   } catch (erro) {
     if (erro instanceof SemPermissao) {

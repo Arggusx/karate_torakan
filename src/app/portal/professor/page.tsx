@@ -57,7 +57,7 @@ function ConteudoProfessor() {
         sobretitulo="Portal do Professor"
         titulo={professor?.nome ?? sessao?.nome ?? ""}
         descricao="Turmas, plano de aulas, chamada, mensalidades, provas e cadastro de alunos."
-        imagem="/imagens/dojo.jpg"
+        imagem="/imagens/dojo.webp"
         acao={
           professor ? (
             <Badge tone="accent">{professor.graduacao}</Badge>

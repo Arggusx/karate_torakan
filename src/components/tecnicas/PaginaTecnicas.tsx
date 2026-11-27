@@ -177,7 +177,7 @@ export function PaginaTecnicas({
       <HeroPagina
         sobretitulo={t.sobretitulo}
         titulo={t.titulo}
-        imagem="/imagens/dojo.jpg"
+        imagem="/imagens/dojo.webp"
         kanji="技術"
         descricao={<>{t.descricao(tecnicas.length, katas.length)}</>}
       />

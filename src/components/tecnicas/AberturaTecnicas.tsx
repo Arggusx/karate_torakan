@@ -21,7 +21,7 @@ export function AberturaTecnicas({
   return (
     <CartazNumeros
       kanji="技"
-      foto="/imagens/dojo.jpg"
+      foto="/imagens/dojo.webp"
       sobretitulo={t.cartazSobretitulo}
       frase={t.cartazFrase}
       numeros={[
