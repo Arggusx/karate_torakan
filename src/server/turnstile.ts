@@ -6,8 +6,9 @@ import "server-only";
  * TURNSTILE_SECRET_KEY fica só no servidor (Vercel › Environment Variables).
  * Fora de produção, sem a variável, usa a chave secreta de teste da
  * Cloudflare, que sempre aprova: o login funciona no localhost.
- * Em produção sem a variável, o captcha fica desligado (devolve true), para
- * um esquecimento de configuração não trancar todo mundo do lado de fora.
+ * Nos previews da Vercel sem a variável, o captcha fica desligado. No site
+ * publicado (VERCEL_ENV=production) sem a variável, o login é recusado: é
+ * melhor ninguém entrar e o erro aparecer no log do que aceitar robôs.
  */
 
 const VERIFICAR = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -29,7 +30,16 @@ export async function captchaValido(
   ip: string | null,
 ): Promise<boolean> {
   const chave = segredo();
-  if (!chave) return true;
+  if (!chave) {
+    // No site publicado (VERCEL_ENV=production), sem a chave o login fica
+    // fechado: entrar sem captcha seria aceitar robôs sem ninguém perceber.
+    // Nos previews da Vercel (sem a chave) o captcha segue desligado.
+    if (process.env.VERCEL_ENV === "production") {
+      console.error("[turnstile] TURNSTILE_SECRET_KEY ausente em produção: login recusado");
+      return false;
+    }
+    return true;
+  }
   if (!token) return false;
 
   const corpo = new URLSearchParams({ secret: chave, response: token });

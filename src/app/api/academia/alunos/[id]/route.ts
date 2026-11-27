@@ -37,6 +37,10 @@ export async function PATCH(
   const temFaixa = typeof corpo.faixa === "string" && corpo.faixa.trim() !== "";
   const temNascimento = corpo.dataNascimento !== undefined;
 
+  if (temFaixa && (corpo.faixa as string).length > 60) {
+    return NextResponse.json({ erro: "Faixa inválida." }, { status: 400 });
+  }
+
   if (!temTurma && !temFaixa && !temNascimento) {
     return NextResponse.json(
       { erro: "Informe ao menos um campo para alterar." },
@@ -56,7 +60,20 @@ export async function PATCH(
   }
 
   try {
-    await exigirPerfil(["professor", "admin"]);
+    const sessao = await exigirPerfil(["professor", "admin"]);
+
+    // Professor só mexe em conta de aluno; conta de professor ou admin é
+    // assunto do admin (mesma regra do DELETE abaixo).
+    const alvo = await buscarConta(alunoId);
+    if (!alvo || !alvo.ativo) {
+      return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
+    }
+    if (alvo.role !== "aluno" && sessao.perfil !== "admin") {
+      return NextResponse.json(
+        { erro: "Só o admin pode alterar contas de professor ou admin." },
+        { status: 403 },
+      );
+    }
 
     if (temTurma) {
       await moverAlunoDeTurma(alunoId, corpo.turmaId as number);

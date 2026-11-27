@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { sql, competenciaDoMes } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { sessaoAtual } from "@/server/sessao";
 import {
   buscarAluno,
   buscarCobrancaDoMes,
   estaPaga,
+  competenciaPermitida,
   garantirCobrancaDoMes,
   registrarCheckoutStripe,
 } from "@/server/pagamentos";
@@ -43,7 +44,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Corpo inválido." }, { status: 400 });
   }
 
-  const competencia = corpo.competencia ?? competenciaDoMes();
   const origem =
     process.env.APP_URL ?? new URL(request.url).origin;
 
@@ -74,6 +74,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { erro: "Você só pode pagar a própria mensalidade." },
         { status: 403 },
+      );
+    }
+
+    const competencia = await competenciaPermitida(aluno.id, corpo.competencia);
+    if (!competencia) {
+      return NextResponse.json(
+        { erro: "Mês de cobrança inválido." },
+        { status: 400 },
       );
     }
 

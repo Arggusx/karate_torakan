@@ -56,6 +56,9 @@ export function normalizarUsuario(valor: string): string {
 
 // --------------------------------------------------------------- consultas
 
+/** Validade da senha temporária (dada pela equipe) até a pessoa trocar. */
+export const DIAS_SENHA_TEMPORARIA = 14;
+
 export async function autenticar(
   usuarioInformado: string,
   senha: string,
@@ -64,16 +67,24 @@ export async function autenticar(
   if (!usuario) return null;
 
   const linhas = await sql`
-    SELECT id, nome, usuario, role, ativo, precisa_trocar_senha, senha_hash
+    SELECT id, nome, usuario, role, ativo, precisa_trocar_senha, senha_hash,
+           (precisa_trocar_senha
+             AND senha_alterada_em IS NOT NULL
+             AND senha_alterada_em < now() - make_interval(days => ${DIAS_SENHA_TEMPORARIA})) AS temporaria_vencida
       FROM users
      WHERE usuario = ${usuario} AND ativo = true
      LIMIT 1`;
 
-  const conta = linhas[0] as (ContaBasica & { senha_hash: string }) | undefined;
+  const conta = linhas[0] as
+    | (ContaBasica & { senha_hash: string; temporaria_vencida: boolean })
+    | undefined;
   if (!conta) return null;
   if (!conferirSenha(senha, conta.senha_hash)) return null;
+  // Senha temporária que ninguém trocou a tempo deixa de valer: a equipe
+  // gera outra. (Contas antigas, sem data gravada, não são afetadas.)
+  if (conta.temporaria_vencida) return null;
 
-  const { senha_hash: _ignorado, ...publico } = conta;
+  const { senha_hash: _ignorado, temporaria_vencida: _vencida, ...publico } = conta;
   return publico;
 }
 
@@ -209,7 +220,8 @@ export async function trocarSenha(
   await sql`
     UPDATE users
        SET senha_hash = ${gerarHashSenha(novaSenha)},
-           precisa_trocar_senha = false
+           precisa_trocar_senha = false,
+           senha_alterada_em = now()
      WHERE id = ${id}`;
   if (conta.google_disponivel) {
     await sql`UPDATE users SET tem_senha = true WHERE id = ${id}`;
@@ -255,7 +267,8 @@ export async function redefinirSenha(alvoId: number): Promise<string> {
   await sql`
     UPDATE users
        SET senha_hash = ${gerarHashSenha(temporaria)},
-           precisa_trocar_senha = true
+           precisa_trocar_senha = true,
+           senha_alterada_em = now()
      WHERE id = ${alvoId}`;
   try {
     await sql`UPDATE users SET tem_senha = true WHERE id = ${alvoId}`;
@@ -441,10 +454,10 @@ export async function criarAluno(dados: {
   const linhas = await sql`
     INSERT INTO users (nome, email, senha_hash, role, usuario, idade,
                        data_nascimento, ativo, precisa_trocar_senha,
-                       financial_status)
+                       senha_alterada_em, financial_status)
     VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
             'aluno', ${usuario}, ${dados.idade},
-            ${dados.dataNascimento}::date, true, true, 'pendente')
+            ${dados.dataNascimento}::date, true, true, now(), 'pendente')
     RETURNING id`;
 
   const id = linhas[0].id as number;
@@ -468,10 +481,11 @@ export async function criarProfessor(dados: {
 }): Promise<{ id: number }> {
   const linhas = await sql`
     INSERT INTO users (nome, email, senha_hash, role, usuario,
-                       data_nascimento, ativo, precisa_trocar_senha)
+                       data_nascimento, ativo, precisa_trocar_senha,
+                       senha_alterada_em)
     VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
             ${dados.role ?? "professor"}, ${normalizarUsuario(dados.usuario)},
-            ${dados.dataNascimento ?? null}::date, true, true)
+            ${dados.dataNascimento ?? null}::date, true, true, now())
     RETURNING id`;
   return { id: linhas[0].id as number };
 }

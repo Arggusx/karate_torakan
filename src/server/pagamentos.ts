@@ -153,6 +153,27 @@ export function estaPendente(cobranca: Cobranca): boolean {
 }
 
 /**
+ * Qual mês pode ser cobrado a pedido do navegador.
+ *
+ * Sem `pedida`, é o mês atual. Com ela, só vale no formato AAAA-MM-01 e se
+ * for o mês atual ou um mês anterior que já tenha cobrança em aberto para
+ * este aluno: o navegador não cria cobrança de mês futuro nem de mês antigo
+ * que a equipe nunca lançou. Devolve null quando o pedido não vale.
+ */
+export async function competenciaPermitida(
+  alunoId: number,
+  pedida: unknown,
+): Promise<string | null> {
+  const atual = competenciaDoMes();
+  if (pedida === undefined || pedida === null || pedida === "") return atual;
+  if (typeof pedida !== "string" || !/^\d{4}-(0[1-9]|1[0-2])-01$/.test(pedida)) return null;
+  if (pedida === atual) return atual;
+  if (pedida > atual) return null;
+  const existente = await buscarCobrancaDoMes(alunoId, pedida);
+  return existente && !estaPaga(existente) ? pedida : null;
+}
+
+/**
  * Cria a cobrança do mês se ela ainda não existir. O índice único
  * (aluno_id, competencia) garante que chamadas concorrentes não dupliquem.
  */

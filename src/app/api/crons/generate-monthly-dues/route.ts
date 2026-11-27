@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { competenciaDoMes } from "@/lib/db";
 import {
@@ -34,7 +35,10 @@ async function executar(request: Request) {
   }
 
   const autorizacao = request.headers.get("authorization");
-  if (autorizacao !== `Bearer ${segredo}`) {
+  // Comparação em tempo constante: não vaza o segredo pelo tempo de resposta.
+  const esperado = Buffer.from(`Bearer ${segredo}`);
+  const recebido = Buffer.from(autorizacao ?? "");
+  if (esperado.length !== recebido.length || !timingSafeEqual(esperado, recebido)) {
     return NextResponse.json({ erro: "Não autorizado." }, { status: 401 });
   }
 
