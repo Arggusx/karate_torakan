@@ -170,6 +170,13 @@ function PainelAluno({
               <p className="mt-1.5 text-2xs text-subtle">
                 Próximo exame de graduação: {aluno.proximoExame}
               </p>
+              {/* Transparência da decisão automática (LGPD, art. 20). */}
+              <p className="mt-1 text-2xs leading-relaxed text-subtle">
+                O progresso é calculado pelo sistema com quatro critérios:
+                técnicas do programa marcadas pelo sensei, tempo na faixa,
+                aulas assistidas e mensalidade em dia. Quem decide o exame é o
+                sensei; se algo estiver errado, peça a ele para revisar.
+              </p>
             </div>
       </PerfilFaixa>
 

@@ -10,7 +10,16 @@ import { HeroPagina } from "@/components/layout/HeroPagina";
  */
 export const CONTATO_EMAIL: string | null = null;
 
-export const ATUALIZADO_EM = "5 de novembro de 2026";
+/**
+ * Identificação completa do controlador (razão social ou nome, e CNPJ ou CPF)
+ * e o encarregado pelo tratamento de dados (LGPD, arts. 9º e 41). Enquanto
+ * estiverem vazios, a política mostra só o nome da academia e indica a
+ * secretaria. Preencher assim que a academia definir.
+ */
+export const CONTROLADOR: { nome: string; documento: string } | null = null;
+export const ENCARREGADO: string | null = null;
+
+export const ATUALIZADO_EM = "27 de novembro de 2026";
 
 export interface SecaoLegal {
   id: string;
