@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AvatarPerfil } from "@/components/portal/AvatarPerfil";
 import { BotaoGoogle } from "@/components/ui/BotaoGoogle";
+import { CampoSenha } from "@/components/ui/CampoSenha";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useAcademia } from "@/lib/academiaStore";
@@ -277,10 +278,9 @@ export function MinhaConta({
                   <label htmlFor="conta-senha-atual" className="label">
                     Senha atual
                   </label>
-                  <input
+                  <CampoSenha
                     id="conta-senha-atual"
-                    type="password"
-                    className="input mt-1"
+                    className="input"
                     value={senhaAtual}
                     onChange={(e) => setSenhaAtual(e.target.value)}
                     autoComplete="current-password"
@@ -291,10 +291,9 @@ export function MinhaConta({
                 <label htmlFor="conta-nova-senha" className="label">
                   Nova senha
                 </label>
-                <input
+                <CampoSenha
                   id="conta-nova-senha"
-                  type="password"
-                  className="input mt-1"
+                  className="input"
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
                   autoComplete="new-password"
@@ -305,10 +304,9 @@ export function MinhaConta({
                 <label htmlFor="conta-confirmar" className="label">
                   Confirmar nova senha
                 </label>
-                <input
+                <CampoSenha
                   id="conta-confirmar"
-                  type="password"
-                  className="input mt-1"
+                  className="input"
                   value={confirmar}
                   onChange={(e) => setConfirmar(e.target.value)}
                   autoComplete="new-password"

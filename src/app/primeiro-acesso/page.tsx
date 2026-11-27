@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { MarcaTorakan } from "@/components/ui/MarcaTorakan";
+import { CampoSenha } from "@/components/ui/CampoSenha";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { BotaoGoogle } from "@/components/ui/BotaoGoogle";
 import { Button } from "@/components/ui/Button";
@@ -147,11 +148,10 @@ export default function PrimeiroAcessoPage() {
                   </div>
                   <div>
                     <label htmlFor="pa-senha" className="label">Nova senha</label>
-                    <input
+                    <CampoSenha
                       id="pa-senha"
-                      type="password"
                       autoComplete="new-password"
-                      className="input mt-1"
+                      className="input"
                       value={senha}
                       onChange={(e) => setSenha(e.target.value)}
                       placeholder="Mínimo de 6 caracteres"
@@ -159,11 +159,10 @@ export default function PrimeiroAcessoPage() {
                   </div>
                   <div>
                     <label htmlFor="pa-confirmar" className="label">Confirmar</label>
-                    <input
+                    <CampoSenha
                       id="pa-confirmar"
-                      type="password"
                       autoComplete="new-password"
-                      className="input mt-1"
+                      className="input"
                       value={confirmar}
                       onChange={(e) => setConfirmar(e.target.value)}
                     />

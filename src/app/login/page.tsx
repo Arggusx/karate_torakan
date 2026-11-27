@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { GarraTigre } from "@/components/animacoes/AnimacoesKarate";
 import { MarcaTorakan } from "@/components/ui/MarcaTorakan";
+import { CampoSenha } from "@/components/ui/CampoSenha";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { BotaoGoogle } from "@/components/ui/BotaoGoogle";
@@ -119,15 +120,14 @@ export default function LoginPage() {
                 <label htmlFor="senha" className="label">
                   Senha
                 </label>
-                <input
+                <CampoSenha
                   id="senha"
-                  type="password"
                   autoComplete="current-password"
                   required
                   value={senha}
                   onChange={(event) => setSenha(event.target.value)}
                   placeholder="••••••••"
-                  className="input mt-1"
+                  className="input"
                 />
               </div>
 
