@@ -88,6 +88,10 @@ export function Footer({ comAreaDoAluno = false }: { comAreaDoAluno?: boolean })
           ·{" "}
           <Link href="/termos" className="underline-offset-2 hover:text-accent hover:underline">
             Termos de uso
+          </Link>{" "}
+          ·{" "}
+          <Link href="/termos#creditos" className="underline-offset-2 hover:text-accent hover:underline">
+            Créditos das fotos
           </Link>
         </p>
         <p>空手に先手なし — No karatê, não existe atitude ofensiva.</p>

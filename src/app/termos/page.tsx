@@ -9,6 +9,40 @@ export const metadata: Metadata = {
   alternates: { canonical: "/termos" },
 };
 
+/** Fotos do Unsplash em uso no site (ver também public/imagens/CREDITOS.md). */
+const CREDITOS = [
+  {
+    foto: "Karatecas treinando ao ar livre (abertura do site)",
+    autor: "Thao LEE",
+    perfil: "https://unsplash.com/@h4x0r3",
+    original: "https://unsplash.com/photos/two-men-performing-karate-near-trees-during-daytime-SRFUTeEZ9bM",
+  },
+  {
+    foto: "Faixa preta sendo amarrada",
+    autor: "Nguyen Hung",
+    perfil: "https://unsplash.com/@nguyenhung190402",
+    original: "https://unsplash.com/photos/person-tightening-black-martial-arts-belt-FktPF6cwIWo",
+  },
+  {
+    foto: "Chute no dojo",
+    autor: "Uriel Soberanes",
+    perfil: "https://unsplash.com/@soberanes",
+    original: "https://unsplash.com/photos/man-doing-karate-stunts-on-gym-ngd2uo1eyZg",
+  },
+  {
+    foto: "Pagode em Kyoto (página de História)",
+    autor: "Roméo A.",
+    perfil: "https://unsplash.com/@gronemo",
+    original: "https://unsplash.com/photos/SlIl9eZjWUc",
+  },
+  {
+    foto: "Pagode Chureito e o Monte Fuji (página de Estudos)",
+    autor: "Manuel Cosentino",
+    perfil: "https://unsplash.com/@manucosen",
+    original: "https://unsplash.com/photos/n--CMLApjfI",
+  },
+];
+
 export default function TermosPage() {
   return (
     <PaginaLegal
@@ -105,6 +139,41 @@ export default function TermosPage() {
               salvo indicação de outra fonte (como o cartaz da ISO citado nos Fundamentos). Você pode usar o
               conteúdo para estudo pessoal; reproduzir ou publicar exige autorização.
             </p>
+          ),
+        },
+        {
+          id: "creditos",
+          titulo: "Créditos das fotos",
+          conteudo: (
+            <>
+              <p>
+                As fotos do site vêm do{" "}
+                <a href="https://unsplash.com" target="_blank" rel="noreferrer">
+                  Unsplash
+                </a>
+                , sob a{" "}
+                <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">
+                  Licença Unsplash
+                </a>
+                , e serão trocadas por fotos do próprio dojo. Obrigado aos fotógrafos:
+              </p>
+              <ul>
+                {CREDITOS.map((c) => (
+                  <li key={c.foto}>
+                    {c.foto}:{" "}
+                    <a href={c.perfil} target="_blank" rel="noreferrer">
+                      {c.autor}
+                    </a>{" "}
+                    (
+                    <a href={c.original} target="_blank" rel="noreferrer">
+                      foto original
+                    </a>
+                    )
+                  </li>
+                ))}
+              </ul>
+              <p>A marca Torakan é arte da própria academia.</p>
+            </>
           ),
         },
         {

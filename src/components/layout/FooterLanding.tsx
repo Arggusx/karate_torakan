@@ -28,6 +28,9 @@ export function FooterLanding() {
           <Link href={noSite("/termos")} className="landing-link text-muted">
             Termos
           </Link>
+          <Link href={noSite("/termos#creditos")} className="landing-link text-muted">
+            Créditos das fotos
+          </Link>
         </span>
       </div>
     </footer>
