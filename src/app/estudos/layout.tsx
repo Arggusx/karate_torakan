@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "Torakan Academy",
     locale: "pt_BR",
     type: "website",
-    images: [{ url: "/imagens/estudos.jpg", alt: "Acervo de estudos do Karatê Shotokan" }],
+    images: [{ url: "/imagens/og-estudos.jpg", width: 1200, height: 630, alt: "Acervo de estudos do Karatê Shotokan" }],
   },
 };
 

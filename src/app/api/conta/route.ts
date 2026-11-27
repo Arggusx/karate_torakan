@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { ErroContato, lerContato, salvarContato, type DadosContato } from "@/server/contato";
 import { gravarCookieSessao, sessaoAtual } from "@/server/sessao";
 import { esperaParaTentar, registrarAcerto, registrarErro } from "@/server/tentativas";
@@ -87,6 +88,7 @@ export async function PATCH(request: Request) {
     if (corpo.contato !== undefined) {
       try {
         const contato = await salvarContato(sessao.id, corpo.contato);
+        await registrarAuditoria("conta.contato", { atorId: sessao.id });
         return NextResponse.json({ ok: true, contato });
       } catch (erro) {
         if (erro instanceof ErroContato) {
@@ -124,6 +126,7 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ erro: resultado.erro }, { status: 409 });
       }
       novoUsuario = resultado.usuario;
+      await registrarAuditoria("conta.usuario", { atorId: sessao.id, detalhes: { usuario: resultado.usuario } });
     }
 
     // 3. Troca de senha — exige a senha atual. Derruba as outras sessões e
@@ -153,7 +156,8 @@ export async function PATCH(request: Request) {
         if (resultado.erro === "A senha atual não confere.") await registrarErro(quem, ip, "s");
         return NextResponse.json({ erro: resultado.erro }, { status: 400 });
       }
-      await registrarAcerto(quem, "s");
+      await registrarAcerto(quem, ip, "s");
+      await registrarAuditoria("conta.senha", { atorId: sessao.id });
       trocouSenha = true;
     }
 

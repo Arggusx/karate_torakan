@@ -59,7 +59,7 @@ export function PaginaEstudos({ idioma = "pt" }: { idioma?: Idioma }) {
       <HeroPagina
         sobretitulo={t.sobretitulo}
         titulo={t.titulo}
-        imagem="/imagens/estudos.jpg"
+        imagem="/imagens/estudos.webp"
         opacidadeImagem={0.4}
         descricao={t.descricao(katas.length, tecnicas.length, dados.timeline.length)}
         acao={
@@ -145,7 +145,7 @@ export function PaginaEstudos({ idioma = "pt" }: { idioma?: Idioma }) {
               >
                 {i === 0 ? (
                   <div className="pilar-foto">
-                    <Image src="/imagens/dojo.jpg" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
+                    <Image src="/imagens/dojo.webp" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
                   </div>
                 ) : null}
                 <div className="pilar-corpo">

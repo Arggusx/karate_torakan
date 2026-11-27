@@ -257,7 +257,7 @@ export function PaginaFundamentos({ idioma = "pt" }: { idioma?: Idioma }) {
         sobretitulo={t.heroSobretitulo}
         titulo={t.heroTitulo}
         descricao={t.heroDescricao}
-        imagem="/imagens/faixa.jpg"
+        imagem="/imagens/faixa.webp"
         opacidadeImagem={0.8}
         kanji="基本"
       />

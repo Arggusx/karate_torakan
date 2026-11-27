@@ -91,7 +91,7 @@ function ConteudoAluno() {
         compacto
         sobretitulo="Portal do Aluno"
         titulo={`Olá, ${aluno.nome.split(" ")[0]}`}
-        imagem="/imagens/faixa.jpg"
+        imagem="/imagens/faixa.webp"
         acao={<StatusBadge status={aluno.status} />}
       />
 

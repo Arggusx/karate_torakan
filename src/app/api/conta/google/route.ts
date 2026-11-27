@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { sessaoAtual } from "@/server/sessao";
 import { desvincularGoogle, lerConta, semColunasGoogle } from "@/server/usuarios";
 
@@ -13,6 +14,7 @@ export async function DELETE() {
   try {
     const resultado = await desvincularGoogle(sessao.id);
     if (!resultado.ok) return NextResponse.json({ erro: resultado.erro }, { status: 409 });
+    await registrarAuditoria("conta.google.desvincular", { atorId: sessao.id });
     return NextResponse.json({ ok: true, conta: await lerConta(sessao.id) });
   } catch (erro) {
     if (semColunasGoogle(erro)) {

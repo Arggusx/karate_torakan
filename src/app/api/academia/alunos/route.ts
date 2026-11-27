@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import {
   ErroContato,
   normalizarTelefone,
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await exigirPerfil(["professor", "admin"]);
+    const sessao = await exigirPerfil(["professor", "admin"]);
 
     // Confere os telefones antes de criar a conta, para um número errado não
     // deixar um aluno cadastrado pela metade.
@@ -115,6 +116,7 @@ export async function POST(request: Request) {
       }
     }
 
+    await registrarAuditoria("aluno.criar", { atorId: sessao.id, alvoId: id, detalhes: { turmaId: corpo.turmaId ?? null, faixa: corpo.faixa ?? null } });
     return NextResponse.json({ ok: true, id }, { status: 201 });
   } catch (erro) {
     if (erro instanceof SemPermissao) {

@@ -12,6 +12,8 @@ import { sql } from "@/lib/db";
  *    quem tenta a mesma conta de vários IPs; o captcha já encarece isso);
  *  - por IP: 20 erros travam aquele IP (protege contra quem testa vários
  *    usuários de uma vez).
+ * Bloqueio crescente: no mesmo dia, quem chega a 2x o limite (IP ou
+ * usuário + IP) espera 1 hora a cada novo erro; a 4x, 6 horas.
  * Login certo zera os contadores do usuário.
  *
  * A mesma regra vale para a "senha atual" na troca de senha (chaves "s:").
@@ -71,20 +73,46 @@ export async function esperaParaTentar(
   ];
   try {
     const linhas = (await sql`
-      SELECT chave, count(*)::int AS erros, min(criado_em) AS primeiro
+      SELECT chave,
+             count(*) FILTER (WHERE criado_em > now() - make_interval(mins => ${JANELA_MINUTOS}))::int AS erros,
+             min(criado_em) FILTER (WHERE criado_em > now() - make_interval(mins => ${JANELA_MINUTOS})) AS primeiro,
+             count(*)::int AS erros_dia,
+             max(criado_em) AS ultimo
         FROM login_tentativas
-       WHERE criado_em > now() - make_interval(mins => ${JANELA_MINUTOS})
+       WHERE criado_em > now() - interval '1 day'
          AND chave = ANY(${chaves})
-       GROUP BY chave`) as { chave: string; erros: number; primeiro: string }[];
+       GROUP BY chave`) as {
+      chave: string;
+      erros: number;
+      primeiro: string | null;
+      erros_dia: number;
+      ultimo: string;
+    }[];
 
+    let espera = 0;
     for (const linha of linhas) {
       const limite = limiteDa(linha.chave);
-      if (linha.erros >= limite) {
+      const minutos = (ms: number) => Math.max(1, Math.ceil((ms - Date.now()) / 60_000));
+
+      // Bloqueio crescente: quem insiste depois de ser travado espera cada vez
+      // mais (1 hora a partir de 2x o limite no dia, 6 horas a partir de 4x).
+      // Só vale para o IP e para usuário+IP: o limite do usuário de qualquer
+      // IP fica em 15 minutos, para um estranho não trancar a conta do dono
+      // por horas.
+      const escalavel = /^(ip|uip|sip):/.test(linha.chave);
+      const horasExtras = !escalavel ? 0 : linha.erros_dia >= limite * 4 ? 6 : linha.erros_dia >= limite * 2 ? 1 : 0;
+      if (horasExtras > 0) {
+        const libera = new Date(linha.ultimo).getTime() + horasExtras * 60 * 60_000;
+        if (libera > Date.now()) espera = Math.max(espera, minutos(libera));
+        continue;
+      }
+
+      if (linha.erros >= limite && linha.primeiro) {
         const libera = new Date(linha.primeiro).getTime() + JANELA_MINUTOS * 60_000;
-        return Math.max(1, Math.ceil((libera - Date.now()) / 60_000));
+        espera = Math.max(espera, minutos(libera));
       }
     }
-    return 0;
+    return espera;
   } catch (erro) {
     if (!semTabela(erro)) console.error("[tentativas]", erro);
     return 0;
@@ -108,14 +136,21 @@ export async function registrarErro(
   }
 }
 
-/** Login certo: zera o usuário e aproveita para limpar registros velhos. */
-export async function registrarAcerto(usuario: string, prefixo: "u" | "s" = "u"): Promise<void> {
+/**
+ * Login certo: zera o contador do usuário e o dele neste IP, e aproveita
+ * para limpar registros velhos. Os erros do mesmo usuário vindos de OUTROS
+ * IPs ficam: se o dono entra enquanto alguém tenta adivinhar a senha dele de
+ * outro lugar, o bloqueio crescente desse outro lugar continua valendo.
+ */
+export async function registrarAcerto(
+  usuario: string,
+  ip: string | null,
+  prefixo: "u" | "s" = "u",
+): Promise<void> {
   try {
     await sql`
       DELETE FROM login_tentativas
-       WHERE chave = ${chaveUsuario(usuario, prefixo)}
-          OR (left(chave, ${prefixo.length + 3}) = ${prefixo + "ip:"}
-              AND right(chave, ${nomeDe(usuario).length + 1}) = ${":" + nomeDe(usuario)})`;
+       WHERE chave = ANY(${[chaveUsuario(usuario, prefixo), chaveUsuarioIp(usuario, ip, prefixo) ?? ""]})`;
     await sql`DELETE FROM login_tentativas WHERE criado_em < now() - interval '1 day'`;
   } catch (erro) {
     if (!semTabela(erro)) console.error("[tentativas]", erro);

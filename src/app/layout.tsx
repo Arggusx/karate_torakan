@@ -138,7 +138,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/imagens/dojo.jpg",
+        // JPEG de 1200x630: o WhatsApp não mostra prévia de WebP em todo aparelho.
+        url: "/imagens/og-dojo.jpg",
+        width: 1200,
+        height: 630,
         alt: "Aluno executando um chute no dojo da Academia Tigre de Karatê",
       },
     ],

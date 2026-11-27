@@ -53,7 +53,7 @@ function ConteudoAdmin() {
         sobretitulo="Portal do Admin"
         titulo="Administração do dojo"
         descricao="Turmas, chamada e mensalidades num só lugar, mais o cadastro de professores e alunos."
-        imagem="/imagens/dojo.jpg"
+        imagem="/imagens/dojo.webp"
         acao={<Badge tone="accent">Acesso total</Badge>}
       />
 

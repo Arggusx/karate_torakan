@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import {
   buscarCobranca,
@@ -83,6 +84,11 @@ export async function POST(
     }
 
     // Sem nada em aberto, o aluno volta a constar como em dia.
+    await registrarAuditoria("pagamento.baixa", {
+      atorId: lancador.id,
+      alvoId: atualizada.aluno_id,
+      detalhes: { cobrancaId, forma: corpo.forma },
+    });
     const restantes = await listarCobrancasDoAluno(atualizada.aluno_id, 60);
     const aindaAberto = restantes.some(
       (item) => item.status === "pending" || item.status === "aberta",

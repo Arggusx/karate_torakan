@@ -73,6 +73,11 @@ export default function PrivacidadePage() {
                   <strong>Senha</strong>, guardada apenas como hash (bcrypt) — nem a equipe consegue lê-la.
                 </li>
                 <li>
+                  <strong>Registro de ações</strong> (log de auditoria): quem entrou no portal e quando, e
+                  as ações da equipe e da própria conta (por exemplo, troca de senha, mudança de faixa, baixa
+                  de mensalidade), com a data e um código do endereço IP que não permite saber o IP.
+                </li>
+                <li>
                   <strong>Tentativas de login</strong>: o usuário tentado, a data e o endereço IP
                   embaralhado (hash), para bloquear quem tenta adivinhar senhas. Só contam pelos 15 minutos
                   seguintes e são apagadas depois de um dia.
@@ -131,8 +136,8 @@ export default function PrivacidadePage() {
                 usar (art. 7º, I).
               </li>
               <li>
-                <strong>Proteger as contas</strong> (limite de tentativas de login e verificação contra
-                robôs) e <strong>medir visitas ao site</strong> de forma agregada — legítimo interesse da
+                <strong>Proteger as contas</strong> (limite de tentativas de login, verificação contra
+                robôs e registro de ações para investigar acessos indevidos) e <strong>medir visitas ao site</strong> de forma agregada — legítimo interesse da
                 academia em manter o site seguro e funcionando (art. 7º, IX).
               </li>
             </ul>
@@ -238,7 +243,11 @@ export default function PrivacidadePage() {
               </p>
               <p>
                 As tentativas de login com mais de um dia são apagadas automaticamente, na próxima vez que
-                alguém entra no portal.
+                alguém entra no portal. O registro de ações é guardado por 1 ano e depois apagado.
+              </p>
+              <p>
+                Uma cópia de segurança criptografada do banco é feita todo dia e guardada por 30 dias, para
+                recuperar os dados em caso de falha.
               </p>
             </>
           ),

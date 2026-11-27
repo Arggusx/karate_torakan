@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import {
   definirItemPrograma,
@@ -86,6 +87,11 @@ export async function POST(
       item: corpo.item.trim(),
       concluido: corpo.concluido === true,
       autorId: sessao.id,
+    });
+    await registrarAuditoria("programa.marcar", {
+      atorId: sessao.id,
+      alvoId: alunoId,
+      detalhes: { tipo: corpo.tipo, item: corpo.item.trim().slice(0, 80), concluido: corpo.concluido === true },
     });
     return NextResponse.json({ ok: true });
   } catch (erro) {

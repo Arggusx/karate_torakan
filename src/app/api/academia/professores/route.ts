@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import { criarProfessor, usuarioEmUso } from "@/server/usuarios";
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await exigirPerfil(["admin"]);
+    const sessao = await exigirPerfil(["admin"]);
 
     if (await usuarioEmUso(corpo.usuario)) {
       return NextResponse.json(
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
       dataNascimento: corpo.dataNascimento ?? null,
     });
 
+    await registrarAuditoria("professor.criar", { atorId: sessao.id, alvoId: id });
     return NextResponse.json({ ok: true, id }, { status: 201 });
   } catch (erro) {
     if (erro instanceof SemPermissao) {

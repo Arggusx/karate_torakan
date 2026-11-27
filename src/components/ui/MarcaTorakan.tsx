@@ -18,7 +18,7 @@
 export function MarcaTorakan({ className }: { className?: string }) {
   return (
     <img
-      src="/imagens/marca-torakan.png"
+      src="/imagens/marca-torakan.webp"
       alt=""
       aria-hidden
       className={className}

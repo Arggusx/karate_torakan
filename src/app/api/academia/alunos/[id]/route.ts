@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import {
   atualizarAluno,
@@ -85,6 +86,15 @@ export async function PATCH(
       });
     }
 
+    await registrarAuditoria("aluno.alterar", {
+      atorId: sessao.id,
+      alvoId: alunoId,
+      detalhes: {
+        ...(temTurma ? { turmaId: corpo.turmaId } : {}),
+        ...(temFaixa ? { faixa: corpo.faixa } : {}),
+        ...(temNascimento ? { dataNascimento: true } : {}),
+      },
+    });
     return NextResponse.json({ ok: true });
   } catch (erro) {
     if (erro instanceof SemPermissao) {
@@ -142,6 +152,7 @@ export async function DELETE(
     }
 
     const removido = await desativarConta(alunoId);
+    await registrarAuditoria("aluno.desmatricular", { atorId: sessao.id, alvoId: alunoId });
     return NextResponse.json({ ok: true, nome: removido?.nome });
   } catch (erro) {
     if (erro instanceof SemPermissao) {

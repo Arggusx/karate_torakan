@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import { lerChamada, salvarChamada } from "@/server/chamada";
 
@@ -84,6 +85,10 @@ export async function POST(request: Request) {
       presencas,
       sessao.id,
     );
+    await registrarAuditoria("chamada.salvar", {
+      atorId: sessao.id,
+      detalhes: { turmaId: corpo.turmaId, data: corpo.data, alunos: presencas.length },
+    });
     return NextResponse.json({ ok: true, ...resultado });
   } catch (erro) {
     if (erro instanceof SemPermissao) {

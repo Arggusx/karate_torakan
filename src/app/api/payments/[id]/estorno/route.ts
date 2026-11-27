@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrarAuditoria } from "@/server/auditoria";
 import {
   buscarCobranca,
   definirStatusFinanceiro,
@@ -72,6 +73,7 @@ export async function POST(
     }
 
     await definirStatusFinanceiro(atualizada.aluno_id, "pendente");
+    await registrarAuditoria("pagamento.estorno", { atorId: lancador.id, alvoId: atualizada.aluno_id, detalhes: { cobrancaId } });
 
     return NextResponse.json({
       ok: true,
