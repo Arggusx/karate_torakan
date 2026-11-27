@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ErroContato, lerContato, salvarContato, type DadosContato } from "@/server/contato";
 import { gravarCookieSessao, sessaoAtual } from "@/server/sessao";
 import {
   lerConta,
@@ -32,7 +33,8 @@ export async function GET() {
   if (!conta) {
     return NextResponse.json({ erro: "Conta não encontrada." }, { status: 404 });
   }
-  return NextResponse.json({ conta });
+  const contato = await lerContato(sessao.id);
+  return NextResponse.json({ conta, contato });
 }
 
 export async function PATCH(request: Request) {
@@ -46,6 +48,7 @@ export async function PATCH(request: Request) {
     senhaAtual?: string;
     novaSenha?: string;
     avatarUrl?: string | null;
+    contato?: DadosContato;
   };
   try {
     corpo = await request.json();
@@ -54,6 +57,20 @@ export async function PATCH(request: Request) {
   }
 
   try {
+    // 0. Telefone, responsável e aceite de WhatsApp. Responde sozinho: é um
+    //    formulário à parte na tela.
+    if (corpo.contato !== undefined) {
+      try {
+        const contato = await salvarContato(sessao.id, corpo.contato);
+        return NextResponse.json({ ok: true, contato });
+      } catch (erro) {
+        if (erro instanceof ErroContato) {
+          return NextResponse.json({ erro: erro.message }, { status: 400 });
+        }
+        throw erro;
+      }
+    }
+
     // 1. Foto de perfil.
     if (corpo.avatarUrl !== undefined) {
       const valor = corpo.avatarUrl;

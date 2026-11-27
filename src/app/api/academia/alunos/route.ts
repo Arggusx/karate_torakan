@@ -1,4 +1,10 @@
 import { NextResponse } from "next/server";
+import {
+  ErroContato,
+  normalizarTelefone,
+  salvarContato,
+  type DadosContato,
+} from "@/server/contato";
 import { SemPermissao, exigirPerfil } from "@/server/sessao";
 import { criarAluno, usuarioEmUso } from "@/server/usuarios";
 
@@ -19,6 +25,8 @@ export async function POST(request: Request) {
     dataNascimento?: string | null;
     turmaId?: number;
     faixa?: string;
+    /** O aceite de WhatsApp nunca vem daqui: é do titular ou do responsável. */
+    contato?: Omit<DadosContato, "aceitaWhatsapp">;
   };
 
   try {
@@ -40,6 +48,18 @@ export async function POST(request: Request) {
   try {
     await exigirPerfil(["professor", "admin"]);
 
+    // Confere os telefones antes de criar a conta, para um número errado não
+    // deixar um aluno cadastrado pela metade.
+    try {
+      normalizarTelefone(corpo.contato?.telefone);
+      normalizarTelefone(corpo.contato?.responsavelTelefone);
+    } catch (erro) {
+      if (erro instanceof ErroContato) {
+        return NextResponse.json({ erro: erro.message }, { status: 400 });
+      }
+      throw erro;
+    }
+
     if (await usuarioEmUso(corpo.usuario)) {
       return NextResponse.json(
         { erro: `O usuário "${corpo.usuario}" já está em uso.` },
@@ -57,6 +77,29 @@ export async function POST(request: Request) {
       turmaId: corpo.turmaId ?? null,
       faixa: corpo.faixa ?? "7º Kyu - Faixa Branca",
     });
+
+    // Contato e responsável. Se a migração 011 ainda não rodou, o aluno fica
+    // cadastrado sem eles e o aviso vai para o log.
+    if (corpo.contato) {
+      const { telefone, responsavelNome, responsavelParentesco, responsavelTelefone, responsavelEmail } =
+        corpo.contato;
+      try {
+        await salvarContato(id, {
+          telefone,
+          responsavelNome,
+          responsavelParentesco,
+          responsavelTelefone,
+          responsavelEmail,
+        });
+      } catch (erro) {
+        if (!(erro instanceof ErroContato)) throw erro;
+        console.warn("[academia/alunos] contato não salvo:", erro.message);
+        return NextResponse.json(
+          { ok: true, id, aviso: `Aluno cadastrado, mas o contato não foi salvo: ${erro.message}` },
+          { status: 201 },
+        );
+      }
+    }
 
     return NextResponse.json({ ok: true, id }, { status: 201 });
   } catch (erro) {
