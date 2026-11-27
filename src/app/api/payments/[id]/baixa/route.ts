@@ -43,15 +43,16 @@ export async function POST(
     return NextResponse.json({ erro: "Corpo inválido." }, { status: 400 });
   }
 
-  if (!corpo.forma || !FORMAS.includes(corpo.forma)) {
-    return NextResponse.json(
-      { erro: `Forma inválida. Use uma de: ${FORMAS.join(", ")}.` },
-      { status: 400 },
-    );
-  }
-
   try {
+    // Permissão primeiro: quem não é da equipe não chega a ver a validação.
     const lancador = await exigirPerfil(["professor", "admin"]);
+
+    if (!corpo.forma || !FORMAS.includes(corpo.forma)) {
+      return NextResponse.json(
+        { erro: `Forma inválida. Use uma de: ${FORMAS.join(", ")}.` },
+        { status: 400 },
+      );
+    }
 
     const cobranca = await buscarCobranca(cobrancaId);
     if (!cobranca) {

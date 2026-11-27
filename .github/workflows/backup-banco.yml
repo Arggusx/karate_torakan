@@ -1,0 +1,116 @@
+# Backup do banco (Neon) — ver db/BACKUP.md.
+#
+# Todo dia às 03:00 (Brasília): pg_dump da produção, criptografado com
+# BACKUP_SENHA (AES-256) e guardado como artefato por 30 dias.
+# Toda segunda às 04:00: restaura o backup do dia na branch de teste do Neon
+# (BACKUP_TESTE_URL) e confere se as tabelas têm o mesmo número de linhas.
+# Dá para rodar qualquer um à mão em Actions › Backup do banco › Run workflow.
+#
+# Segredos necessários (Settings › Secrets and variables › Actions):
+#   DATABASE_URL      conexão da produção (pode ser só leitura)
+#   BACKUP_SENHA      senha da criptografia do arquivo — guarde fora do GitHub
+#   BACKUP_TESTE_URL  conexão da branch "restauracao-teste" do Neon (NUNCA a produção)
+
+name: Backup do banco
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # 03:00 em Brasília
+    - cron: "0 7 * * 1"   # segunda, 04:00 em Brasília: teste de restauração
+  workflow_dispatch:
+    inputs:
+      testar_restauracao:
+        description: "Também restaurar na branch de teste e conferir"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-banco
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+      BACKUP_TESTE_URL: ${{ secrets.BACKUP_TESTE_URL }}
+      # O Neon roda Postgres 18: o pg_dump precisa ser da mesma versão ou mais nova.
+      PG_IMAGEM: postgres:18
+      TESTAR: ${{ github.event.schedule == '0 7 * * 1' || inputs.testar_restauracao == true }}
+    steps:
+      - name: Conferir os segredos
+        run: |
+          test -n "$DATABASE_URL" || { echo "::error::Falta o segredo DATABASE_URL"; exit 1; }
+          test -n "$BACKUP_SENHA" || { echo "::error::Falta o segredo BACKUP_SENHA"; exit 1; }
+          if [ "$TESTAR" = "true" ]; then
+            test -n "$BACKUP_TESTE_URL" || { echo "::error::Falta o segredo BACKUP_TESTE_URL"; exit 1; }
+            # Trava de segurança: a restauração apaga e recria tudo no destino.
+            if [ "$BACKUP_TESTE_URL" = "$DATABASE_URL" ]; then
+              echo "::error::BACKUP_TESTE_URL é igual à produção. Abortado."; exit 1
+            fi
+          fi
+
+      - name: Fazer o dump
+        run: |
+          nome="torakan-$(date -u +%Y-%m-%d).dump"
+          echo "NOME=$nome" >> "$GITHUB_ENV"
+          docker run --rm -e DATABASE_URL "$PG_IMAGEM" \
+            pg_dump "$DATABASE_URL" --format=custom --no-owner --no-privileges > "$nome"
+          tamanho=$(stat -c %s "$nome")
+          echo "Tamanho do dump: $tamanho bytes"
+          test "$tamanho" -gt 10000 || { echo "::error::Dump pequeno demais, algo deu errado"; exit 1; }
+          # O arquivo precisa ser legível pelo pg_restore.
+          docker run --rm -v "$PWD:/b" "$PG_IMAGEM" pg_restore --list "/b/$nome" > lista.txt
+          echo "Itens no dump: $(wc -l < lista.txt)"
+
+      - name: Teste de restauração
+        if: env.TESTAR == 'true'
+        run: |
+          docker run --rm -v "$PWD:/b" -e BACKUP_TESTE_URL "$PG_IMAGEM" \
+            pg_restore --clean --if-exists --no-owner --no-privileges \
+            --dbname "$BACKUP_TESTE_URL" "/b/$NOME"
+
+          # Uma linha "tabela=linhas" por tabela do schema public.
+          cat > contar.sql <<'SQL'
+          SELECT format('%s=%s', table_name,
+                 (xpath('/row/c/text()',
+                   query_to_xml(format('SELECT count(*) AS c FROM public.%I', table_name), false, true, '')))[1]::text)
+            FROM information_schema.tables
+           WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+             AND table_name <> 'login_tentativas'
+           ORDER BY table_name;
+          SQL
+          docker run --rm -v "$PWD:/b" -e DATABASE_URL "$PG_IMAGEM" psql "$DATABASE_URL" -At -f /b/contar.sql > producao.txt
+          docker run --rm -v "$PWD:/b" -e BACKUP_TESTE_URL "$PG_IMAGEM" psql "$BACKUP_TESTE_URL" -At -f /b/contar.sql > restaurado.txt
+          echo "--- linhas por tabela (produção | restaurado)"
+          paste -d '|' producao.txt restaurado.txt
+          # Diferença pequena é normal (alguém usou o portal entre o dump e a contagem);
+          # aqui só falha se uma tabela sumir ou ficar vazia no restaurado.
+          faltando=$(comm -23 <(cut -d= -f1 producao.txt | sort) <(cut -d= -f1 restaurado.txt | sort))
+          vazias=$(awk -F= 'NR==FNR { p[$1]=$2; next } p[$1] > 0 && $2 == 0 { print $1 }' producao.txt restaurado.txt)
+          if [ -n "$faltando" ] || [ -n "$vazias" ]; then
+            echo "::error::Restauração incompleta. Faltando: $faltando / Vazias: $vazias"; exit 1
+          fi
+          echo "Restauração conferida."
+
+      - name: Criptografar
+        run: |
+          gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+            --passphrase-fd 0 --output "$NOME.gpg" "$NOME" <<< "$BACKUP_SENHA"
+          rm -f "$NOME"
+          sha256sum "$NOME.gpg" | tee "$NOME.gpg.sha256"
+
+      - name: Guardar o backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ env.NOME }}
+          path: |
+            ${{ env.NOME }}.gpg
+            ${{ env.NOME }}.gpg.sha256
+          retention-days: 30
+          if-no-files-found: error

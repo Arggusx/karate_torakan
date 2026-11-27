@@ -58,6 +58,10 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  // Uma turma não passa de algumas dezenas de alunos; o teto barra abuso.
+  if (Array.isArray(corpo.presencas) && corpo.presencas.length > 200) {
+    return NextResponse.json({ erro: "Chamada grande demais." }, { status: 400 });
+  }
   if (!Array.isArray(corpo.presencas) || corpo.presencas.length === 0) {
     return NextResponse.json(
       { erro: "Nenhum aluno na chamada." },

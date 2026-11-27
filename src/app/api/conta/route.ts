@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { ErroContato, lerContato, salvarContato, type DadosContato } from "@/server/contato";
 import { gravarCookieSessao, sessaoAtual } from "@/server/sessao";
+import { esperaParaTentar, registrarAcerto, registrarErro } from "@/server/tentativas";
+import { ipDaRequisicao } from "@/server/turnstile";
 import {
   lerConta,
   salvarAvatar,
@@ -128,14 +130,30 @@ export async function PATCH(request: Request) {
     // regrava o cookie deste aparelho com a versão nova.
     let trocouSenha = false;
     if (corpo.novaSenha !== undefined && corpo.novaSenha !== "") {
+      if (typeof corpo.novaSenha !== "string" || (corpo.senhaAtual !== undefined && typeof corpo.senhaAtual !== "string")) {
+        return NextResponse.json({ erro: "Senha inválida." }, { status: 400 });
+      }
+      // Chutar a senha atual tem o mesmo limite do login: quem pegou um
+      // aparelho logado não descobre a senha por tentativa e erro.
+      const ip = ipDaRequisicao(request);
+      const quem = String(sessao.id);
+      const espera = await esperaParaTentar(quem, ip, "s");
+      if (espera > 0) {
+        return NextResponse.json(
+          { erro: `Muitas tentativas erradas. Espere ${espera} ${espera === 1 ? "minuto" : "minutos"} e tente de novo.` },
+          { status: 429, headers: { "Retry-After": String(espera * 60) } },
+        );
+      }
       const resultado = await trocarSenha(
         sessao.id,
         corpo.senhaAtual ?? "",
         corpo.novaSenha,
       );
       if (!resultado.ok) {
+        if (resultado.erro === "A senha atual não confere.") await registrarErro(quem, ip, "s");
         return NextResponse.json({ erro: resultado.erro }, { status: 400 });
       }
+      await registrarAcerto(quem, "s");
       trocouSenha = true;
     }
 

@@ -29,12 +29,19 @@ const MAPA_STATUS: Record<string, StatusCobranca> = {
 
 /**
  * Valida a assinatura `x-signature` do Mercado Pago.
- * Sem `MERCADOPAGO_WEBHOOK_SECRET` a checagem é pulada (útil no ngrok local),
- * mas em produção o segredo deve estar sempre definido.
+ * Sem `MERCADOPAGO_WEBHOOK_SECRET`, a checagem só é pulada fora de produção
+ * (útil no ngrok local). Em produção, sem o segredo, todo aviso é recusado:
+ * um esquecimento de configuração não pode abrir a rota para qualquer um.
  */
 function assinaturaValida(request: Request, dataId: string): boolean {
   const segredo = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-  if (!segredo) return true;
+  if (!segredo) {
+    if (process.env.NODE_ENV === "production") {
+      console.error("[webhook/mercadopago] MERCADOPAGO_WEBHOOK_SECRET ausente: aviso recusado");
+      return false;
+    }
+    return true;
+  }
 
   const assinatura = request.headers.get("x-signature");
   const requestId = request.headers.get("x-request-id");
@@ -96,6 +103,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "assinatura inválida" }, { status: 401 });
   }
 
+  // Chave do evento em webhook_events: registrada e, em caso de erro,
+  // liberada com o mesmo valor (senão a retentativa vira "duplicado").
+  let chaveEvento: string | null = null;
+
   try {
     const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
     if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado.");
@@ -108,12 +119,9 @@ export async function POST(request: Request) {
     const status = MAPA_STATUS[statusProvedor] ?? "pending";
 
     // 2. Idempotência: o par (pagamento, status) só é processado uma vez.
-    const inedito = await registrarEventoWebhook(
-      "mercadopago",
-      `${dataId}:${statusProvedor}`,
-      tipo,
-      evento,
-    );
+    const chave = `${dataId}:${statusProvedor}`;
+    const inedito = await registrarEventoWebhook("mercadopago", chave, tipo, evento);
+    if (inedito) chaveEvento = chave;
     if (!inedito) {
       return NextResponse.json({ duplicado: true }, { status: 200 });
     }
@@ -140,7 +148,9 @@ export async function POST(request: Request) {
   } catch (erro) {
     console.error("[webhook/mercadopago]", erro);
     // Libera o evento para a retentativa do Mercado Pago.
-    await descartarEventoWebhook("mercadopago", dataId).catch(() => {});
+    if (chaveEvento) {
+      await descartarEventoWebhook("mercadopago", chaveEvento).catch(() => {});
+    }
     return NextResponse.json(
       { erro: "Falha ao processar; reenvie." },
       { status: 500 },

@@ -54,7 +54,27 @@ export function normalizarUsuario(valor: string): string {
     .replace(/(^[.]|[.]$)/g, "");
 }
 
+/**
+ * Nomes que soam como a equipe ou o sistema. Ninguém escolhe um deles para
+ * si nem recebe um no cadastro de aluno: "admin" mandando mensagem no grupo
+ * da turma parece oficial. (Contas que já existem com esses nomes ficam.)
+ */
+const RESERVADOS = new Set([
+  "admin", "administrador", "adm", "root", "sistema", "suporte", "ajuda",
+  "contato", "secretaria", "financeiro", "professor", "prof", "sensei",
+  "mestre", "torakan", "academia", "dojo", "tigre", "equipe", "staff",
+  "oficial", "seguranca", "noreply", "no-reply",
+]);
+
+export function usuarioReservado(valor: string): boolean {
+  const nome = normalizarUsuario(valor);
+  return RESERVADOS.has(nome) || RESERVADOS.has(nome.replace(/[._-]?\d+$/, ""));
+}
+
 // --------------------------------------------------------------- consultas
+
+/** Validade da senha temporária (dada pela equipe) até a pessoa trocar. */
+export const DIAS_SENHA_TEMPORARIA = 14;
 
 export async function autenticar(
   usuarioInformado: string,
@@ -64,17 +84,44 @@ export async function autenticar(
   if (!usuario) return null;
 
   const linhas = await sql`
-    SELECT id, nome, usuario, role, ativo, precisa_trocar_senha, senha_hash
+    SELECT id, nome, usuario, role, ativo, precisa_trocar_senha, senha_hash,
+           (precisa_trocar_senha
+             AND senha_alterada_em IS NOT NULL
+             AND senha_alterada_em < now() - make_interval(days => ${DIAS_SENHA_TEMPORARIA})) AS temporaria_vencida
       FROM users
      WHERE usuario = ${usuario} AND ativo = true
      LIMIT 1`;
 
-  const conta = linhas[0] as (ContaBasica & { senha_hash: string }) | undefined;
+  const conta = linhas[0] as
+    | (ContaBasica & { senha_hash: string; temporaria_vencida: boolean })
+    | undefined;
   if (!conta) return null;
   if (!conferirSenha(senha, conta.senha_hash)) return null;
+  // Senha temporária que ninguém trocou a tempo deixa de valer: a equipe
+  // gera outra. (Contas antigas, sem data gravada, não são afetadas.)
+  if (conta.temporaria_vencida) return null;
 
-  const { senha_hash: _ignorado, ...publico } = conta;
+  const { senha_hash: _ignorado, temporaria_vencida: _vencida, ...publico } = conta;
   return publico;
+}
+
+/**
+ * Admin com o Google vinculado só entra pelo Google: a senha sozinha não
+ * basta para a conta que vê e mexe em tudo. A verificação em duas etapas fica
+ * com a conta Google (ligue-a em myaccount.google.com › Segurança).
+ *
+ * Saída de emergência: ADMIN_SENHA_PERMITIDA=1 na Vercel libera a senha de
+ * novo (por exemplo, se o login com Google parar de funcionar).
+ */
+export async function adminPrecisaDoGoogle(conta: { id: number; role: string }): Promise<boolean> {
+  if (conta.role !== "admin" || process.env.ADMIN_SENHA_PERMITIDA === "1") return false;
+  try {
+    const linhas = await sql`SELECT google_sub FROM users WHERE id = ${conta.id} LIMIT 1`;
+    return Boolean((linhas[0] as { google_sub: string | null } | undefined)?.google_sub);
+  } catch (erro) {
+    if (semColunasGoogle(erro)) return false;
+    throw erro;
+  }
 }
 
 export async function usuarioEmUso(usuario: string): Promise<boolean> {
@@ -158,6 +205,12 @@ export async function trocarUsuario(
   if (usuario.length < 3) {
     return { ok: false, erro: "O usuário precisa de ao menos 3 caracteres." };
   }
+  if (usuario.length > 40) {
+    return { ok: false, erro: "O usuário pode ter no máximo 40 caracteres." };
+  }
+  if (usuarioReservado(usuario)) {
+    return { ok: false, erro: "Esse nome é reservado para a equipe. Escolha outro." };
+  }
 
   const ocupado = await sql`
     SELECT 1 FROM users WHERE usuario = ${usuario} AND id <> ${id} LIMIT 1`;
@@ -209,7 +262,8 @@ export async function trocarSenha(
   await sql`
     UPDATE users
        SET senha_hash = ${gerarHashSenha(novaSenha)},
-           precisa_trocar_senha = false
+           precisa_trocar_senha = false,
+           senha_alterada_em = now()
      WHERE id = ${id}`;
   if (conta.google_disponivel) {
     await sql`UPDATE users SET tem_senha = true WHERE id = ${id}`;
@@ -255,7 +309,8 @@ export async function redefinirSenha(alvoId: number): Promise<string> {
   await sql`
     UPDATE users
        SET senha_hash = ${gerarHashSenha(temporaria)},
-           precisa_trocar_senha = true
+           precisa_trocar_senha = true,
+           senha_alterada_em = now()
      WHERE id = ${alvoId}`;
   try {
     await sql`UPDATE users SET tem_senha = true WHERE id = ${alvoId}`;
@@ -438,24 +493,26 @@ export async function criarAluno(dados: {
 }): Promise<{ id: number }> {
   const usuario = normalizarUsuario(dados.usuario);
 
+  // Conta e perfil numa instrução só: se a turma não existir (ou o perfil
+  // falhar por outro motivo), a conta também não é criada. Antes eram duas
+  // e sobrava uma conta sem perfil, capaz de entrar no portal.
   const linhas = await sql`
-    INSERT INTO users (nome, email, senha_hash, role, usuario, idade,
-                       data_nascimento, ativo, precisa_trocar_senha,
-                       financial_status)
-    VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
-            'aluno', ${usuario}, ${dados.idade},
-            ${dados.dataNascimento}::date, true, true, 'pendente')
-    RETURNING id`;
+    WITH conta AS (
+      INSERT INTO users (nome, email, senha_hash, role, usuario, idade,
+                         data_nascimento, ativo, precisa_trocar_senha,
+                         senha_alterada_em, financial_status)
+      VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
+              'aluno', ${usuario}, ${dados.idade},
+              ${dados.dataNascimento}::date, true, true, now(), 'pendente')
+      RETURNING id
+    ), perfil AS (
+      INSERT INTO alunos_perfil (user_id, turma_id, faixa_atual, status_mensalidade)
+      SELECT id, ${dados.turmaId}, ${dados.faixa}, 'pendente' FROM conta
+      RETURNING user_id
+    )
+    SELECT user_id AS id FROM perfil`;
 
-  const id = linhas[0].id as number;
-
-  await sql`
-    INSERT INTO alunos_perfil (user_id, turma_id, faixa_atual, status_mensalidade)
-    VALUES (${id}, ${dados.turmaId}, ${dados.faixa}, 'pendente')
-    ON CONFLICT (user_id) DO UPDATE
-      SET turma_id = EXCLUDED.turma_id, faixa_atual = EXCLUDED.faixa_atual`;
-
-  return { id };
+  return { id: linhas[0].id as number };
 }
 
 export async function criarProfessor(dados: {
@@ -468,10 +525,11 @@ export async function criarProfessor(dados: {
 }): Promise<{ id: number }> {
   const linhas = await sql`
     INSERT INTO users (nome, email, senha_hash, role, usuario,
-                       data_nascimento, ativo, precisa_trocar_senha)
+                       data_nascimento, ativo, precisa_trocar_senha,
+                       senha_alterada_em)
     VALUES (${dados.nome}, ${dados.email}, ${gerarHashSenha(dados.senha)},
             ${dados.role ?? "professor"}, ${normalizarUsuario(dados.usuario)},
-            ${dados.dataNascimento ?? null}::date, true, true)
+            ${dados.dataNascimento ?? null}::date, true, true, now())
     RETURNING id`;
   return { id: linhas[0].id as number };
 }

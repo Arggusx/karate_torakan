@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Payment } from "mercadopago";
-import { competenciaDoMes } from "@/lib/db";
 import { sessaoAtual } from "@/server/sessao";
 import {
   buscarAluno,
   buscarCobrancaDoMes,
   estaPaga,
+  competenciaPermitida,
   garantirCobrancaDoMes,
   registrarPixNaCobranca,
 } from "@/server/pagamentos";
@@ -92,7 +92,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const competencia = corpo.competencia ?? competenciaDoMes();
 
   try {
     const sessao = await sessaoAtual();
@@ -125,6 +124,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { erro: "Você só pode pagar a própria mensalidade." },
         { status: 403 },
+      );
+    }
+
+    const competencia = await competenciaPermitida(aluno.id, corpo.competencia);
+    if (!competencia) {
+      return NextResponse.json(
+        { erro: "Mês de cobrança inválido." },
+        { status: 400 },
       );
     }
 

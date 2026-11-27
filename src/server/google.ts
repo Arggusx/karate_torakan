@@ -34,12 +34,33 @@ export interface EstadoGoogle {
   volta: string;
 }
 
-/** Só aceita caminho interno ("/portal/aluno"), nunca outro site. */
+/**
+ * Só aceita caminho interno ("/portal/aluno"), nunca outro site.
+ *
+ * Além de "//" e "\", recusa caracteres de controle: o navegador apaga
+ * tabulação e quebra de linha da URL, e "/\t/evil.com" vira "//evil.com".
+ * Por fim, monta a URL de verdade e confere que ela continua no site.
+ */
 export function voltaSegura(valor: string | null | undefined, padrao: string) {
-  if (!valor || !valor.startsWith("/") || valor.startsWith("//") || valor.includes("\\")) {
+  if (
+    !valor ||
+    valor.length > 300 ||
+    !valor.startsWith("/") ||
+    valor.startsWith("//") ||
+    valor.includes("\\") ||
+    // eslint-disable-next-line no-control-regex
+    /[\u0000-\u001f\u007f]/.test(valor)
+  ) {
     return padrao;
   }
-  return valor;
+  try {
+    const base = "https://interno.invalid";
+    const url = new URL(valor, base);
+    if (url.origin !== base) return padrao;
+    return `${url.pathname}${url.search}`;
+  } catch {
+    return padrao;
+  }
 }
 
 export function novoEstado(modo: ModoGoogle, volta: string): EstadoGoogle {
