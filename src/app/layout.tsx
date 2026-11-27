@@ -163,6 +163,10 @@ export default function RootLayout({
       className={`${fonteDisplay.variable} ${fonteTexto.variable} ${fonteMarca.variable} ${fonteKanji.variable} ${fonteMincho.variable} ${fonteGotica.variable} ${fonteMono.variable}`}
     >
       <body className="min-h-screen bg-canvas text-fg">
+        {/* Teclado e leitor de tela: o primeiro Tab pula o menu e vai ao conteúdo. */}
+        <a href="#conteudo" className="pular-conteudo">
+          Pular para o conteúdo
+        </a>
         <ThemeProvider>
           {/* Ondas, halos e sakura: fica atrás de tudo e não recebe clique. */}
           <FundoAsiatico />

@@ -88,7 +88,7 @@ export default function LoginPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-4 py-12">
+      <main id="conteudo" tabIndex={-1} className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <div className="card relative overflow-hidden p-5">
             {/* A marca do Tigre: três riscos de garra no canto do cartão. */}

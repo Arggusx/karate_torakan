@@ -134,7 +134,7 @@ export default function LandingPage() {
       <HeaderLanding />
       <EfeitosLanding />
 
-      <main className="flex-1">
+      <main id="conteudo" tabIndex={-1} className="flex-1">
         <HeroLanding />
 
         {/* 01 — Turmas e mensalidade */}

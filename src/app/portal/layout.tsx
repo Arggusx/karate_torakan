@@ -42,7 +42,7 @@ export default function PortalLayout({
 
       {/* Ver comentário em estudos/layout.tsx: o hero de cada página encosta
           no header, então o padding do topo sai daqui. */}
-      <main className="flex-1 pb-8">{children}</main>
+      <main id="conteudo" tabIndex={-1} className="flex-1 pb-8">{children}</main>
       <Footer />
     </div>
   );

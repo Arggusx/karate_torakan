@@ -50,7 +50,7 @@ export function PaginaLegal({
   return (
     <div className="flex min-h-screen flex-col">
       <HeaderLanding />
-      <main className="flex-1">
+      <main id="conteudo" tabIndex={-1} className="flex-1">
         <HeroPagina sobretitulo={sobretitulo} titulo={titulo} descricao={descricao} compacto kanji="約" />
 
         <div className="section grid gap-8 py-10 lg:grid-cols-[15rem_1fr]">

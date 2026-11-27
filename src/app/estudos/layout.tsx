@@ -32,7 +32,7 @@ export default function EstudosLayout({
         no header. O respiro do conteúdo vem do padding interno da própria
         página, logo abaixo do hero.
       */}
-      <main className="flex-1 pb-10">{children}</main>
+      <main id="conteudo" tabIndex={-1} className="flex-1 pb-10">{children}</main>
       <Footer comAreaDoAluno />
     </div>
   );

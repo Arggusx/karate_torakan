@@ -102,7 +102,7 @@ export default function PrimeiroAcessoPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 items-start justify-center px-4 py-12">
+      <main id="conteudo" tabIndex={-1} className="flex flex-1 items-start justify-center px-4 py-12">
         <div className="w-full max-w-3xl">
           {vinculou ? (
             <section className="painel card-faixa mx-auto max-w-md text-center [--faixa-cor:#16A34A]">

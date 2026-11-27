@@ -26,7 +26,7 @@ export default function EstudosEnLayout({ children }: { children: React.ReactNod
     <div className="academy flex min-h-screen flex-col">
       <IdiomaDoDocumento lang="en" />
       <HeaderEstudos idioma="en" />
-      <main className="flex-1 pb-10">{children}</main>
+      <main id="conteudo" tabIndex={-1} className="flex-1 pb-10">{children}</main>
       <footer className="mt-16 border-t border-line bg-elevated">
         <div className="section flex flex-col gap-2 py-6 text-xs text-subtle sm:flex-row sm:items-center sm:justify-between">
           <p>
