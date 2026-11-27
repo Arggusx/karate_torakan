@@ -4,6 +4,7 @@ import { Embusen } from "@/components/tecnicas/Embusen";
 import { EmbusenImage } from "@/components/tecnicas/EmbusenImage";
 import { NavegacaoKata } from "@/components/tecnicas/NavegacaoKata";
 import { SequenciaMovimentos } from "@/components/tecnicas/SequenciaMovimentos";
+import { VideoAoClicar } from "@/components/tecnicas/VideoAoClicar";
 import { Badge } from "@/components/ui/Badge";
 import { rotaTecnicas, type Idioma } from "@/i18n/idioma";
 import { TECNICAS_EN } from "@/i18n/katas-en";
@@ -139,12 +140,10 @@ export function KataDetailView({
           </div>
           <div className="relative aspect-video w-full bg-elevated">
             {kata.videoUrl ? (
-              <iframe
-                className="absolute inset-0 h-full w-full"
+              <VideoAoClicar
                 src={kata.videoUrl}
-                title={`Kata ${kata.nome} — ${t.demonstracao}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+                titulo={`Kata ${kata.nome} — ${t.demonstracao}`}
+                idioma={idioma}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">

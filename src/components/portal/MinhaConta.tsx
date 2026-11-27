@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AvatarPerfil } from "@/components/portal/AvatarPerfil";
+import { ContatoConta, type ContatoDaConta } from "@/components/portal/ContatoConta";
 import { BotaoGoogle } from "@/components/ui/BotaoGoogle";
 import { CampoSenha } from "@/components/ui/CampoSenha";
 import { Button } from "@/components/ui/Button";
@@ -57,6 +58,7 @@ export function MinhaConta({
   const { recarregar } = useAcademia();
 
   const [conta, setConta] = useState<Conta | null>(null);
+  const [contato, setContato] = useState<ContatoDaConta | null>(null);
   const [usuario, setUsuario] = useState("");
   const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
@@ -70,6 +72,7 @@ export function MinhaConta({
     const dados = await resposta.json();
     setConta(dados.conta);
     setUsuario(dados.conta.usuario);
+    setContato(dados.contato ?? null);
   }
 
   const [comGoogle, setComGoogle] = useState(false);
@@ -322,6 +325,10 @@ export function MinhaConta({
               {salvandoSenha ? "Salvando…" : conta && !conta.tem_senha ? "Criar senha" : "Trocar senha"}
             </Button>
           </form>
+
+          {/* Contato, responsável (menores) e aceite de WhatsApp. Some se a
+              migração 011 ainda não rodou no banco. */}
+          {contato?.disponivel ? <ContatoConta contato={contato} onSalvo={setContato} /> : null}
 
           {/* Conta Google — só aparece quando o login com Google está ligado
               (chaves GOOGLE_* configuradas). Desligado, some por inteiro. */}

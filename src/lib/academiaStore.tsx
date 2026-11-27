@@ -79,7 +79,18 @@ interface AcademiaContexto {
   ) => Promise<Resultado>;
   removerProfessor: (professorId: string) => Promise<Resultado>;
   criarAluno: (
-    aluno: Omit<Aluno, "id" | "foto"> & { email?: string },
+    aluno: Omit<Aluno, "id" | "foto"> & {
+      email?: string;
+      /** Maior de idade: telefone e e-mail dele. Menor: os do responsável. */
+      contato?: {
+        telefone?: string;
+        email?: string;
+        responsavelNome?: string;
+        responsavelParentesco?: string;
+        responsavelTelefone?: string;
+        responsavelEmail?: string;
+      };
+    },
   ) => Promise<Resultado>;
   criarProfessor: (
     // A foto é da própria pessoa (Minha conta ou Google), nunca do cadastro.
@@ -459,11 +470,20 @@ export function AcademiaProvider({ children }: { children: ReactNode }) {
           nome: aluno.nome,
           usuario: aluno.usuario,
           senha: aluno.senha,
-          email: aluno.email,
+          email: aluno.contato?.email || aluno.email,
           dataNascimento: aluno.dataNascimento || null,
           idade: aluno.idade,
           turmaId: Number(aluno.turmaId) || null,
           faixa: aluno.faixa,
+          contato: aluno.contato
+            ? {
+                telefone: aluno.contato.telefone,
+                responsavelNome: aluno.contato.responsavelNome,
+                responsavelParentesco: aluno.contato.responsavelParentesco,
+                responsavelTelefone: aluno.contato.responsavelTelefone,
+                responsavelEmail: aluno.contato.responsavelEmail,
+              }
+            : undefined,
         }),
       });
       const dados = await resposta.json();

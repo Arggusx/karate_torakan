@@ -33,6 +33,14 @@ export function CadastroAlunoPanel() {
   // A idade deixou de ser digitada: vem da data de nascimento e nunca envelhece
   // errado, porque é recalculada a cada leitura.
   const idadeCalculada = idadePorNascimento(nascimento);
+  // Sem data ainda, trata como menor: a maioria dos alunos novos é da turma
+  // infantil, e o servidor decide de verdade pela data gravada.
+  const menor = idadeCalculada === null || idadeCalculada < 18;
+
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
+  const [respNome, setRespNome] = useState("");
+  const [respParentesco, setRespParentesco] = useState("");
 
   async function cadastrar(event: React.FormEvent) {
     event.preventDefault();
@@ -61,6 +69,14 @@ export function CadastroAlunoPanel() {
       frequencia: 0,
       aptoParaExame: false,
       criterios: null,
+      contato: menor
+        ? {
+            responsavelNome: respNome,
+            responsavelParentesco: respParentesco,
+            responsavelTelefone: telefone,
+            responsavelEmail: email,
+          }
+        : { telefone, email },
     });
 
     if (!resultado.ok) {
@@ -73,6 +89,10 @@ export function CadastroAlunoPanel() {
     setUsuario("");
     setSenha("");
     setNascimento("");
+    setTelefone("");
+    setEmail("");
+    setRespNome("");
+    setRespParentesco("");
     setStatusUsuario("vazio");
   }
 
@@ -149,32 +169,69 @@ export function CadastroAlunoPanel() {
             </p>
           </div>
 
+          {/* Menor de idade: o contato é do responsável. Maior: do próprio
+              aluno. O aceite de WhatsApp não é marcado aqui — quem aceita é o
+              titular (ou o responsável) em Minha conta. */}
+          {menor ? (
+            <>
+              <div>
+                <label htmlFor="aluno-resp-nome" className="label">
+                  Nome do responsável
+                </label>
+                <input
+                  id="aluno-resp-nome"
+                  className="input mt-1"
+                  value={respNome}
+                  onChange={(event) => setRespNome(event.target.value)}
+                  maxLength={120}
+                />
+              </div>
+              <div>
+                <label htmlFor="aluno-resp-parentesco" className="label">
+                  Parentesco
+                </label>
+                <input
+                  id="aluno-resp-parentesco"
+                  className="input mt-1"
+                  value={respParentesco}
+                  onChange={(event) => setRespParentesco(event.target.value)}
+                  placeholder="Mãe, pai, avó…"
+                  maxLength={40}
+                />
+              </div>
+            </>
+          ) : null}
+
           <div>
             <label htmlFor="aluno-contato" className="label">
-              Telefone do responsável
+              {menor ? "Telefone do responsável" : "Telefone do aluno"}
             </label>
             <input
               id="aluno-contato"
-              name="contato"
+              type="tel"
+              inputMode="tel"
               className="input mt-1"
-              placeholder="(11) 90000-0000"
+              value={telefone}
+              onChange={(event) => setTelefone(event.target.value)}
+              placeholder="(82) 99999-0000"
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div className={menor ? "" : "sm:col-span-2"}>
             <label htmlFor="aluno-email" className="label">
-              E-mail do aluno ou responsável
+              {menor ? "E-mail do responsável" : "E-mail do aluno"}
             </label>
             <input
               id="aluno-email"
-              name="email"
               type="email"
               className="input mt-1"
-              placeholder="responsavel@email.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder={menor ? "responsavel@email.com" : "aluno@email.com"}
             />
             <p className="mt-1 text-2xs text-subtle">
-              Não é usado para entrar — serve para contato e, futuramente, para
-              o envio dos comprovantes de pagamento.
+              Não é usado para entrar: serve para contato e para os avisos de
+              mensalidade.
             </p>
           </div>
 

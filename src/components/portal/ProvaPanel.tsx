@@ -418,6 +418,10 @@ function ResultadoDaProva({ resultado, onVoltar }: { resultado: Resultado; onVol
             ? "O resultado ficou registrado no seu histórico e o sensei já pode ver. O exame de faixa no tatame é com ele."
             : `Faltaram ${faltaram} ${faltaram === 1 ? "acerto" : "acertos"} para os ${resultado.minimo}. Leia a correção abaixo; o sensei pode liberar uma nova prova quando você estiver pronto.`}
         </p>
+        <p className="mx-auto mt-2 max-w-md text-2xs text-subtle">
+          A correção é automática, pelo gabarito da prova. Se discordar de
+          alguma questão, fale com o sensei: ele pode revisar o resultado.
+        </p>
         <Button size="sm" className="mt-4" onClick={onVoltar}>
           Voltar às provas
         </Button>
